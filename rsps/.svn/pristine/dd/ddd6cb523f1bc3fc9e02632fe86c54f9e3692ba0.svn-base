@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.izhuixin.rsps.dao.manual.BoxInfoDao" >
+
+  <resultMap id="baseResultMap" type="com.izhuixin.rsps.domain.manual.BoxInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="rfid" jdbcType="VARCHAR" property="rfid" />
+    <result column="barcode" jdbcType="VARCHAR" property="barcode" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="operator_id" jdbcType="VARCHAR" property="operatorId" />
+    <result column="operator" jdbcType="VARCHAR" property="operator" />
+    <result column="operate_time" jdbcType="TIMESTAMP" property="operateTime" />
+    <result column="du_address" jdbcType="VARCHAR" property="duAddress" />
+    <result column="du_latitude" jdbcType="DOUBLE" property="duLatitude" />
+    <result column="du_longitude" jdbcType="DOUBLE" property="duLongitude" />
+    <result column="du_coord_type" jdbcType="TINYINT" property="duCoordType" />
+    <result column="du_table_id" jdbcType="VARCHAR" property="duTableId" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="order_id" jdbcType="VARCHAR" property="orderId" />
+    <result column="box_name" jdbcType="VARCHAR" property="boxName" />
+    <result column="next_operator_id" jdbcType="VARCHAR" property="nextOperatorId" />
+    <result column="bind_time" jdbcType="TIMESTAMP" property="bindTime" />
+    <result column="detail" jdbcType="VARCHAR" property="detail" />
+    <result column="sign_status" jdbcType="TINYINT" property="signStatus" />
+    <result column="uuid" jdbcType="VARCHAR" property="btMac" />
+    <result column="transfer_id" jdbcType="VARCHAR" property="beginTransferId" />
+    <result column="custom_id" jdbcType="VARCHAR" property="customId" />
+  </resultMap>
+
+  <!-- 通过条件获取包装箱数量 -->
+  <select id="countBoxesByCondition" resultType="Integer" statementType="STATEMENT">
+    select count(*) from rsps_${entCode}box_info as bi left join rsps_box_base as bb on bi.rfid = bb.rfid where 1 = 1
+    <if test="operatorId != null and operatorId != ''">
+      and bi.operator_id = '${operatorId}'
+    </if>
+    <if test="boxStatus != null">
+      and bi.status in <foreach item="item" collection="boxStatus" index="index" open="(" separator="," close=")">${item}</foreach>
+    </if>
+    <if test="beginTime != null">
+      <![CDATA[ and bi.update_time >= '${beginTime}']]>
+    </if>
+    <if test="endTime != null">
+      <![CDATA[ and bi.update_time <= '${endTime}']]>
+    </if>
+  </select>
+
+  <!-- 通过条件获取包装箱信息 -->
+  <select id="queryBoxesByCondition" resultMap="baseResultMap" statementType="STATEMENT">
+    select bi.*, bb.uuid from rsps_${entCode}box_info as bi left join rsps_box_base as bb on bi.rfid = bb.rfid where 1 = 1
+    <if test="operatorId != null and operatorId != ''">
+      and bi.operator_id = '${operatorId}'
+    </if>
+    <if test="boxStatus != null">
+      and bi.status in <foreach item="item" collection="boxStatus" index="index" open="(" separator="," close=")">${item}</foreach>
+    </if>
+    <if test="beginTime != null">
+      <![CDATA[ and bi.update_time >= '${beginTime}']]>
+    </if>
+    <if test="endTime != null">
+      <![CDATA[ and bi.update_time <= '${endTime}']]>
+    </if>
+  </select>
+
+  <!-- 获取配货状态及指定操作的包装箱数量 -->
+  <select id="countPendingBoxes" resultType="Integer" statementType="STATEMENT">
+    select count(*) from rsps_${entCode}box_info where (status = 1) or (operator_id = '${operatorId}') ;
+  </select>
+
+  <!-- 获取配货状态及指定操作的包装箱信息 -->
+  <select id="queryPendingBoxes" resultMap="baseResultMap" statementType="STATEMENT">
+    select * from rsps_${entCode}box_info where (status = 1) or (operator_id = '${operatorId}') ;
+  </select>
+
+  <!-- 获取指定状态包装信息数量 -->
+  <select id="countBoxesByStatus" resultType="Long" statementType="STATEMENT">
+    select count(*) from rsps_${entCode}box_info where status in <foreach item="item" collection="boxStatus" index="index" open="(" separator="," close=")">${item}</foreach>
+  </select>
+
+  <!-- 获取指定状态下的包装箱列表 -->
+  <select id="queryBoxes" resultType="com.izhuixin.rsps.domain.manual.BoxInfo">
+    SELECT bb.rfid as rfid, bb.type as boxType, bb.uuid as btMac, bb.create_time as createTime,
+    bb.unique_id as uniqueId, bi.status, bi.du_address as duAddress, bi.operator_id as operatorId, bi.operator
+    FROM rsps_box_base as bb left join rsps_${entCode}box_info as bi on bb.rfid = bi.rfid where bi.status in
+    <foreach item="item" collection="status" index="index" open="(" separator="," close=")">${item}</foreach>
+  </select>
+
+  <!-- 获取线路对应的包装箱信息数量 -->
+  <select id="countLineBoxes" resultType="Integer" statementType="STATEMENT">
+    select count(*) from
+    (select bi.*, jo.customer_id, jo.customer from rsps_${entCode}box_info as bi right join rsps_${entCode}order as jo on bi.order_id = jo.order_id where bi.status = 1) as t1
+    left join (select t2.* from (select rc.*, ro.operator_id from rsps_${entCode}route_custom as rc left join rsps_${entCode}route_operator as ro on rc.route_id = ro.route_id) as t2) as t22
+    on t1.customer_id = t22.custom_id where t22.operator_id = '${operatorId}' or (t22.operator_id is null and t22.route_id is null);
+  </select>
+
+  <!-- 获取线路对应包装箱信息（20180607 配送员对未配置线路的客户包装箱不可见修改） -->
+  <select id="queryLineBoxes" resultMap="baseResultMap" statementType="STATEMENT">
+    select t11.*, bb.uuid from (select t1.* from
+    (select bi.*, jo.customer_id, jo.customer from rsps_${entCode}box_info as bi right join rsps_${entCode}order as jo on bi.order_id = jo.order_id where bi.status = 1 or bi.status = 5) as t1
+    left join (select t2.* from (select rc.*, ro.operator_id from rsps_${entCode}route_custom as rc left join rsps_${entCode}route_operator as ro on rc.route_id = ro.route_id) as t2) as t22
+    on t1.customer_id = t22.custom_id where t22.operator_id = '${operatorId}') as t11 left join rsps_box_base as bb on t11.rfid = bb.rfid;
+  </select>
+  <!--<select id="queryLineBoxes" resultMap="baseResultMap" statementType="STATEMENT">-->
+    <!--select t11.*, bb.uuid from (select t1.* from-->
+    <!--(select bi.*, jo.customer_id, jo.customer from rsps_${entCode}box_info as bi right join rsps_${entCode}order as jo on bi.order_id = jo.order_id where bi.status = 1 or bi.status = 5) as t1-->
+    <!--left join (select t2.* from (select rc.*, ro.operator_id from rsps_${entCode}route_custom as rc left join rsps_${entCode}route_operator as ro on rc.route_id = ro.route_id) as t2) as t22-->
+    <!--on t1.customer_id = t22.custom_id where t22.operator_id = '${operatorId}' or (t22.operator_id is null and t22.route_id is null)) as t11 left join rsps_box_base as bb on t11.rfid = bb.rfid;-->
+  <!--</select>-->
+
+  <!-- 获取线路对应的包装箱信息数量 -->
+  <select id="countCLineBoxes" resultType="Integer" statementType="STATEMENT">
+    select count(*) from
+    (select bi.*, jo.customer_id, jo.customer from rsps_${entCode}box_info as bi right join rsps_order as jo on bi.order_id = jo.order_id where bi.status = 1) as t1
+    left join (select t2.* from (select rc.*, ro.operator_id from rsps_route_custom as rc left join rsps_route_operator as ro on rc.route_id = ro.route_id) as t2) as t22
+    on t1.customer_id = t22.custom_id where t22.operator_id = '${operatorId}' or (t22.operator_id is null and t22.route_id is null);
+  </select>
+
+  <!-- 获取线路对应包装箱信息 -->
+  <select id="queryCLineBoxes" resultMap="baseResultMap" statementType="STATEMENT">
+    select t11.*, bb.uuid from (select t1.* from
+    (select bi.*, jo.customer_id, jo.customer from rsps_${entCode}box_info as bi right join rsps_order as jo on bi.order_id = jo.order_id where bi.status = 1) as t1
+    left join (select t2.* from (select rc.*, ro.operator_id from rsps_${entCode}route_custom as rc left join rsps_${entCode}route_operator as ro on rc.route_id = ro.route_id) as t2) as t22
+    on t1.customer_id = t22.custom_id where t22.operator_id = '${operatorId}' or (t22.operator_id is null and t22.route_id is null)) as t11 left join rsps_box_base as bb on t11.rfid = bb.rfid;
+  </select>
+
+  <!-- 通过订单查询包装箱信息 -->
+  <select id="queryBoxesByOrderId" resultMap="baseResultMap" statementType="STATEMENT">
+    select * from rsps_${entCode}box_info where order_id = '${orderId}'
+  </select>
+
+  <!-- 通过rfid获取包装箱信息 -->
+  <select id="queryBoxByRfid" resultMap="baseResultMap" statementType="STATEMENT">
+    select * from rsps_${entCode}box_info where rfid = '${rfid}'
+  </select>
+
+  <!-- 获取指定状态下包装包装箱所属客户列表 -->
+  <select id="queryCustomsWithBox" resultType="com.izhuixin.rsps.domain.manual.BoxesCustomInfo" statementType="STATEMENT">
+    SELECT o.custom_id as customId, o.custom_name as customName, o.custom_show_id as customShowId, o.custom_show_name as customShowName, count(*) as count FROM rsps_${entCode}box_info as bi INNER join
+    (select order_id, customer_id as custom_id, customer as custom_name, customer_id as custom_show_id, customer as custom_show_name from
+    rsps_${entCode}order union
+    select order_id, customer_id as custom_id, customer as custom_name, receiver_tel as custom_show_id, receiver_name as custom_show_name from
+    rsps_order) as o on bi.order_id = o.order_id where bi.status in
+    <foreach item="item" collection="status" index="index" open="(" separator="," close=")">${item}</foreach>
+    group by o.custom_id order by bi.operate_time desc;
+  </select>
+  <!--<select id="queryCustomsWithBox" resultType="com.izhuixin.rsps.modal.domain.BoxesCustomInfo" statementType="STATEMENT">-->
+    <!--SELECT o.custom_id as customId, o.custom_name as customName, o.custom_show_id as customShowId, o.custom_show_name as customShowName, count(*) as count FROM rsps_${entCode}box_info as bi INNER join-->
+    <!--(select o.order_id, ci.custom_id, ci.custom_name, ci.custom_id as custom_show_id, ci.custom_name as custom_show_name from rsps_${entCode}order as o INNER join rsps_custom_info as ci on-->
+    <!--ci.custom_id = o.customer_id union-->
+    <!--select o.order_id, ci.custom_id, ci.custom_name, o.receiver_tel as custom_show_id, o.receiver_name as custom_show_name from-->
+    <!--rsps_order as o inner join rsps_custom_info as ci on ci.custom_id = o.customer_id) as o on bi.order_id = o.order_id where bi.status in-->
+    <!--<foreach item="item" collection="status" index="index" open="(" separator="," close=")">${item}</foreach>-->
+    <!--group by o.custom_id order by bi.operate_time desc;-->
+  <!--</select>-->
+
+  <!-- 获取指定状态、指定客户下包装包装箱列表 -->
+  <select id="queryBoxesByCustomId" resultType="com.izhuixin.rsps.domain.manual.BoxInfo" statementType="STATEMENT">
+    SELECT bb.rfid as rfid, bb.type as boxType, bb.uuid as btMac, bb.create_time as createTime,
+    bb.unique_id as uniqueId, bi.status, bi.du_address as duAddress, bi.operator_id as operatorId,
+    bi.operator,bi.operate_time as operateTime, bi.order_id as orderId
+    FROM rsps_box_base as bb right join (SELECT bi.* FROM rsps_${entCode}box_info as bi left join
+    (select order_id, customer_id as custom_id, customer as custom_name from rsps_${entCode}order union
+    select order_id, customer_id as custom_id, customer as custom_name from rsps_order) as o on bi.order_id = o.order_id
+    where bi.status in
+    <foreach item="item" collection="status" index="index" open="(" separator="," close=")">${item}</foreach>
+    and o.custom_id = '${customId}') as bi on bb.rfid = bi.rfid
+    <!--SELECT bb.rfid as rfid, bb.type as boxType, bb.uuid as btMac, bb.create_time as createTime,-->
+    <!--bb.unique_id as uniqueId, bi.status, bi.du_address as duAddress, bi.operator_id as operatorId, bi.operator,bi.operate_time as operateTime-->
+    <!--FROM rsps_box_base as bb right join (SELECT bi.* FROM rsps_${entCode}box_info as bi left join-->
+    <!--(select o.order_id, ci.custom_id, ci.custom_name from rsps_${entCode}order as o INNER join-->
+    <!--rsps_custom_info as ci on ci.custom_id = o.customer_id union -->
+    <!--select o.order_id, ci.custom_id, ci.custom_name from rsps_order as o INNER join-->
+    <!--rsps_custom_info as ci on ci.custom_id = o.customer_id) as o on bi.order_id = o.order_id-->
+    <!--where bi.status in-->
+    <!--<foreach item="item" collection="status" index="index" open="(" separator="," close=")">${item}</foreach>-->
+    <!--and o.custom_id = '${customId}') as bi on bb.rfid = bi.rfid-->
+  </select>
+
+  <!-- 获取回收状态下包装箱所属操作人列表 -->
+  <select id="queryOperatorsWithBox" resultType="com.izhuixin.rsps.domain.manual.BoxesOperatorInfo" statementType="STATEMENT">
+    select t.operatorId, t.operator, count(*) as count from
+    (SELECT bb.rfid as rfid, bb.type as boxType, bb.uuid as btMac, bb.create_time as createTime,bb.unique_id as uniqueId,
+    bi.status, bi.du_address as duAddress, bi.operator_id as operatorId, bi.operator FROM
+    rsps_box_base as bb left join rsps_${entCode}box_info as bi on bb.rfid = bi.rfid where bi.status in
+    <foreach item="item" collection="status" index="index" open="(" separator="," close=")">${item}</foreach>
+    order by bi.operate_time desc) as t
+    group by t.operatorId;
+  </select>
+
+  <!-- 获取回收状态、指定操作人下的包装箱信息 -->
+  <select id="queryBoxesByOperatorId" resultType="com.izhuixin.rsps.domain.manual.BoxInfo" statementType="STATEMENT">
+    select t.*, t1.customer_id as customId, t1.customer as customName from rsps_${entCode}order as t1 right join
+    (SELECT bb.rfid as rfid, bb.type as boxType, bb.uuid as btMac, bb.create_time as createTime,bb.unique_id as uniqueId,
+    bi.status, bi.du_address as duAddress, bi.operator_id as operatorId, bi.operator, bi.operate_time as operateTime, bi.order_id as orderId FROM
+    rsps_box_base as bb right join rsps_${entCode}box_info as bi on bb.rfid = bi.rfid where bi.status in
+    <foreach item="item" collection="status" index="index" open="(" separator="," close=")">${item}</foreach>
+    and bi.operator_id = '${operatorId}') as t on t1.order_id = t.orderId
+    <!--SELECT bb.rfid as rfid, bb.type as boxType, bb.uuid as btMac, bb.create_time as createTime,bb.unique_id as uniqueId,-->
+    <!--bi.status, bi.du_address as duAddress, bi.operator_id as operatorId, bi.operator, bi.operate_time as operateTime, bi.order_id as orderId FROM-->
+    <!--rsps_box_base as bb right join rsps_${entCode}box_info as bi on bb.rfid = bi.rfid where bi.status in-->
+    <!--<foreach item="item" collection="status" index="index" open="(" separator="," close=")">${item}</foreach>-->
+    <!--and bi.operator_id = '${operatorId}'-->
+  </select>
+
+  <!-- 获取所有包装箱信息 -->
+  <select id="queryAllBoxes" resultType="com.izhuixin.rsps.domain.manual.BoxInfo" statementType="STATEMENT">
+    SELECT bb.rfid as rfid, bb.type as boxType, bb.uuid as btMac, bb.create_time as createTime,bb.unique_id as uniqueId,
+    bi.status, bi.du_address as duAddress, bi.operator_id as operatorId, bi.operator FROM
+    rsps_box_base as bb right join rsps_${entCode}box_info as bi on bb.rfid = bi.rfid order by bb.create_time desc;
+  </select>
+
+  <!-- 获取指定经纬度范围内的包装箱总数 -->
+  <select id="countNearbyBoxes" resultType="LONG" statementType="STATEMENT">
+    <![CDATA[
+    select count(*) from rsps_${entCode}box_info where du_latitude >= ${lat} - ${precision} and du_latitude <= ${lat} + ${precision} and
+    du_longitude >= ${lon} - ${precision} and du_longitude <= ${lon} + ${precision} and status in
+    ]]><foreach item="item" collection="status" index="index" open="(" separator="," close=")">${item}</foreach>;
+  </select>
+
+  <!-- 获取指定经纬度范围内的包装箱信息 -->
+  <select id="queryNearbyBoxes" resultType="com.izhuixin.rsps.domain.manual.BoxInfo" statementType="STATEMENT">
+    <![CDATA[
+    select id, rfid, barcode, status, operator_id as operatorId, operator, du_address as duAddress, du_latitude as duLatitude,
+    du_longitude as duLongitude, du_coord_type as duCoordType, order_id as orderId, box_name as boxName, sign_status as signStatus
+    from rsps_${entCode}box_info where du_latitude >= ${lat} - ${precision} and du_latitude <= ${lat} + ${precision} and
+    du_longitude >= ${lon} - ${precision} and du_longitude <= ${lon} + ${precision} and status in
+    ]]><foreach item="item" collection="status" index="index" open="(" separator="," close=")">${item}</foreach>
+     limit ${startPage}, ${endPage};
+  </select>
+
+  <!-- 删除包装箱 -->
+  <delete id="deleteBox" statementType="STATEMENT">
+    delete from rsps_${entCode}box_info where rfid = '${rfid}'
+  </delete>
+
+  <!-- 通过包装箱rfid、订单id获取包装箱信息 -->
+  <select id="getBoxInfoByRfidAndOrderId" resultMap="baseResultMap" statementType="STATEMENT">
+    select * from rsps_${entCode}box_info where 1 = 1
+    <if test="rfid != null">
+      and rfid = '${rfid}'
+    </if>
+    <if test="orderId != null">
+      and order_id = '${orderId}'
+    </if>
+  </select>
+
+  <!-- 获取回收状态下前的包装箱使用的客户名称 -->
+  <select id="queryCustomerByBox" resultType="String" statementType="STATEMENT">
+    select o.customer from rsps_${entCode}order as o left join rsps_${entCode}box_record as br
+    on o.order_id = br.order_id where br.rfid = '${boxId}' and br.operate_type = 3 order by br.id desc limit 1;
+  </select>
+
+  <!-- 获取闲置包装箱信息 -->
+  <select id="queryLeisureBoxes" resultType="com.izhuixin.rsps.domain.manual.BoxInfo" statementType="STATEMENT">
+    select t.*, case when t1.cycleIndex is null then 0 else t1.cycleIndex end as cycleIndex from (SELECT bb.rfid as rfid, bb.type as boxType, bb.uuid as btMac, bb.create_time as createTime,
+    bb.unique_id as uniqueId, bi.status, bi.du_address as duAddress,
+    bi.operator_id as operatorId, bi.operator, bi.operate_time as operateTime
+    FROM rsps_box_base as bb right join rsps_${entCode}box_info as bi on bb.rfid = bi.rfid where bi.status = 0
+    order by operateTime desc) as t left join (select rfid, count(*) as cycleIndex from rsps_${entCode}box_record where operate_type = 0 group by rfid
+    ) as t1 on t.rfid = t1.rfid;
+--     SELECT bb.rfid as rfid, bb.type as boxType, bb.uuid as btMac, bb.create_time as createTime,bb.unique_id as uniqueId,
+--     bi.status, bi.du_address as duAddress, bi.operator_id as operatorId, bi.operator, bi.operate_time as operateTime, (select count(*) from rsps_${entCode}box_record as br where br.rfid = bi.rfid and br.operate_type = 4) as cycleIndex FROM
+--     rsps_box_base as bb right join rsps_${entCode}box_info as bi on bb.rfid = bi.rfid where bi.status = 0 order by operateTime desc
+  </select>
+
+  <!-- 获取订单绑定的包装箱 -->
+  <select id="queryAllBoxesByOrderId" resultMap="baseResultMap" statementType="STATEMENT">
+    select * from (
+    <foreach collection="entCodes" item="entCode" open="" close="" separator="union">
+      SELECT * from rsps_${entCode}box_info where order_id = '${orderId}'
+    </foreach>
+    ) as temp_table
+  </select>
+
+  <!-- 通过rfid更新包装箱信息 -->
+  <update id="updateBoxByRfid" parameterType="com.izhuixin.rsps.domain.manual.BoxInfo" statementType="STATEMENT">
+    update rsps_${entCode}box_info
+    <set>
+      <if test="boxInfo.barcode != null">
+        barcode = '${boxInfo.barcode}',
+      </if>
+      <if test="boxInfo.status != null">
+        status = ${boxInfo.status},
+      </if>
+      <if test="boxInfo.operatorId != null">
+        operator_id = '${boxInfo.operatorId}',
+      </if>
+      <if test="boxInfo.operator != null">
+        operator = '${boxInfo.operator}',
+      </if>
+      <if test="boxInfo.operateTimeStr != null">
+        operate_time = '${boxInfo.operateTimeStr}',
+      </if>
+      <if test="boxInfo.duAddress != null">
+        du_address = '${boxInfo.duAddress}',
+      </if>
+      <if test="boxInfo.duLatitude != null">
+        du_latitude = ${boxInfo.duLatitude},
+      </if>
+      <if test="boxInfo.duLongitude != null">
+        du_longitude = ${boxInfo.duLongitude},
+      </if>
+      <if test="boxInfo.duCoordType != null">
+        du_coord_type = ${boxInfo.duCoordType},
+      </if>
+      <if test="boxInfo.duTableId != null">
+        du_table_id = '${boxInfo.duTableId}',
+      </if>
+      <if test="boxInfo.updateTimeStr != null">
+        update_time = '${boxInfo.updateTimeStr}',
+      </if>
+      <if test="boxInfo.orderId != null">
+        order_id = '${boxInfo.orderId}',
+      </if>
+      <if test="boxInfo.boxName != null">
+        box_name = '${boxInfo.boxName}',
+      </if>
+      <if test="boxInfo.bindTimeStr != null">
+        bind_time = '${boxInfo.bindTimeStr}',
+      </if>
+      <if test="boxInfo.nextOperatorId != null">
+        next_operator_id = '${boxInfo.nextOperatorId}',
+      </if>
+      <if test="boxInfo.detail != null">
+        detail = '${boxInfo.detail}',
+      </if>
+      <if test="boxInfo.signStatus != null">
+        sign_status = ${boxInfo.signStatus},
+      </if>
+      <if test="boxInfo.beginTransferId != null">
+        transfer_id = ${boxInfo.beginTransferId}
+      </if>
+    </set>
+    where rfid = '${boxInfo.rfid}'
+  </update>
+
+  <!-- 通过订单ID更新包装箱信息 -->
+  <update id="updateBoxInfoByOrderId" parameterType="com.izhuixin.rsps.domain.manual.BoxInfo" statementType="STATEMENT">
+    update rsps_${entCode}box_info
+    <set>
+      <if test="boxInfo.operatorId != null">
+        operator_id = '${boxInfo.operatorId}',
+      </if>
+      <if test="boxInfo.operator != null">
+        operator = '${boxInfo.operator}',
+      </if>
+      <if test="boxInfo.status != null">
+        status = ${boxInfo.status},
+      </if>
+    </set>
+    where order_id = '${boxInfo.orderId}'
+  </update>
+
+  <!-- 保存包装箱信息 -->
+  <insert id="saveBox" parameterType="com.izhuixin.rsps.domain.manual.BoxInfo" statementType="STATEMENT">
+    insert into rsps_${entCode}box_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="boxInfo.rfid != null">
+        rfid,
+      </if>
+      <if test="boxInfo.barcode != null">
+        barcode,
+      </if>
+      <if test="boxInfo.status != null">
+        status,
+      </if>
+      <if test="boxInfo.operatorId != null">
+        operator_id,
+      </if>
+      <if test="boxInfo.operator != null">
+        operator,
+      </if>
+      <if test="boxInfo.operateTimeStr != null">
+        operate_time,
+      </if>
+      <if test="boxInfo.duAddress != null">
+        du_address,
+      </if>
+      <if test="boxInfo.duLatitude != null">
+        du_latitude,
+      </if>
+      <if test="boxInfo.duLongitude != null">
+        du_longitude,
+      </if>
+      <if test="boxInfo.duCoordType != null">
+        du_coord_type,
+      </if>
+      <if test="boxInfo.duTableId != null">
+        du_table_id,
+      </if>
+      <if test="boxInfo.updateTimeStr != null">
+        update_time,
+      </if>
+      <if test="boxInfo.orderId != null">
+        order_id,
+      </if>
+      <if test="boxInfo.boxName != null">
+        box_name,
+      </if>
+      <if test="boxInfo.nextOperatorId != null">
+        next_operator_id,
+      </if>
+      <if test="boxInfo.bindTimeStr != null">
+        bind_time,
+      </if>
+      <if test="boxInfo.detail != null">
+        detail,
+      </if>
+      <if test="boxInfo.signStatus != null">
+        sign_status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="boxInfo.rfid != null">
+        '${boxInfo.rfid}',
+      </if>
+      <if test="boxInfo.barcode != null">
+        '${boxInfo.barcode}',
+      </if>
+      <if test="boxInfo.status != null">
+        ${boxInfo.status},
+      </if>
+      <if test="boxInfo.operatorId != null">
+        '${boxInfo.operatorId}',
+      </if>
+      <if test="boxInfo.operator != null">
+        '${boxInfo.operator}',
+      </if>
+      <if test="boxInfo.operateTimeStr != null">
+        '${boxInfo.operateTimeStr}',
+      </if>
+      <if test="boxInfo.duAddress != null">
+        '${boxInfo.duAddress}',
+      </if>
+      <if test="boxInfo.duLatitude != null">
+        ${boxInfo.duLatitude},
+      </if>
+      <if test="boxInfo.duLongitude != null">
+        ${boxInfo.duLongitude},
+      </if>
+      <if test="boxInfo.duCoordType != null">
+        ${boxInfo.duCoordType},
+      </if>
+      <if test="boxInfo.duTableId != null">
+        '${boxInfo.duTableId}',
+      </if>
+      <if test="boxInfo.updateTimeStr != null">
+        '${boxInfo.updateTimeStr}',
+      </if>
+      <if test="boxInfo.orderId != null">
+        '${boxInfo.orderId}',
+      </if>
+      <if test="boxInfo.boxName != null">
+        '${boxInfo.boxName}',
+      </if>
+      <if test="boxInfo.nextOperatorId != null">
+        '${boxInfo.nextOperatorId}',
+      </if>
+      <if test="boxInfo.bindTimeStr != null">
+        '${boxInfo.bindTimeStr}',
+      </if>
+      <if test="boxInfo.detail != null">
+        '${boxInfo.detail}',
+      </if>
+      <if test="boxInfo.signStatus != null">
+        ${boxInfo.signStatus},
+      </if>
+    </trim>
+  </insert>
+
+  <!-- 获取指定客户配货状态下的包装箱 -->
+  <select id="queryBoxesForCustoms" resultMap="baseResultMap" statementType="STATEMENT">
+    select t.*, bb.uuid from rsps_box_base as bb INNER JOIN (
+    select bi.*, jo.customer_id as custom_id, jo.customer from rsps_${entCode}box_info as bi right join
+    rsps_${entCode}order as jo on bi.order_id = jo.order_id where (bi.status = 1 or bi.status = 5) and jo.customer_id in
+    <foreach item="item" collection="customIds" index="index" open="(" separator="," close=")">'${item}'</foreach>
+    ) as t on t.rfid = bb.rfid
+  </select>
+
+</mapper>

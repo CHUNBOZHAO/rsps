@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>RSPS智能包装系统</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- CSS Libs -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap.min.css}" href="../../lib/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/font-awesome.min.css}" href="../../lib/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/animate.min.css}" href="../../lib/css/animate.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap-switch.min.css}" href="../../lib/css/bootstrap-switch.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/checkbox3.min.css}" href="../../lib/css/checkbox3.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/jquery.dataTables.min.css}" href="../../lib/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/dataTables.bootstrap.css}" href="../../lib/css/dataTables.bootstrap.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/select2.min.css}" href="../../lib/css/select2.min.css">
+
+    <!-- CSS App -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/style.css}" href="../../css/style.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/themes/flat-green.css}" href="../../css/themes/flat-green.css">
+
+
+    <style type="text/css">
+        .login-input {
+            background-color: rgba(51,122,183,0.21);
+            height: 38px;
+            border: 0px;
+        }
+
+        .q-code {
+            height: 34px;
+            position: absolute;
+            right: 23px;
+            top: 28px;
+        }
+    </style>
+</head>
+
+<body class="flat-blue login-page" style="background: url('/assets/images/custom_bg.jpg') no-repeat center center fixed !important;">
+    <div class="container">
+        <div class="login-box" style="top:42% !important;">
+            <div>
+                <div class="login-form row">
+                    <div class="col-sm-12 text-center login-header" style="color: #0288D1;">
+                        <!--<i class="login-logo fa fa-recycle fa-5x"></i>-->
+                        <image th:src="@{/assets/images/custom/rsps_logo.png}" style="height: 80px;"></image>
+                        <h4 class="login-title">RSPS智能包装系统</h4>
+                    </div>
+                    <div class="col-sm-12" style="padding:0px;">
+                        <div class="login-body">
+                            <div class="progress hidden" id="login-progress">
+                                <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                                    Log In...
+                                </div>
+                            </div>
+                            <div th:unless="${#strings.isEmpty(error)}">
+                                <span style="color: red" th:text="${error}"></span>
+                            </div>
+                            <form action="/custom/login/handle" method="post">
+                                <image th:src="@{/assets/images/custom/saoma.png}" class="q-code"></image>
+                                <div class="control">
+                                    <input class="form-control focus-event login-input" name="username" value="" maxlength="20" placeholder="用户名/手机号码" />
+                                </div>
+                                <div class="control">
+                                    <input type="password" class="form-control focus-event login-input" name="password" value="" maxlength="20" placeholder="密码"/>
+                                </div>
+                                <div class="login-button text-center">
+                                    <input type="submit" class="btn btn-primary" value="登  录" style="background-color: #0288D1;border-color: #0288D1;width:100%">
+                                </div>
+                                <div class="login-button text-center">
+                                    <input type="button" class="btn btn-primary" value="快速登录" style="background-color: #0288D1;border-color: #0288D1;width:100%">
+                                </div>
+                            </form>
+                        </div>
+                        <div class="login-footer" style="padding-left: 15px;padding-right: 15px;padding-top: 0px;">
+                            <div style="width: 50%;text-align: left;float: left">
+                                <span class="text-left"><a th:href="@{/custom/register}" class="color-white" style="cursor: pointer">注册</a></span>
+                            </div>
+                            <div style="width: 50%;text-align: right;float: left">
+                                <span class="text-right"><a th:href="@{/custom/forget/password}" class="color-white" style="cursor: pointer">忘记密码</a></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Javascript Libs -->
+    <script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.min.js}" src="../../lib/js/jquery.min.js"></script>
+    <script type="text/javascript" th:src="@{/assets/btzero/lib/js/bootstrap.min.js}" src="../../lib/js/bootstrap.min.js"></script>
+    <script type="text/javascript" th:src="@{/assets/btzero/lib/js/Chart.min.js}" src="../../lib/js/Chart.min.js"></script>
+    <script type="text/javascript" th:src="@{/assets/btzero/lib/js/bootstrap-switch.min.js}" src="../../lib/js/bootstrap-switch.min.js"></script>
+    
+    <script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.matchHeight-min.js}" src="../../lib/js/jquery.matchHeight-min.js"></script>
+    <script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.dataTables.min.js}" src="../../lib/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" th:src="@{/assets/btzero/lib/js/dataTables.bootstrap.min.js}" src="../../lib/js/dataTables.bootstrap.min.js"></script>
+    <script type="text/javascript" th:src="@{/assets/btzero/lib/js/select2.full.min.js}" src="../../lib/js/select2.full.min.js"></script>
+    <script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/ace.js}" src="../../lib/js/ace/ace.js"></script>
+    <script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/mode-html.js}" src="../../lib/js/ace/mode-html.js"></script>
+    <script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/theme-github.js}" src="../../lib/js/ace/theme-github.js"></script>
+
+
+    <script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+    <!-- Javascript -->
+    <!--<script type="text/javascript" th:src="@{/assets/js/custom/login.js}"></script>-->
+
+    <script th:inline="javascript">
+
+        $(document).ready(function () {
+            var appId = [[${wxConfigModel.appId}]];
+            var noncestr = [[${wxConfigModel.noncestr}]];
+            var timestamp = [[${wxConfigModel.timestamp}]];
+            var signature = [[${wxConfigModel.signature}]];
+
+            wx.config({
+                debug: false,
+                appId: appId,
+                timestamp: timestamp,
+                nonceStr: noncestr,
+                signature: signature,
+                jsApiList: [
+                    'scanQRCode',
+                ]
+            });
+
+            wx.ready(function(){
+
+                $(document).on("click", ".q-code", function () {
+                    wx.scanQRCode({
+                        desc: 'scanQRCode desc',
+                        needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+                        scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+                        success: function (res) {
+                            alert(res);
+                        },
+                        error: function(res){
+                            if(res.errMsg.indexOf('function_not_exist') > 0){
+                                alert('版本过低请升级')
+                            }
+                        }
+                    });
+                });
+
+
+            });
+        });
+
+
+
+    </script>
+</body>
+
+</html>

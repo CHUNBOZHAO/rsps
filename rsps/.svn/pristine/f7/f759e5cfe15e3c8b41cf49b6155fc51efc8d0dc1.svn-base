@@ -1,0 +1,101 @@
+package com.izhuixin.rsps.domain;
+
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.Serializable;
+import java.util.List;
+
+public class SignInfo implements Serializable {
+    private String Jobno;
+    private String CustJobno;
+    private String SignDateTime;
+    private String SignDriverNO;
+    //拒收原因和拒收数量
+    private String refusedReason;
+    private String refuseCount;
+    private List<String> orderSource;
+
+    private String Signer;
+    private String SignRemak;
+    private String SignDriverName;
+
+    public String getJobno() {
+        return Jobno;
+    }
+
+    public void setJobno(String jobno) {
+        Jobno = jobno;
+    }
+
+    public String getCustJobno() {
+        return CustJobno;
+    }
+
+    public void setCustJobno(String custJobno) {
+        CustJobno = custJobno;
+    }
+
+    public String getSignDriverNO() {
+        return SignDriverNO;
+    }
+
+    public void setSignDriverNO(String signDriverNO) {
+        SignDriverNO = signDriverNO;
+    }
+
+    public String getSignDateTime() {
+        return SignDateTime;
+    }
+
+    public void setSignDateTime(String signDateTime) {
+        SignDateTime = signDateTime;
+    }
+
+    public String getRefusedReason() {
+        return refusedReason;
+    }
+
+    public void setRefusedReason(String refusedReason) {
+        this.refusedReason = refusedReason;
+    }
+
+    public String getRefuseCount() {
+        return refuseCount;
+    }
+
+    public void setRefuseCount(String refuseCount) {
+        this.refuseCount = refuseCount;
+    }
+
+    public List<String> getOrderSource() {
+        return orderSource;
+    }
+    public void setOrderSource(List<String> orderSource) {
+        this.orderSource = orderSource;
+    }
+
+    public String getSigner() {
+        return Signer;
+    }
+
+    public void setSigner(String signer) {
+        Signer = signer;
+    }
+
+    public String getSignRemak() {
+        return SignRemak;
+    }
+
+    public void setSignRemak(String signRemak) {
+        SignRemak = signRemak;
+    }
+
+    public String getSignDriverName() {
+        return SignDriverName;
+    }
+
+    public void setSignDriverName(String signDriverName) {
+        SignDriverName = signDriverName;
+    }
+}

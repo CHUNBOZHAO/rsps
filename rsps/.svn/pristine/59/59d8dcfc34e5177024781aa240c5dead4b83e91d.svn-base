@@ -1,0 +1,178 @@
+package com.izhuixin.rsps.controller;
+
+import com.izhuixin.rsps.domain.automatic.Enterprise;
+import com.izhuixin.rsps.domain.manual.EnterpriseAndUserInfo;
+import com.izhuixin.rsps.service.EnterpriseService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("v1/enterpriseData/")
+public class EnterpriseController {
+
+    @Autowired
+    private EnterpriseService enterpriseService;
+
+    /**
+     * 检测企业用户名
+     * @param userName
+     * @return
+     */
+    @RequestMapping("/userName/check/{userName}")
+    public String checkUserName(@PathVariable String userName) {
+        return enterpriseService.checkUserName(userName);
+    }
+
+    /**
+     * 获取企业用户名
+     * @param userName
+     * @return
+     */
+    @RequestMapping("/enterprise/get/userName/{userName}")
+    public Enterprise getEntByUserName(@PathVariable String userName) {
+        return enterpriseService.getEntByUserName(userName);
+    }
+
+    /**
+     * 获取企业ID
+     * @param entCode
+     * @return
+     */
+    @RequestMapping("/entId/get/entCode/{entCode}")
+    public String getEntIdByEntCode(@PathVariable String entCode) {
+        return enterpriseService.getEntIdByEntCode(entCode);
+    }
+
+    /**
+     * 获取所有企业编码
+     * @return
+     */
+    @RequestMapping("/entCodes/get")
+    public List<String> getEntCodes() {
+        return enterpriseService.getEntCodes();
+    }
+
+    /**
+     * 获取企业编码
+     * @param boxId
+     * @return
+     */
+    @RequestMapping("/entCode/get/boxId/{boxId}")
+    public String getEntCodeByBoxId(@PathVariable String boxId) {
+        return enterpriseService.getEntCodeByBoxId(boxId);
+    }
+
+    /**
+     * 检测企业密码
+     * @param id
+     * @param oldPwd
+     * @return
+     */
+    @RequestMapping("/password/check")
+    public boolean checkPwd(Integer id, String oldPwd) {
+        return enterpriseService.checkPwd(id, oldPwd);
+    }
+
+    /**
+     * 更新企业密码
+     * @param id
+     * @param newPwd
+     * @return
+     */
+    @RequestMapping("/password/update")
+    public boolean updatePwd(Integer id, String newPwd) {
+        return enterpriseService.updatePwd(id, newPwd);
+    }
+
+    /**
+     * 获取企业接入方式
+     * @param entCode
+     * @return
+     */
+    @RequestMapping("/accessWay/get/entCode/{entCode}")
+    public Byte getAccessWayByEntCode(@PathVariable String entCode) {
+        return enterpriseService.getAccessWayByEntCode(entCode);
+    }
+
+    /**
+     * 检测企业编码有效性
+     * @param entCode
+     * @return
+     */
+    @RequestMapping("/entCode/check/{entCode}")
+    public boolean checkEntCode(@PathVariable String entCode) {
+        return enterpriseService.checkEntCode(entCode);
+    }
+
+    /**
+     * 检测企业编码有效性
+     */
+    @RequestMapping("/checkEntCode")
+    public boolean checkEntCode2(@RequestParam String entCode){
+
+        return enterpriseService.checkEntCode(entCode);
+    }
+
+    /**
+     * 获取所有的企业信息
+     */
+    @RequestMapping("/getAllEnterpriseAndUserInfo")
+    public List<EnterpriseAndUserInfo> getAllEnterpriseAndUserInfo(){
+        List<EnterpriseAndUserInfo> eus = enterpriseService.getAllEnterpriseAndUserInfo();
+        return eus;
+    }
+
+    /**
+     * 根据userId获取子企业
+     */
+    @RequestMapping("/getDeepEnterpriseAndUserByUserId")
+    public List<EnterpriseAndUserInfo> getDeepEnterpriseAndUserInfo(@RequestParam String userId){
+        List<EnterpriseAndUserInfo> enterpriseAndUserInfos = enterpriseService.getDeepEnterpriseAndUserInfo(userId);
+        return enterpriseAndUserInfos;
+    }
+    /**
+     * 新增企业
+     */
+    @RequestMapping("/addEnterpriseAndUserInfo")
+    public boolean addEnterpriseAndUserInfo(@RequestBody EnterpriseAndUserInfo enterpriseAndUserInfo){
+        return enterpriseService.addEnterpriseAndUser(enterpriseAndUserInfo);
+    }
+
+    /**
+     * 校验企业名是否重名
+     */
+    @RequestMapping("/checkEntName")
+    public boolean checkEntName(String entName){
+
+        return enterpriseService.checkEntName(entName);
+    }
+
+
+    /**
+     * 更新企业用户
+     */
+    @RequestMapping("/updateEnterpriseAndUserInfo")
+    public boolean updateEnterpriseAndUser(@RequestBody EnterpriseAndUserInfo enterpriseAndUserInfo){
+        return enterpriseService.updateEnterpriseAndUserInfo(enterpriseAndUserInfo);
+    }
+
+    /**
+     * 删除企业
+     */
+    @RequestMapping("/deleteEnterpriseAndUserInfo")
+    public boolean deleteEnterpriseAndUser(String entId){
+        return enterpriseService.deleteEnterprise(entId);
+    }
+
+    /**
+     * 根据entId来获取EnterpriseAndUserInfo
+     */
+    @RequestMapping("/getEnterpriseAndUserInfoByEntId")
+    public EnterpriseAndUserInfo getEnterpriseAndUserInfoByEntId(String entId){
+        return enterpriseService.getEnterpriseAndUserInfoByEntId(entId);
+    }
+
+ 
+}

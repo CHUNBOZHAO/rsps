@@ -1,0 +1,103 @@
+package com.izhuixin.rsps.receiver;
+
+import com.google.gson.Gson;
+import com.izhuixin.rsps.EnterpriseService;
+import com.izhuixin.rsps.domain.Params;
+import com.izhuixin.rsps.domain.SignInfo;
+import com.izhuixin.rsps.message.InputMsg;
+import com.izhuixin.rsps.util.Md5Util;
+import okhttp3.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.stream.annotation.EnableBinding;
+import org.springframework.cloud.stream.annotation.StreamListener;
+
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * 绑定一个接收消息的通道
+ */
+@EnableBinding(InputMsg.class)
+public class OrderReceiver {
+
+    @Value("${url.test}")
+    private String URL;
+
+
+
+    private static Logger logger = LoggerFactory.getLogger(EnterpriseService.class);
+
+    @StreamListener(InputMsg.INPUT_ORDER)
+    public void OrderMessage(Object message) throws Exception{
+
+        SignInfo signInfo = (SignInfo)message;
+
+        //对象转json
+        Gson gson = new Gson();
+        //使用Gson将对象转换为json字符串
+        String jsonStr = gson.toJson(signInfo);
+
+
+        Params params = new Params();
+        params.setService("zmrj_status_qs");
+        params.setContent(jsonStr);
+        params.setCustomerCode("zm");
+        params.setFormat("json");
+        params.setSign(Md5Util.MD5Encode(jsonStr+"4686c51afd8f30d93d209c8e3fd2331d","UTF-8"));
+
+        //发送
+        OkHttpClient okHttpClient  = new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .writeTimeout(10,TimeUnit.SECONDS)
+                .readTimeout(20, TimeUnit.SECONDS)
+                .build();
+
+        FormBody formBody = new FormBody.Builder()
+                .add("service", params.getService())
+                .add("content", params.getContent())
+                .add("customerCode", params.getCustomerCode())
+                .add("format", params.getFormat())
+                .add("sign", params.getSign())
+                .build();
+/*
+        //使用Gson 添加 依赖 compile 'com.google.code.gson:gson:2.8.1'
+        Gson gson = new Gson();
+        //使用Gson将对象转换为json字符串
+        String json = gson.toJson(params);
+        System.out.println(json);
+
+        //MediaType  设置Content-Type 标头中包含的媒体类型值
+        RequestBody requestBody = FormBody.create(MediaType.parse("x-www-form-urlencoded; charset=utf-8")
+                , json);
+*/
+        Request request = new Request.Builder()
+                .url(URL)//请求的url
+                .post(formBody)
+                .build();
+
+        //创建/Call
+        Call call = okHttpClient.newCall(request);
+        //加入队列 异步操作
+        call.enqueue(new Callback() {
+            //请求错误回调方法
+            @Override
+            public void onFailure(Call call, IOException e) {
+                System.out.println("连接失败");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String a = response.body().string();
+                logger.info(a);
+                System.out.println(a);
+
+            }
+        });
+
+
+
+}
+
+}

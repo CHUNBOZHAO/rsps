@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.izhuixin.rsps.dao.manual.OperatorLocationDao" >
+
+  <!-- 通过条件获取包装箱数量 -->
+  <select id="checkOnline" resultType="java.lang.Integer" statementType="STATEMENT">
+    select count(*) from rsps_operator_location where (modify_time BETWEEN '${startTime}' and '${endTime}')
+    <if test="operatorId != null">
+      and operator_id = '${operatorId}'
+    </if>
+    <if test="operatorName != null">
+      and operator_name = '${operatorName}'
+    </if>
+
+  </select>
+
+</mapper>

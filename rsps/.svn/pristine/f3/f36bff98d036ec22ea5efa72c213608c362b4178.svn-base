@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.izhuixin.rsps.dao.manual.BoxBaseDao" >
+
+    <resultMap id="BoxBase" type="com.izhuixin.rsps.domain.manual.BoxBaseInfo">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="rfid" jdbcType="VARCHAR" property="rfid"/>
+        <result column="type" jdbcType="VARCHAR" property="type"/>
+        <result column="ent_id" jdbcType="VARCHAR" property="entId"/>
+        <result column="uuid" jdbcType="VARCHAR" property="uuid"/>
+        <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
+        <result column="software_version" jdbcType="VARCHAR" property="softwareVersion"/>
+        <result column="hardware_version" jdbcType="VARCHAR" property="hardwareVersion"/>
+        <result column="epc" jdbcType="VARCHAR" property="epc"/>
+        <result column="tid" jdbcType="VARCHAR" property="tid"/>
+    </resultMap>
+
+    <!-- 获取boxbase下的所有的包装箱
+    List<BoxBaseInfo> getAllBoxBaseInfo();-->
+    <select id="getAllBoxBaseInfo" resultMap="BoxBase">
+        select id,rfid,type,ent_id,uuid,create_time,software_version,hardware_version,epc,tid from rsps_box_base limit 0,1225
+    </select>
+
+    <!-- 添加包装箱
+    boolean saveBox(BoxBaseInfo boxBaseInfo);-->
+    <insert id="saveBox">
+        insert into rsps_box_base(id,rfid,type,ent_id,uuid,create_time,software_version,hardware_version,epc,tid) values (#{id},#{rfid},#{type},#{entId},#{uuid},#{createTime},#{softwareVersion},#{hardwareVersion},#{epc},#{tid})
+    </insert>
+
+   <!-- 更新包装箱
+    boolean updateBox(BoxBaseInfo baseInfo);-->
+    <update id="updateBox">
+        update rsps_box_base set rfid=#{rfid},ent_id=#{entId},create_time=#{createTime},software_version=#{softwareVersion},hardware_version=#{hardwareVersion},epc=#{epc},tid=#{tid} where id = #{id}
+    </update>
+
+    <!--保存rfid重名校验
+    boolean checkRfidForSave(String rfid);-->
+    <select id="checkRfidForSave" resultType="Integer">
+        select count(*) from rsps_box_base where rfid=#{rfid}
+    </select>
+
+   <!--  编辑重名校验
+    boolean checkRfidForUpdate(String rfid, Integer id);-->
+    <select id="checkRfidForUpdate" resultType="Integer">
+        select count(*) from rsps_box_base where rfid=#{arg0} and id!=#{arg1}
+    </select>
+
+  <!-- 删除包装箱
+    boolean deleteBox(String id);-->
+    <delete id="deleteBox">
+        delete from rsps_box_base where id=#{id}
+    </delete>
+
+    <!-- 通过id获取包装箱
+    BoxBaseInfo getBoxBaseInfoById(Integer id);-->
+    <select id="getBoxBaseInfoById" resultMap="BoxBase">
+        select * from rsps_box_base where id=#{id}
+    </select>
+    <!-- 获取boxbase总数
+    Integer getboxCount();-->
+    <select id="getboxCount" resultType="Integer">
+        select count(*) from rsps_box_base
+    </select>
+
+   <!--
+    分页查询
+    List<BoxBaseInfo> getBoxBaseInfoByPage(Integer offset,Integer item);-->
+    <select id="getBoxBaseInfoByPage" resultMap="BoxBase" statementType="STATEMENT">
+       <!-- select * from rsps_box_base where rfid like '%${arg2}%' limit ${arg0},${arg1}-->
+        select c.*,d.size from rsps_box_type d right join (select b.id,b.rfid,b.type,b.ent_id,b.uuid,b.create_time,b.software_version,b.hardware_version,e.ent_name from rsps_box_base b right join rsps_enterprise e on b.ent_id = e.ent_id) c
+        on d.type_id = c.type
+        <!--<if test="search != null and search != ''">-->
+             <!--and ent_id = '${search}'-->
+        <!--</if>-->
+       <if test="search != null and search !='' ">
+         where rfid like binary '%${search}%' or uuid like binary '%${search}%' or software_version like binary '%${search}%' or hardware_version like binary '%${search}%' or create_time like binary '%${search}%' or d.size like binary '%${search}%' or c.ent_name like binary '%${search}%'
+       </if>
+        order by id limit ${start},${length}
+    </select>
+
+   <!-- /**
+    * count过滤后的数
+    */
+    Integer countBoxBaseInfoByPage(@Param("start") Integer start,@Param("length") Integer length, @Param("search") String search);-->
+    <select id="countBoxBaseInfoByPage" resultType="Integer" statementType="STATEMENT">
+    <!-- select * from rsps_box_base where rfid like '%${arg2}%' limit ${arg0},${arg1}-->
+    select count(*) from rsps_box_type d right join (select b.id,b.rfid,b.type,b.ent_id,b.uuid,b.create_time,b.software_version,b.hardware_version,e.ent_name from rsps_box_base b right join rsps_enterprise e on b.ent_id = e.ent_id) c
+    on d.type_id = c.type
+    <!--<if test="search != null and search != ''">-->
+    <!--and ent_id = '${search}'-->
+    <!--</if>-->
+    <if test="search != null and search !='' ">
+        where rfid like binary '%${search}%' or uuid like binary '%${search}%' or software_version like binary '%${search}%' or hardware_version like binary '%${search}%' or create_time like binary '%${search}%' or d.size like binary '%${search}%' or c.ent_name like binary '%${search}%'
+    </if>
+    limit ${start},${length}
+    </select>
+
+</mapper>

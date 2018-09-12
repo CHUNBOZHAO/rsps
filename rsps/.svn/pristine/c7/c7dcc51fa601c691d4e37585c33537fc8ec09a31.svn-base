@@ -1,0 +1,6 @@
+package com.izhuixin.rsps.service;
+
+public interface EnterpriseService {
+
+
+}

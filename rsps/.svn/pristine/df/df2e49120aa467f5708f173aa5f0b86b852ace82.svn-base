@@ -1,0 +1,57 @@
+package com.izhuixin.rsps.controller;
+
+import com.izhuixin.rsps.common.vo.web.PermissionInfoVO;
+import com.izhuixin.rsps.service.PermissionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
+
+/**
+ * 权限配置
+ */
+@Controller
+@RequestMapping("permission")
+public class ManagerPermissionController {
+
+    @Autowired
+    private PermissionService permissionService;
+
+    /**
+     * 权限设置主页
+     * @param modelMap
+     * @return
+     */
+    @RequestMapping("/setting/index")
+    public String settingIndex(ModelMap modelMap,
+//                               HttpServletRequest request,
+                               String pid,
+                               String targetUserId,
+                               String targetNickname) {
+//        ManagerUserDetail userDetail = (ManagerUserDetail) request.getSession().getAttribute("user");
+
+        List<PermissionInfoVO> vos = permissionService.getPermissionInfoByUser(pid, targetUserId);
+
+        modelMap.put("permissionInfos", vos);
+        modelMap.put("targetNickname", targetNickname);
+        modelMap.put("targetUserId", targetUserId);
+        return "manager/permission/setting_index";
+    }
+
+    /**
+     * 设置权限
+     * @param permissionIds
+     * @param targetUserId
+     * @return
+     */
+    @RequestMapping("/setting/handle")
+    @ResponseBody
+    public String settingHandle(String[] permissionIds, String targetUserId) {
+        boolean res = permissionService.settingPermission(targetUserId, permissionIds);
+        return res ? "success" : "failed";
+    }
+
+}

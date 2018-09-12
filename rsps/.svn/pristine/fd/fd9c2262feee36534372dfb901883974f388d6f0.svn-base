@@ -1,0 +1,31 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:9100/eureka/
+server:
+  port: 10300
+spring:
+  application:
+    name: wechat-service
+  zipkin:
+    base-url: http://localhost:9300
+  sleuth:
+    sampler:
+      percentage: 1.0
+  thymeleaf:
+    mode: LEGACYHTML5  # 不进未关闭标签检查，需配合nekohtml使用
+    cache: false  # 关闭缓存，开发过程中开启
+
+endpoints.shutdown.enabled: true    #开启优雅关闭方式
+management.security.enabled: false  #关闭安全认证
+ribbon:
+  ReadTimeout: 60000
+  ConnectTimeout: 60000
+mybatis:
+  mapper-locations: classpath:com.izhuixin.rsps.mapping/**/*.xml
+  type-aliases-package: com.izhuixin.rsps.domain.*
+rsps:
+  domain: http://192.168.0.111
+
+
+

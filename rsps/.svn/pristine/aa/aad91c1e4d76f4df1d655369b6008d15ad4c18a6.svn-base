@@ -1,0 +1,82 @@
+package com.izhuixin.rsps.domain;
+
+import java.io.Serializable;
+import java.util.List;
+
+public class SignInfo implements Serializable {
+    private String Jobno;
+    private String CustJobno;
+    private String SignDateTime;
+//    private String dateShow;
+    private String SignDriverNO;
+    //拒收原因和拒收数量
+    private String refusedReason;
+    private String refuseCount;
+
+    //图片
+    private List<byte[]> orderSource;
+
+    public String getJobno() {
+        return Jobno;
+    }
+
+    public void setJobno(String jobno) {
+        Jobno = jobno;
+    }
+
+    public String getCustJobno() {
+        return CustJobno;
+    }
+
+    public void setCustJobno(String custJobno) {
+        CustJobno = custJobno;
+    }
+
+    public String getSignDriverNO() {
+        return SignDriverNO;
+    }
+
+    public void setSignDriverNO(String signDriverNO) {
+        SignDriverNO = signDriverNO;
+    }
+
+    public String getSignDateTime() {
+        return SignDateTime;
+    }
+
+    public void setSignDateTime(String signDateTime) {
+        SignDateTime = signDateTime;
+    }
+
+    //    public String getDateShow() {
+//        return dateShow;
+//    }
+//
+//    public void setDateShow(String dateShow) {
+//        this.dateShow = dateShow;
+//    }
+
+    public String getRefusedReason() {
+        return refusedReason;
+    }
+
+    public void setRefusedReason(String refusedReason) {
+        this.refusedReason = refusedReason;
+    }
+
+    public String getRefuseCount() {
+        return refuseCount;
+    }
+
+    public void setRefuseCount(String refuseCount) {
+        this.refuseCount = refuseCount;
+    }
+
+    public List<byte[]> getOrderSource() {
+        return orderSource;
+    }
+
+    public void setOrderSource(List<byte[]> orderSource) {
+        this.orderSource = orderSource;
+    }
+}

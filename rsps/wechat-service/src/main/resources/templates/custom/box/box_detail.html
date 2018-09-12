@@ -1,0 +1,270 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>RSPS智能包装系统</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- CSS Libs -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap.min.css}" href="../../lib/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/font-awesome.min.css}" href="../../lib/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/animate.min.css}" href="../../lib/css/animate.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap-switch.min.css}" href="../../lib/css/bootstrap-switch.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/checkbox3.min.css}" href="../../lib/css/checkbox3.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/jquery.dataTables.min.css}" href="../../lib/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/dataTables.bootstrap.css}" href="../../lib/css/dataTables.bootstrap.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/select2.min.css}" href="../../lib/css/select2.min.css">
+
+    <!-- CSS App -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/style.css}" href="../../css/style.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/themes/flat-blue.css}" href="../../css/themes/flat-blue.css">
+
+    <!-- timeline -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/timeline/css/jquery.eeyellow.Timeline.css}" href="">
+
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/css/custom/box/box-detail.css}">
+
+    <style type="text/css">
+        .anchorBL{
+            display: none;
+        }
+    </style>
+
+</head>
+
+<body class="flat-blue">
+<div class="app-container" th:attr="boxId=${boxId},orderId=${orderId},orderType=${orderType}">
+    <div class="row content-container">
+        <nav th:replace="custom/common/header::custom_navbar_top('包裹详情')">
+        </nav>
+
+        <!--  -->
+        <div th:replace="custom/common/menu::custom_side_menu(100)"></div>
+
+        <!-- Main Content -->
+        <div class="container-fluid">
+
+            <div class="row" style="padding-top: 70px;height: 380px;">
+
+                <div class="col-md-12 col-xs-12" style="margin-bottom: 0px;font-size: 16px;">
+                    <div id="box_detail_map_btn" class="col-md-6 col-xs-6" style="height:35px;line-height: 35px;text-align: center;border-bottom: 2px solid #0288D1;cursor: pointer">
+                        <span>地图模式</span>
+                    </div>
+                    <div id="box_detail_word_btn" class="col-md-6 col-xs-6" style="height:35px;line-height: 35px;text-align: center;cursor: pointer;">
+                        <span>文字模式</span>
+                    </div>
+                </div>
+
+                <!-- 包裹地图信息 -->
+                <div id="box_detail_map" style="width: 100%;height: 280px;margin-top: -20px;">
+
+                </div>
+
+                <!-- 包裹流转状态 -->
+                <div id="box_detail_word" style="margin-top: 45px;overflow: auto;max-height: 270px;display: none">
+                    <div th:if="${#lists.isEmpty(flows)}" style="text-align: center;min-height: 100px;line-height: 280px;">
+                        <span>暂无物流信息</span>
+                    </div>
+                    <div class="VivaTimeline" th:unless="${#lists.isEmpty(flows)}">
+                        <dl>
+                            <dd th:each="flow:${flows}" th:if="${flow.operateType != 0}" class="pos-left clearfix">
+                                <div class="circ"></div>
+                                <div class="time">
+                                    <span th:text="${#dates.format(flow.createTime, 'HH:mm')}">12:20</span><br/>
+                                    <span th:text="${#dates.format(flow.createTime, 'yyyy.MM.dd')}">2017.12.12</span>
+                                </div>
+                                <div class="events">
+                                    <div th:if="${flow.exceptionType == 0}" class="events-header" style="text-align: left; padding-left: 10px;">
+                                        <span th:if="${flow.operateType == 1}">
+                                            正在为您配货
+                                        </span>
+                                        <span th:if="${flow.operateType == 2}">
+                                            包裹交给<span th:text="${flow.operator}" style="color: #2caef5">xxx</span>, 正在运输中
+                                        </span>
+                                        <span th:if="${flow.operateType == 3}">
+                                            已签收，感谢您使用芯翼
+                                        </span>
+                                        <span th:if="${flow.operateType == 4}">
+                                            包装箱已回收
+                                        </span>
+                                        <span th:if="${flow.operateType == 5}">
+                                            包裹到达中转站<span th:text="${flow.extraValue}" style="color: #2caef5"></span>
+                                        </span>
+                                        <span th:if="${flow.operateType == 6}">
+                                            拒绝签收，感谢您使用芯翼
+                                        </span>
+                                        <span th:if="${flow.operateType == 20}">
+                                            接单成功，<span th:text="${flow.operator}" style="color: #2caef5">xxx</span>正在揽货途中
+                                        </span>
+                                        <span th:if="${flow.operateType == 21}">
+                                            揽货成功，正在为您分派配送员
+                                        </span>
+                                        <span th:if="${flow.operateType == 22}">
+                                            分配成功，包裹将由<span th:text="${flow.operator}" style="color: #2caef5">xxx</span>为您配送
+                                        </span>
+                                    </div>
+                                    <div th:if="${flow.exceptionType != 0}" class="events-header" style="text-align: left; padding-left: 10px;">
+                                        <span th:if="${flow.exceptionType == 1}" style="color: red;">
+                                            警告：包装箱有异常打开记录
+                                        </span>
+                                    </div>
+                                </div>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${not #lists.isEmpty(boxes)}" class="row" style="margin-top: 12px;">
+                <div class="col-xs-12" style="padding-left: 5px;padding-right: 5px;">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <div class="title" STYLE="font-size: 1em">智能包装箱</div>
+                            </div>
+                        </div>
+                        <div th:if="${orderState} == 2" class="card-body" style="padding: 10px 25px;">
+                            <div class="box-info-div" th:each="item:${boxes}">
+                                <div style="width: 50%;float: left">
+                                    <span th:text="${item.name}"></span>
+                                </div>
+                                <div style="width: 30%;float: left">
+                                    <span th:if="${item.color} == 'white'" th:text="|白色|"></span>
+                                    <span th:if="${item.color} == 'blue'" th:text="|蓝色|"></span>
+                                </div>
+                                <div style="width: 20%;float: left">
+                                    <span th:text="|${item.count}个|"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div th:if="${orderState} != 2" class="card-body" style="padding: 10px 25px;">
+                            <div class="box-info-div" th:each="item:${boxes}">
+                                <div style="width: 40%;float: left">
+                                    <span th:text="${item.name}"></span>
+                                </div>
+                                <div style="width: 40%;float: left">
+                                    <span th:text="${item.size}"></span>
+                                </div>
+                                <div style="width: 20%;float: left">
+                                    <span th:if="${item.color} == 'white'" th:text="|白色|"></span>
+                                    <span th:if="${item.color} == 'blue'" th:text="|蓝色|"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${orderInfo.id}" class="row" style="margin-top: 12px;">
+                <div th:if="${orderInfo.detail}" class="col-xs-12" style="padding-left: 5px;padding-right: 5px;">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <div class="title" STYLE="font-size: 1em">物品信息</div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <span th:utext="${orderInfo.detail}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:unless="${orderInfo.id}" th:if="${not #lists.isEmpty(drugs)}" class="row" style="margin-top: 12px;">
+                <div class="col-xs-12" style="padding-left: 5px;padding-right: 5px;">
+                    <div class="card">
+                        <div class="card-header">
+
+                            <div class="card-title">
+                                <div class="title" STYLE="font-size: 1em">物品清单</div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th width="70%">物品名称</th>
+                                    <th>数量</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="drug,drugStat:${drugs}">
+                                    <th scope="row" th:text="${drugStat.count}">1</th>
+                                    <td th:text="${drug.name}">阿司匹林</td>
+                                    <td th:if="${drug.unit} != null" th:text="|${drug.amount}${drug.unit}|">10盒</td>
+                                    <td th:if="${drug.unit} == null" th:text="${drug.amount}">10盒</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${orderInfo.id}" class="btn-order-detail">
+                <span>订单详情</span>
+            </div>
+
+        </div>
+    </div>
+    <footer th:replace="custom/common/footer::manager_footer">
+    </footer>
+</div>
+
+<div th:if="${orderInfo.id}" class="content-order-detail" style="display: none;">
+    <div class="col-md-12" style="height: 30px;line-height:30px;text-align: center;font-size: 1.2em;">
+        <span style="font-weight: bold;">订单详情</span>
+        <div class="btn-order-detail-close" style="position: absolute;top:0px;right:3px;cursor: pointer"><span class="fa fa-close"></span></div>
+    </div>
+    <div class="col-md-12" style="margin-top: 10px;">
+        <div style="position: absolute;height: 25px;width: 25px;border-radius: 15px;top: 3px;text-align: center;line-height: 25px;background-color: #2caef5;color: white">
+            <span>寄</span>
+        </div>
+        <div class="col-md-10" style="margin-left: 20px;">
+            <span th:text="${orderInfo.senderName}"></span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <span th:text="${orderInfo.senderTel}"></span><br/>
+            <span th:text="|${orderInfo.senderArea1}${orderInfo.senderArea2}${orderInfo.senderArea3}${orderInfo.senderAddress}|"></span>
+        </div>
+    </div>
+    <div class="col-md-12" style="margin-top: 10px;">
+        <div style="position: absolute;height: 25px;width: 25px;border-radius: 15px;top: 3px;text-align: center;line-height: 25px;background-color: #ff2702;color: white">
+            <span>收</span>
+        </div>
+        <div class="col-md-10" style="margin-left: 20px;">
+            <span th:text="${orderInfo.receiverName}"></span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <span th:text="${orderInfo.receiverTel}"></span><br/>
+            <span th:text="|${orderInfo.receiverArea1}${orderInfo.receiverArea2}${orderInfo.receiverArea3}${orderInfo.receiverAddress}|"></span>
+        </div>
+    </div>
+</div>
+
+<!-- Javascript Libs -->
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.min.js}" src="../../lib/js/jquery.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/bootstrap.min.js}" src="../../lib/js/bootstrap.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/Chart.min.js}" src="../../lib/js/Chart.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/bootstrap-switch.min.js}" src="../../lib/js/bootstrap-switch.min.js"></script>
+
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.matchHeight-min.js}" src="../../lib/js/jquery.matchHeight-min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.dataTables.min.js}" src="../../lib/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/dataTables.bootstrap.min.js}" src="../../lib/js/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/select2.full.min.js}" src="../../lib/js/select2.full.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/ace.js}" src="../../lib/js/ace/ace.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/mode-html.js}" src="../../lib/js/ace/mode-html.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/theme-github.js}" src="../../lib/js/ace/theme-github.js"></script>
+
+<script type="text/javascript" th:src="@{/assets/btzero/js/app.js}" src="../../js/app.js"></script>
+<!--<script type="text/javascript" th:src="@{/assets/btzero/js/index.js}" src="../../js/index.js"></script>-->
+
+<script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=yuVfoZPpqfa0gdQuPw9s5ZeYKhiGROsg"></script>
+
+<!-- timeline -->
+<script type="text/javascript" th:src="@{/assets/timeline/js/jquery.eeyellow.Timeline.js}" ></script>
+<script type="text/javascript" th:src="@{/assets/js/custom/header.js}"></script>
+
+<script type="text/javascript" th:src="@{/assets/js/custom/box/box_detail.js}"></script>
+
+<script type="text/javascript" th:src="@{/assets/js/custom/map-track.js}"></script>
+
+</body>
+
+</html>

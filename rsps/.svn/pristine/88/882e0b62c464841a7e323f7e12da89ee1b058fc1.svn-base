@@ -1,0 +1,18 @@
+package com.izhuixin.rsps.service;
+
+import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+@FeignClient("api-service")
+@RequestMapping("v1/reportData/record/operate")
+public interface BoxOperateRecordReportService {
+
+    @RequestMapping("/export")
+    ResponseEntity<byte[]> exportCSV(@RequestParam("entCode") String entCode,
+                                     @RequestParam("beginDate") String beginDate,
+                                     @RequestParam("endDate") String endDate,
+                                     @RequestParam("line") String line,
+                                     @RequestParam("operator") String operator);
+}

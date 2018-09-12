@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<form class="form-horizontal" method="post" accept-charset="utf-8">
+    <div class="col-md-12">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label col-md-2">出货日期</label>
+                <div class="col-md-8">
+                    <div class="input-daterange input-group" id="datepicker">
+                        <input class="input-sm form-control" name="start" id="beginDate" th:value="${defaultBeginDate}"/>
+                        <span class="input-group-addon">to</span>
+                        <input class="input-sm form-control" name="end" id="endDate" th:value="${defaultEndDate}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="col-md-2 control-label">承运商</label>
+                <div class="col-md-8">
+                    <select class="form-control" name="forwarder" id="forwarder">
+                        <option value="0">全部</option>
+                        <option th:each="item : ${forwarder}" th:value="${item.userId}" th:text="${item.realName}"></option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="col-md-2 control-label">配送员</label>
+                <div class="col-md-8">
+                    <select class="form-control" name="operator" id="operator">
+                        <option value="">全部</option>
+                        <option th:each="item : ${operators}" th:value="${item.userName}" th:text="${item.realName}"></option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="col-md-2 control-label">线路</label>
+                <div class="col-md-8">
+                    <select class="form-control" name="lineName" id="lineName">
+                        <option value="">全部</option>
+                        <option th:each="item : ${lineInfos}" th:value="${item.lineName}" th:text="${item.lineName}"></option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="col-md-2 control-label">订单ID</label>
+                <div class="col-md-8">
+                    <input class="form-control" name="orderId" id="orderId" minlength="48" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="col-md-2 control-label">客户名称</label>
+                <div class="col-md-8">
+                    <input class="form-control" name="customName" id="customName" minlength="64" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 报表内容 -->
+    <div id="report_table">
+    </div>
+
+</form>
+
+<!--<div class="form-group">-->
+    <!--<div class="col-sm-offset-2 col-sm-10">-->
+        <!--<button id="btn_export" class="btn btn-default">导出</button>-->
+    <!--</div>-->
+<!--</div>-->
+
+<script type="text/javascript" th:src="@{/assets/js/manager/report/shipment-record-content.js}"></script>
+</body>
+</html>
+

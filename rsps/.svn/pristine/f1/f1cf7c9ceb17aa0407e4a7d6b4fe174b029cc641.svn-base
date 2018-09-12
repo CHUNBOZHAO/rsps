@@ -1,0 +1,70 @@
+package com.izhuixin.rsps.controller;
+
+import com.izhuixin.rsps.common.ManagerUserDetail;
+import com.izhuixin.rsps.common.vo.web.LineInfoVO;
+import com.izhuixin.rsps.common.vo.web.OperatorInfoVO;
+import com.izhuixin.rsps.service.BoxOperateRecordReportService;
+import com.izhuixin.rsps.service.LineService;
+import com.izhuixin.rsps.service.OperatorInfoService;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+
+@RequestMapping("report")
+@Controller
+public class ManagerReportController {
+
+    @Autowired
+    private BoxOperateRecordReportService boxOperateRecordReportService;
+
+    @Autowired
+    private OperatorInfoService operatorInfoService;
+
+    @Autowired
+    private LineService lineService;
+
+
+    @RequestMapping("/shipments/show/index")
+    public String showShipmentBoxOperateRecordInfo() {
+        return "manager/report/shipment_record_index";
+    }
+
+    @RequestMapping("/shipments/show/content")
+    public String showShipmentBoxOperateRecordInfoContent(ModelMap modelMap, HttpServletRequest request) {
+        ManagerUserDetail userDetail = (ManagerUserDetail) request.getSession().getAttribute("user");
+
+        List<OperatorInfoVO> operatorInfoVOS = operatorInfoService.getOperatorsByUserId(userDetail.getEntCode().concat("_"), userDetail.getUserId());
+        List<LineInfoVO> lineInfos = lineService.queryChildLines(userDetail.getUserId(), userDetail.getEntCode().concat("_"));
+
+        String defaultEndDate = new DateTime().toString("yyyy-MM-dd");
+        String defalutBeginDate = new DateTime().minusDays(7).toString("yyyy-MM-dd");
+
+        modelMap.put("operators", operatorInfoVOS);
+        modelMap.put("lineInfos", lineInfos);
+        modelMap.put("defaultBeginDate", defalutBeginDate);
+        modelMap.put("defaultEndDate", defaultEndDate);
+
+        return "manager/report/shipment_record_content";
+    }
+
+    /**
+     * 导出出货信息的操作信息
+     * @return
+     */
+    @RequestMapping("/shipments/record/export")
+    public ResponseEntity<byte[]> exportBoxOperateRecordInfo(HttpServletRequest request,
+                                                             String beginDate,
+                                                             String endDate,
+                                                             String lineName,
+                                                             String operator) {
+        ManagerUserDetail userDetail = (ManagerUserDetail) request.getSession().getAttribute("user");
+        return boxOperateRecordReportService.exportCSV(userDetail.getEntCode().concat("_"), beginDate, endDate, lineName, operator);
+    }
+
+}

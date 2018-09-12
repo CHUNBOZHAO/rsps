@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.izhuixin.rsps.dao.manual.EnterpriseDao" >
+
+    <resultMap id="BaseResultMap" type="com.izhuixin.rsps.domain.manual.EnterpriseInfo">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="user_name" jdbcType="VARCHAR" property="userName" />
+        <result column="user_pwd" jdbcType="VARCHAR" property="userPwd" />
+        <result column="ent_id" jdbcType="VARCHAR" property="entId" />
+        <result column="ent_name" jdbcType="VARCHAR" property="entName" />
+        <result column="ent_address" jdbcType="VARCHAR" property="entAddress" />
+        <result column="ent_postcode" jdbcType="VARCHAR" property="entPostcode" />
+        <result column="ent_code" jdbcType="VARCHAR" property="entCode" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="key_id" jdbcType="VARCHAR" property="keyId" />
+        <result column="key_secret" jdbcType="VARCHAR" property="keySecret" />
+        <result column="ak" jdbcType="VARCHAR" property="ak" />
+        <result column="status" jdbcType="TINYINT" property="status" />
+        <result column="type" jdbcType="TINYINT" property="type" />
+        <result column="access_way" jdbcType="TINYINT" property="accessWay" />
+    </resultMap>
+
+    <resultMap id="EnterpriseAndUserInfo" type="com.izhuixin.rsps.domain.manual.EnterpriseAndUserInfo">
+        <result column="ent_id" jdbcType="VARCHAR" property="entId"/>
+        <result column="ent_name" jdbcType="VARCHAR" property="entName"/>
+        <result column="ent_code" jdbcType="VARCHAR" property="entCode"/>
+        <result column="ent_address" jdbcType="VARCHAR" property="entAddress"/>
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="user_pwd" jdbcType="VARCHAR" property="userPwd"/>
+        <result column="nickname" jdbcType="VARCHAR" property="nickName"/>
+        <result column="pid" jdbcType="VARCHAR" property="pid"/>
+        <result column="p_userName" jdbcType="VARCHAR" property="parentUserName"/>
+        <result column="p_nickName" jdbcType="VARCHAR" property="parentNickName"/>
+    </resultMap>
+
+    <!-- 通过ak获取企业信息 -->
+    <select id="getEnterpriseByEntCode" resultMap="BaseResultMap">
+      select * from rsps_enterprise where ent_code = #{entCode};
+    </select>
+
+    <!-- 通过PadID获取绑定的企业信息 -->
+    <select id="getEnterpriseByPadId" resultType="com.izhuixin.rsps.domain.manual.EnterpriseInfo">
+      select e.id, e.user_name as userName, e.ent_id as entId, e.ent_name as entName, e.ent_address as entAddress,
+      e.ent_postcode as entPostcode, e.ent_code as entCode, e.create_time as createTime, e.type as type , e.access_way as accessWay from rsps_enterprise as e left join
+      rsps_pad_info as pi on e.ent_id = pi.ent_id where pi.unique_code = #{padId};
+    </select>
+
+    <!-- 通过包装箱ID获取企业编码 -->
+    <select id="getEntCodeByBoxId" resultType="String">
+        select e.ent_code from rsps_enterprise as e left join rsps_box_base as bb on e.ent_id = bb.ent_id
+        where bb.rfid = #{boxId};
+    </select>
+
+    <!-- 检测密码 -->
+    <select id="checkPwd" resultType="Integer" statementType="STATEMENT">
+        SELECT count(*) from rsps_enterprise where id = ${id} and user_pwd = '${oldPwd}'
+    </select>
+
+    <!-- 获取企业编码是否配置 -->
+    <select id="countByEntCode" resultType="Integer">
+      SELECT count(*) from rsps_enterprise WHERE ent_code = #{entCode}
+    </select>
+
+    <!-- 更新密码 -->
+    <update id="updatePwd" statementType="STATEMENT">
+        update rsps_enterprise set user_pwd = '${pwd}' where id = ${id}
+    </update>
+
+    <!-- 通过entId获取entCode -->
+    <select id="getEntCodeByEntId" resultType="String">
+        select ent_code from rsps_enterprise where ent_id = #{entId};
+    </select>
+
+    <!--List<EnterpriseAndUserInfo> getAllEnterpriseAndUserInfo();-->
+    <select id="getAllEnterpriseAndUserInfo" resultMap="EnterpriseAndUserInfo">
+        select e.ent_id,e.ent_name,e.ent_code,e.ent_address,u.user_id,u.user_name,u.user_pwd,u.nickname from rsps_enterprise e left join sys_user u on e.ent_id = u.ent_id and u.level=1
+    </select>
+
+    <!--根据userId获取子企业-->
+    <select id="getAllEnterpriseAndUserInfoByUserId" resultMap="EnterpriseAndUserInfo">
+        select e.ent_id,e.ent_name,e.ent_code,e.ent_address,a.* from rsps_enterprise e inner join (
+        select u1.user_id,u1.user_name,u1.user_pwd,u1.nickname,u1.pid,u1.email,u1.tel,u1.ent_id,u1.level,u2.user_name as p_userName,u2.nickname as p_nickName from sys_user u1 inner join sys_user u2 on u1.pid=u2.user_id and u1.pid=#{userId}) a
+        on e.ent_id = a.ent_id and a.level=1
+    </select>
+
+    <!-- boolean addEnterprise(EnterpriseInfo enterpriseInfo);添加企业-->
+    <insert id="addEnterprise">
+        insert into rsps_enterprise(ent_id,ent_name,ent_address,ent_code) values(#{entId},#{entName},#{entAddress},#{entCode})
+    </insert>
+    <!--boolean addEnterpriseUser(SysUserInfo sysUserInfo);添加用户-->
+    <insert id="addEnterpriseUser">
+        insert into sys_user(user_id,user_name,user_pwd,nickname,tel,email,level,ent_id,pid) values(#{userId},#{userName},#{userPwd},#{nickname},#{tel},#{email},#{level},#{entId},#{pid})
+    </insert>
+
+    <!--String getLastEnt_id();查询最后一个企业的企业id-->
+    <select id="getLastEnt_id" resultType="String">
+        select ent_id from rsps_enterprise order by id desc limit 1
+    </select>
+
+    <!-- Integer checkEntName(String ent_name);查询企业名是否存在-->
+    <select id="checkEntName" resultType="Integer">
+        select count(*) from rsps_enterprise where ent_name=#{ent_name}
+    </select>
+
+    <!--boolean updateEnterprise(EnterpriseInfo enterpriseInfo);更新企业-->
+   <update id="updateEnterprise">
+       update rsps_enterprise set ent_name=#{entName},ent_address=#{entAddress},ent_code=#{entCode} where ent_id=#{entId}
+   </update>
+
+    <!-- boolean updateEnterpriseUser(SysUserInfo sysUserInfo);更新用户-->
+    <update id="updateEnterpriseUser">
+        update sys_user set user_name=#{userName},email=#{email},tel=#{tel},nickname=#{nickname} where ent_id=#{entId}
+    </update>
+    <!--  boolean deleteEnterprise(String entId);删除企业-->
+    <delete id="deleteEnterprise">
+        delete from rsps_enterprise where ent_id=#{entId}
+    </delete>
+    <!-- boolean deleteEnterpriseUser(String entId);删除用户-->
+    <delete id="deleteEnterpriseUser">
+        delete from sys_user where ent_id=#{entId}
+    </delete>
+    <!--boolean deleteUserPermission(String userId);删除权限-->
+    <delete id="deleteUserPermission">
+        delete from sys_permission_user where user_id=(select user_id from sys_user where ent_id=#{entId})
+    </delete>
+
+    <!--EnterpriseAndUserInfo getEnterpriseAndUserInfoByEntId(String entId);获取userId下的子用户-->
+    <select id="getEnterpriseAndUserInfoByEntId" resultMap="EnterpriseAndUserInfo">
+        select e.ent_id,e.ent_name,e.ent_code,e.ent_address,u.user_id,u.user_name,u.user_pwd,u.nickname,u.email,u.tel from rsps_enterprise e,sys_user u where e.ent_id=u.ent_id and e.ent_id=#{entId} and level = 1;
+    </select>
+
+    <!--void createEnterpriseTable(String entCode);根据企业编码创建企业业务表-->
+    <select id="createEnterpriseTable" parameterType="String" useCache="false" statementType="CALLABLE">
+        <![CDATA[
+            call rspsdb.createEnt(#{entCode,mode=IN,jdbcType=VARCHAR})
+        ]]>
+    </select>
+
+    <!--void dropEnterpriseTable(String entCode);根据企业编码删除企业业务表-->
+    <select id="dropEnterpriseTable" parameterType="String" useCache="false" statementType="CALLABLE">
+        <![CDATA[
+            call rspsdb.deleteEnt(#{entCode,mode=IN,jdbcType=VARCHAR})
+        ]]>
+    </select>
+</mapper>

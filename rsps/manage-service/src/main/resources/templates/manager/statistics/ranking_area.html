@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<!-- 效率排名区域 -->
+
+<div style="height:500px">
+    <div id="top10" class="col-xs-12">
+
+        <div style="margin-bottom:5px" class="row">
+            <div class="col-md-6"><span>企业闲置率排名</span></div>
+            <!-- <div class="input-group col-md-6" style="width:168px;height:30px;">
+                 <input type="text" class="form-control" placeholder="企业名">
+                 <span class="input-group-btn">
+                 <button class="btn btn-default" type="button" style="margin-top:0px;margin-bottom:0px;">Go!</button>
+                 </span>
+             </div>-->
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;&nbsp;&nbsp;
+                <span class="tab-rank-name tab-rank-name-active" value="0">总体</span>
+            </div>
+            <div class="col-md-6" style="text-align:left;">
+                <span th:text="${rateAll}" class="sp-rate">50.23%</span>
+            </div>
+        </div>
+
+        <div th:each="rank:${rankingVOS}" class="row">
+            <div class="col-md-6">
+                <i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;&nbsp;&nbsp;
+                <span th:text="${rank.entName}" th:attr="value=${rank.entId}" class="tab-rank-name"></span>
+            </div>
+            <div class="col-md-6">
+                <span th:text="${rank.rateVO}" class="sp-rate"></span></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>

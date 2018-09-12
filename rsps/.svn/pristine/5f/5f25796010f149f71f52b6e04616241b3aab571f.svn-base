@@ -1,0 +1,28 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:9100/eureka/
+server:
+  port: 20200
+spring:
+  application:
+    name: assets-service
+  zipkin:
+    base-url: http://localhost:9300
+  sleuth:
+    sampler:
+      percentage: 1.0
+endpoints.shutdown.enabled: true    #开启优雅关闭方式
+management.security.enabled: false  #关闭安全认证
+ribbon:
+  ReadTimeout: 60000
+  ConnectTimeout: 60000
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
+
+
+

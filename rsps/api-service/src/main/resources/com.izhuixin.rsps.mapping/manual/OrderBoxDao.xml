@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.izhuixin.rsps.dao.manual.OrderBoxDao" >
+
+  <resultMap id="BaseResultMap" type="com.izhuixin.rsps.domain.manual.OrderBoxInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="rfid" jdbcType="VARCHAR" property="rfid" />
+    <result column="barcode" jdbcType="VARCHAR" property="barcode" />
+    <result column="box_name" jdbcType="VARCHAR" property="boxName" />
+    <result column="detail" jdbcType="VARCHAR" property="detail" />
+    <result column="order_id" jdbcType="VARCHAR" property="orderId" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="pkg_id" jdbcType="BIGINT" property="pkgId" />
+    <result column="sign_status" jdbcType="TINYINT" property="signStatus" />
+  </resultMap>
+
+  <!-- 通过订单ID、包装箱RFID获取订单信息 -->
+  <select id="getInfoByOrderIdAndRfid" resultMap="BaseResultMap" statementType="STATEMENT">
+    select * from rsps_${entCode}order_box where order_id = '${orderId}' and rfid = '${rfid}'
+  </select>
+
+  <!-- 保存 -->
+  <insert id="saveInfo" parameterType="com.izhuixin.rsps.domain.manual.OrderBoxInfo" statementType="STATEMENT">
+    insert into rsps_${entCode}order_box
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orderBoxInfo.rfid != null">
+        rfid,
+      </if>
+      <if test="orderBoxInfo.barcode != null">
+        barcode,
+      </if>
+      <if test="orderBoxInfo.boxName != null">
+        box_name,
+      </if>
+      <if test="orderBoxInfo.detail != null">
+        detail,
+      </if>
+      <if test="orderBoxInfo.orderId != null">
+        order_id,
+      </if>
+      <if test="orderBoxInfo.status != null">
+        status,
+      </if>
+      <if test="orderBoxInfo.createTimeStr != null">
+        create_time,
+      </if>
+      <if test="orderBoxInfo.pkgId != null">
+        pkg_id,
+      </if>
+      <if test="orderBoxInfo.signStatus != null">
+        sign_status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orderBoxInfo.rfid != null">
+        '${orderBoxInfo.rfid}',
+      </if>
+      <if test="orderBoxInfo.barcode != null">
+        '${orderBoxInfo.barcode}',
+      </if>
+      <if test="orderBoxInfo.boxName != null">
+        '${orderBoxInfo.boxName}',
+      </if>
+      <if test="orderBoxInfo.detail != null">
+        '${orderBoxInfo.detail}',
+      </if>
+      <if test="orderBoxInfo.orderId != null">
+        '${orderBoxInfo.orderId}',
+      </if>
+      <if test="orderBoxInfo.status != null">
+        ${orderBoxInfo.status},
+      </if>
+      <if test="orderBoxInfo.createTimeStr != null">
+        '${orderBoxInfo.createTimeStr}',
+      </if>
+      <if test="orderBoxInfo.pkgId != null">
+        ${orderBoxInfo.pkgId},
+      </if>
+      <if test="orderBoxInfo.signStatus != null">
+        ${orderBoxInfo.signStatus},
+      </if>
+    </trim>
+  </insert>
+
+  <!-- 更新（通过rfid,barcode更新） -->
+  <update id="updateInfo" parameterType="com.izhuixin.rsps.domain.manual.OrderBoxInfo" statementType="STATEMENT">
+    update rsps_${entCode}order_box
+    <set>
+      <if test="orderBoxInfo.boxName != null">
+        box_name = '${orderBoxInfo.boxName}',
+      </if>
+      <if test="orderBoxInfo.detail != null">
+        detail = '${orderBoxInfo.detail}',
+      </if>
+      <if test="orderBoxInfo.orderId != null">
+        order_id = '${orderBoxInfo.orderId}',
+      </if>
+      <if test="orderBoxInfo.status != null">
+        status = ${orderBoxInfo.status},
+      </if>
+      <if test="orderBoxInfo.createTime != null">
+        create_time = '${orderBoxInfo.createTime}',
+      </if>
+      <if test="orderBoxInfo.pkgId != null">
+        pkg_id = ${orderBoxInfo.pkgId},
+      </if>
+      <if test="orderBoxInfo.signStatus != null">
+        sign_status = ${orderBoxInfo.signStatus},
+      </if>
+    </set>
+    where rfid = '${orderBoxInfo.rfid}' and barcode = '${orderBoxInfo.barcode}'
+  </update>
+
+  <!-- 通过rfid,barcode获取数量  -->
+  <select id="countInfoByRfidAndBarcode" resultType="Integer" statementType="STATEMENT">
+    select count(*) from rsps_${entCode}order_box where rfid = '${rfid}' and barcode = '${barcode}'
+  </select>
+
+</mapper>

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.izhuixin.rsps.dao.OrderDao" >
+
+    <resultMap id="order" type="com.izhuixin.rsps.domain.Order">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="job_no" jdbcType="VARCHAR" property="Jobno" />
+        <result column="order_no" jdbcType="VARCHAR" property="OrderNO" />
+        <result column="sd_station" jdbcType="VARCHAR" property="SDStation" />
+        <result column="deli_station" jdbcType="VARCHAR" property="DeliStation" />
+        <result column="sd_client_no" jdbcType="VARCHAR" property="SDClno" />
+        <result column="sd_client_name" jdbcType="VARCHAR" property="SDShipp" />
+        <result column="re_company" jdbcType="VARCHAR" property="ReCompany" />
+        <result column="re_tel" jdbcType="VARCHAR" property="ReTel" />
+        <result column="re_tel2" jdbcType="VARCHAR" property="ReTel2" />
+        <result column="return_type" jdbcType="VARCHAR" property="ReturnType" />
+        <result column="print_type" jdbcType="VARCHAR" property="PrintType" />
+        <result column="eir_no" jdbcType="VARCHAR" property="EirNO" />
+        <result column="eir_stano" jdbcType="VARCHAR" property="EirStano" />
+        <result column="eir_station" jdbcType="VARCHAR" property="EirStation" />
+        <result column="motor_man" jdbcType="VARCHAR" property="MotorMan" />
+        <result column="motor_tel" jdbcType="VARCHAR" property="MotorTel" />
+        <result column="motor_id" jdbcType="VARCHAR" property="EXTCOL1" />
+        <result column="times" jdbcType="VARCHAR" property="Times" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="ent_code" jdbcType="VARCHAR" property="entCode" />
+        <result column="order_status" jdbcType="VARCHAR" property="orderStatus" />
+        <result column="send_ack_status" jdbcType="VARCHAR" property="sendAckStatus" />
+        <result column="order_count" jdbcType="VARCHAR" property="JobnoPcs" />
+        <!--新增客户单号-->
+        <result column="custom_no" jdbcType="VARCHAR" property="EXTCOL2"/>
+        <result column="sign_date" jdbcType="TIMESTAMP" property="signDate"/>
+    </resultMap>
+
+    <!--List<Order> getAllOrderByMotorId(String motorId);根据司机编号获取订单信息-->
+    <select id="getAllOrderByMotorId" resultMap="order">
+        select * from common_order where motor_id = #{EXTCOL1} and (order_status is null or order_status!=2)
+    </select>
+
+    <!--boolean saveOrder(Order order);保存订单信息-->
+    <insert id="saveOrder">
+        insert into common_order values(#{id},#{Jobno},#{OrderNO},#{SDStation},#{DeliStation},#{SDClno},#{SDShipp},#{ReCompany},#{ReTel}
+        ,#{ReTel2},#{ReturnType},#{PrintType},#{EirNO},#{EirStano},#{EirStation},#{MotorMan},#{MotorTel},#{EXTCOL1},#{Times},#{createTime},#{entCode},#{orderStatus},#{sendAckStatus},
+        #{JobnoPcs},#{refusedCount},#{refusedReason},#{EXTCOL2},#{signDate})
+    </insert>
+
+    <!--boolean updateOrderStatus(Order order);更新订单签收状态注意顺序-->
+    <update id="updateOrderStatus">
+        update common_order set order_status=#{arg0} where order_no=#{arg1}
+    </update>
+
+    <!--boolean deleteOrderByOrderId(String orderId);根据订单编号删除订单信息-->
+    <delete id="deleteOrderByOrderId">
+        delete from common_order where order_no = #{OrderNO}
+    </delete>
+
+    <!--boolean updateRefuseCountAndReason(Order order);根据订单id添加拒签数量和拒签原因-->
+    <insert id="updateRefuseCountAndReason">
+        update common_order set refused_count=#{refusedCount},refused_reason=#{refusedReason} where order_no=#{OrderNO}
+    </insert>
+
+    <!--List<String> selectDaySign();查询一天签收量-->
+    <select id="selectDaySign" resultType="java.lang.String">
+        select order_count from common_order where order_status = 2
+    </select>
+    <!--List<String> selectDayRefused();查询一天拒签量-->
+    <select id="selectDayRefused" resultType="java.lang.String">
+        select refused_reason from common_order
+    </select>
+    <!--Integer checkOrder(String jobNo,String orderNo);判断存入订单是否重复-->
+    <select id="checkOrder" resultType="Integer">
+        select count(*) from common_order where job_no = #{arg0} and eir_no = #{arg1}
+    </select>
+
+
+    <!--/**-->
+    <!--* 更新订单-->
+    <!--*/-->
+    <!--boolean updateOrder(Order order);-->
+    <update id="updateOrder">
+        update common_order
+        <set>
+            <if test="Jobno != null">
+                job_no = #{Jobno},
+            </if>
+            <if test="OrderNO != null">
+                order_no = #{OrderNO},
+            </if>
+            <if test="SDStation != null">
+                sd_station = #{SDStation},
+            </if>
+            <if test="DeliStation != null">
+                deli_station = #{DeliStation},
+            </if>
+            <if test="SDClno != null">
+                sd_client_no = #{SDClno},
+            </if>
+            <if test="SDShipp != null">
+                sd_client_name = #{SDShipp},
+            </if>
+            <if test="ReCompany != null">
+                re_company = #{ReCompany},
+            </if>
+            <if test="ReTel != null">
+                re_tel = #{ReTel},
+            </if>
+            <if test="ReTel2 != null">
+                re_tel2 = #{ReTel2},
+            </if>
+            <if test="ReturnType != null">
+                return_type = #{ReturnType},
+            </if>
+            <if test="PrintType != null">
+                print_type = #{PrintType},
+            </if>
+            <if test="EirNO != null">
+                eir_no = #{EirNO},
+            </if>
+            <if test="EirStano != null">
+                eir_stano = #{EirStano},
+            </if>
+            <if test="EirStation != null">
+                eir_station = #{EirStation},
+            </if>
+            <if test="MotorMan != null">
+                motor_man = #{MotorMan},
+            </if>
+            <if test="MotorTel != null">
+                motor_tel = #{MotorTel},
+            </if>
+            <if test="EXTCOL1 != null">
+                motor_id = #{EXTCOL1},
+            </if>
+            <if test="Times != null">
+                times = #{Times},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="entCode != null">
+                ent_code = #{entCode},
+            </if>
+            <if test="orderStatus != null">
+                order_status = #{orderStatus},
+            </if>
+            <if test="sendAckStatus != null">
+                send_ack_status = #{sendAckStatus},
+            </if>
+            <if test="JobnoPcs != null">
+                order_count = #{JobnoPcs},
+            </if>
+            <if test="refusedCount != null">
+                refused_count = #{refusedCount},
+            </if>
+            <if test="refusedReason != null">
+                refused_reason = #{refusedReason},
+            </if>
+            <if test="EXTCOL2 != null">
+                custom_no = #{EXTCOL2},
+            </if>
+            <if test="signDate != null">
+                sign_date = #{signDate},
+            </if>
+        </set>
+        where job_no=#{Jobno} and eir_no=#{EirNO}
+    </update>
+</mapper>

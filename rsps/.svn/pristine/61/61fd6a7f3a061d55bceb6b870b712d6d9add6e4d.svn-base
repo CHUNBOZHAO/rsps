@@ -1,0 +1,106 @@
+package com.izhuixin.rsps.controller;
+
+
+import com.google.gson.JsonObject;
+import com.izhuixin.rsps.model.Order;
+import com.izhuixin.rsps.model.OrderSource;
+import com.izhuixin.rsps.service.OrderService;
+import com.izhuixin.rsps.service.feign.OrderFeignService;
+import com.izhuixin.rsps.service.feign.OrderSourceFeignService;
+import com.izhuixin.rsps.util.UploadUtil;
+import com.netflix.discovery.converters.Auto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+@RestController
+@RequestMapping("v2/")
+public class OderController {
+
+    @Autowired
+    private OrderService orderService;
+    @Autowired
+    private OrderFeignService orderFeignService;
+    @Autowired
+    private OrderSourceFeignService orderSourceFeignService;
+
+    @RequestMapping(value = "/upload/{entCode}",method = RequestMethod.POST)
+    public String upload(HttpServletRequest request,@PathVariable("entCode") String entCode) throws Exception{
+        JsonObject jsonObject = new JsonObject();
+
+        //获取图片
+        MultipartHttpServletRequest mureq = (MultipartHttpServletRequest) request;
+        List<MultipartFile> files = mureq.getFiles("image");
+        //获取orderNo,operatorId,createTime
+        String orderNo = request.getParameter("orderNo");
+        String operatorId = request.getParameter("operatorId");
+        String createTime = request.getParameter("createTime");
+
+        //String转Date
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
+        Date time  = simpleDateFormat.parse(createTime);
+
+
+        try{
+
+        for (MultipartFile file : files) {
+
+            String fileName = file.getOriginalFilename();
+            OrderSource orderSource = new OrderSource();
+            orderSource.setSource(file.getBytes());
+            orderSource.setSourceType(fileName.substring(fileName.indexOf(".")+1));
+            orderSource.setOrderId(orderNo);
+            orderSource.setOperatorId(operatorId);
+            orderSource.setCreateTime(time);
+            orderSourceFeignService.saveOrderSource(orderSource);
+
+        }
+
+        }catch (Exception e){
+
+            e.printStackTrace();
+        }
+        
+        return jsonObject.toString();
+    }
+
+
+    @RequestMapping("/test")
+    public String test(MultipartFile file) throws Exception{
+
+        String fileName = file.getOriginalFilename();
+        OrderSource orderSource = new OrderSource();
+        orderSource.setSource(file.getBytes());
+        orderSource.setSourceType(fileName.substring(fileName.indexOf(".")+1));
+        orderSourceFeignService.saveOrderSource(orderSource);
+
+        try{
+           UploadUtil.saveImg(file,"D:\\Images","test.png");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return "success";
+    }
+
+    @RequestMapping("/order")
+    public String order(HttpServletRequest request,HttpServletResponse response){
+        String order_no = request.getParameter("order_no");
+        System.out.println(order_no);
+        orderService.sendOrder(order_no);
+        return "success";
+    }
+
+    @RequestMapping("/getOrderByMotorId")
+    public List<Order> getOrderByMotorId(String motorId){
+        return orderFeignService.getAllOrderByMotorId(motorId);
+    }
+
+}

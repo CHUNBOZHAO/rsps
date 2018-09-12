@@ -1,0 +1,41 @@
+$(function () {
+
+    // 提示框配置
+    toastr.options = {
+        "positionClass": "toast-top-center", //弹出窗的位置
+    }
+
+    var longitude = $("#pos").attr("longitude");
+    var latitude = $("#pos").attr("latitude");
+
+    var map = new BMap.Map("MyMap");
+    var point = new BMap.Point(longitude, latitude);
+    map.centerAndZoom(point, 15);
+    var marker = new BMap.Marker(point);  // 创建标注
+    map.addOverlay(marker);               // 将标注添加到地图中
+    marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+
+
+    // 上报周期设置
+    $(document).on("click", ".btn-position-upload-setting", function () {
+
+        var periodValue = $("#period_value").val();
+        var periodUnit = $("#period_unit").val();
+        var boxId = $(this).attr("boxId");
+
+        var params = "boxId=" + boxId + "&period=" + periodValue + "&unit=" + periodUnit;
+        $.ajax({
+            url:"/manager/coap/cmd/period/setting",
+            data:params,
+            success:function (msg) {
+                if (msg == "success") {
+                    toastr.success("设置成功");
+                } else {
+                    toastr.warning("设置失败");
+                }
+            }
+        });
+
+    });
+
+});

@@ -1,0 +1,11 @@
+package com.izhuixin.rsps.message;
+
+import org.springframework.cloud.stream.annotation.Output;
+import org.springframework.messaging.MessageChannel;
+
+public interface OutputMsg {
+    String OUTPUT_BASESTATION = "output_basestation";
+
+    @Output("output_basestation")
+    MessageChannel output_basestation();
+}

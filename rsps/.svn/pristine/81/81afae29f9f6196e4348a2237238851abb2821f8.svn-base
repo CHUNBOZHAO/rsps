@@ -1,0 +1,119 @@
+package com.izhuixin.rsps.controller;
+
+
+import com.google.gson.JsonObject;
+import com.izhuixin.rsps.constants.CommonOrderRefuseReason;
+import com.izhuixin.rsps.model.Order;
+import com.izhuixin.rsps.model.OrderSource;
+import com.izhuixin.rsps.service.feign.OrderFeignService;
+import com.izhuixin.rsps.service.feign.OrderSourceFeignService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+@RestController
+@RequestMapping("v2/")
+public class OderController {
+
+    @Autowired
+    private OrderFeignService orderFeignService;
+    @Autowired
+    private OrderSourceFeignService orderSourceFeignService;
+
+    @RequestMapping(value = "orderData/upload/{entCode}",method = RequestMethod.POST)
+    public String upload(HttpServletRequest request,@PathVariable("entCode") String entCode) throws Exception{
+        JsonObject jsonObject = new JsonObject();
+        //获取图片
+//        MultipartHttpServletRequest mureq = (MultipartHttpServletRequest) request;
+//        MultipartFile file1 = mureq.getFile("image1");
+//        MultipartFile file2 = mureq.getFile("image2");
+//        MultipartFile file3 = mureq.getFile("image3");
+//
+//        List<MultipartFile> files = new ArrayList<>();
+//        if(file1!=null||file1.getSize()<64000){
+//            files.add(file1);
+//        }
+//        if(file2!=null||file2.getSize()<64000){
+//                   files.add(file2);
+//        }
+//        if(file3!=null||file2.getSize()<64000){
+//            files.add(file3);
+//        }
+
+        //获取orderNo,operatorId,createTime,
+        String orderNo = request.getParameter("orderId");
+        String operatorId = request.getParameter("operatorId");
+        //获取运单号
+        String jobNo = request.getParameter("Jobno");
+        //拒签原因和拒签数量
+        String refusedReason = request.getParameter("refuseReason");
+        String refusedCount = request.getParameter("refusedCount");
+
+        //保存图片
+        try{
+
+//        for (MultipartFile file : files) {
+//
+//            String fileName = file.getOriginalFilename();
+//            OrderSource orderSource = new OrderSource();
+//            orderSource.setSource(file.getBytes());
+//            orderSource.setSourceType(fileName.substring(fileName.indexOf(".")+1));
+//            orderSource.setOrderId(orderNo);
+//            orderSource.setOperatorId(operatorId);
+//            orderSource.setCreateTime(new Date());
+//            orderSource.setEntCode(entCode);
+//            orderSourceFeignService.saveOrderSource(orderSource);
+//
+//        }
+//
+        }catch (Exception e){
+            jsonObject.addProperty("failure","签收失败");
+            e.printStackTrace();
+        }
+
+        Order order = new Order();
+        order.setJobNo(jobNo);
+        order.setOrderNo(orderNo);
+        order.setMotorId(operatorId);
+        order.setCreateTime(new Date());
+
+        String reason = null;
+        switch (refusedReason){
+            case "0" : reason=CommonOrderRefuseReason.DULL_OF_SALE.getDesc(); break ;
+            case "1" : reason=CommonOrderRefuseReason.DULL_OF_SALE.getDesc(); break ;
+            case "2" : reason=CommonOrderRefuseReason.DULL_OF_SALE.getDesc(); break ;
+            case "3" : reason=CommonOrderRefuseReason.DULL_OF_SALE.getDesc(); break ;
+            case "4" : reason=CommonOrderRefuseReason.DULL_OF_SALE.getDesc(); break ;
+            case "6" : reason=CommonOrderRefuseReason.DULL_OF_SALE.getDesc(); break ;
+        }
+        order.setRefusedReason(reason);
+        order.setRefusedCount(Integer.parseInt(refusedCount));
+
+        //发送签收信息到消息队列
+        orderFeignService.sendOrder(order);
+
+        //删除订单
+        try{
+            orderFeignService.delete(orderNo);
+        }catch (Exception e){
+            jsonObject.addProperty("failure","签收失败");
+            e.printStackTrace();
+        }
+
+        jsonObject.addProperty("success","签收成功");
+
+        return jsonObject.toString();
+    }
+
+    @RequestMapping("orderData/commonOrder/get")
+    public List<Order> getOrderByMotorId(String motorId){
+        return orderFeignService.getAllOrderByMotorId(motorId);
+    }
+
+}

@@ -1,0 +1,808 @@
+package com.izhuixin.rsps.service.impl;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.izhuixin.rsps.common.constant.LineRelatedType;
+import com.izhuixin.rsps.common.dba.BaseAbstractService;
+import com.izhuixin.rsps.common.util.LineIdBuilder;
+import com.izhuixin.rsps.common.vo.web.*;
+import com.izhuixin.rsps.dao.manual.LineDao;
+import com.izhuixin.rsps.dao.manual.LineTransferDao;
+import com.izhuixin.rsps.dao.manual.OperatorInfoDao;
+import com.izhuixin.rsps.domain.manual.CustomerInfo;
+import com.izhuixin.rsps.domain.manual.*;
+import com.izhuixin.rsps.service.LineService;
+import com.izhuixin.rsps.service.SysUserService;
+import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import java.util.*;
+
+@Service
+public class LineServiceImpl extends BaseAbstractService implements LineService {
+
+    @Autowired
+    private LineDao lineDao;
+
+    @Autowired
+    private LineTransferDao lineTransferDao;
+
+    @Autowired
+    private OperatorInfoDao operatorInfoDao;
+
+    @Autowired
+    private SysUserService sysUserService;
+
+    @Autowired
+    private TransactionTemplate transactionTemplate;
+
+
+    /**
+     * 查询该用户所有线路及子用户线路信息
+     * @param userId
+     * @param entCode
+     * @return
+     */
+    @Override
+    public List<LineInfoVO> queryChildLines(String userId, String entCode) {
+        List<LineInfoVO> lineInfoVOS = Lists.newArrayList();
+        try {
+            List<String> userIds = sysUserService.getDeepSysUserIds(userId);
+            userIds.add(userId);
+
+            // 所有线路和客户数量关联集合
+            Map<String, Integer> lineCustomCountMap = Maps.newHashMap();
+            List<RelatedCustomCountInfo> lineCustomCountList = lineDao.queryRelatedCustomCount(entCode);
+            for(RelatedCustomCountInfo relatedCustomCountInfo : lineCustomCountList) {
+                lineCustomCountMap.put(relatedCustomCountInfo.getLineId(), relatedCustomCountInfo.getCustomCount());
+            }
+            // 所有线路和中转站信息关联集合
+            Map<String, List<RelatedSysUserInfo>> lineTransferInfoMap = Maps.newHashMap();
+            List<RelatedSysUserInfo> lineTransferInfoList = lineDao.queryAllRelatedTransfer(entCode);
+            List<RelatedSysUserInfo> tempLineTransferInfoList = null;
+            for(RelatedSysUserInfo relatedSysUserInfo : lineTransferInfoList) {
+                if (lineTransferInfoMap.containsKey(relatedSysUserInfo.getLineId())) {
+                    lineTransferInfoMap.get(relatedSysUserInfo.getLineId()).add(relatedSysUserInfo);
+                } else {
+                    tempLineTransferInfoList  = Lists.newArrayList();
+                    tempLineTransferInfoList.add(relatedSysUserInfo);
+                    lineTransferInfoMap.put(relatedSysUserInfo.getLineId(), tempLineTransferInfoList);
+                }
+            }
+            // 所有线路和配送员信息关联集合
+            Map<String, List<RelatedOperatorInfo>> lineOperatorInfoMap = Maps.newHashMap();
+            List<RelatedOperatorInfo> lineOperatorInfoList = lineDao.queryAllRelatedOperator(entCode);
+            List<RelatedOperatorInfo> tempLineOperatorInfoList = null;
+            for(RelatedOperatorInfo relatedOperatorInfo : lineOperatorInfoList) {
+                if (lineOperatorInfoMap.containsKey(relatedOperatorInfo.getLineId())) {
+                    lineOperatorInfoMap.get(relatedOperatorInfo.getLineId()).add(relatedOperatorInfo);
+                } else {
+                    tempLineOperatorInfoList  = Lists.newArrayList();
+                    tempLineOperatorInfoList.add(relatedOperatorInfo);
+                    lineOperatorInfoMap.put(relatedOperatorInfo.getLineId(), tempLineOperatorInfoList);
+                }
+            }
+
+
+            List<LineEntityInfo> entityInfos = lineDao.queryUserLines(userIds, entCode);
+            List<RelatedSysUserInfo> relatedSysUsers = null;
+            List<RelatedOperatorInfo> relatedOperators = null;
+            for (LineEntityInfo entityInfo : entityInfos) {
+                LineInfoVO lineInfoVO = toLineInfoVO(entityInfo);
+
+//                Integer relatedCustomCount = lineDao.countRelatedCustom(lineInfoVO.getLineId(), entCode);
+//                List<RelatedSysUserInfo> relatedSysUsers = lineDao.queryRelatedTransfer(lineInfoVO.getLineId(), entCode);
+//                List<RelatedOperatorInfo> relatedOperators = lineDao.queryRelatedOperator(lineInfoVO.getLineId(), entCode);
+                Integer relatedCustomCount = 0;
+                if (lineCustomCountMap.containsKey(lineInfoVO.getLineId())) {
+                    relatedCustomCount = lineCustomCountMap.get(lineInfoVO.getLineId());
+                }
+
+                if (lineTransferInfoMap.containsKey(lineInfoVO.getLineId())) {
+                    relatedSysUsers = lineTransferInfoMap.get(lineInfoVO.getLineId());
+                } else {
+                    relatedSysUsers = Lists.newArrayList();
+                }
+
+                if (lineOperatorInfoMap.containsKey(lineInfoVO.getLineId())) {
+                    relatedOperators = lineOperatorInfoMap.get(lineInfoVO.getLineId());
+                } else {
+                    relatedOperators = Lists.newArrayList();
+                }
+
+
+                lineInfoVO.setRelatedCustomCount(relatedCustomCount);
+                lineInfoVO.setRelatedTransferCount(relatedSysUsers.size());
+                lineInfoVO.setRelatedOperatorCount(relatedOperators.size());
+
+                StringBuilder strRelatedSysUsers = new StringBuilder();
+                for(int i = 0; i < relatedSysUsers.size(); i++) {
+                    if (i > 1) {
+                        strRelatedSysUsers.append("...");
+                        break;
+                    }
+                    strRelatedSysUsers.append("【");
+                    strRelatedSysUsers.append(relatedSysUsers.get(i).getNickname());
+                    strRelatedSysUsers.append("】");
+                }
+                lineInfoVO.setBitRelatedTransfer(strRelatedSysUsers.toString());
+
+                StringBuilder strRelatedOperators = new StringBuilder();
+                for(int i = 0; i < relatedOperators.size(); i++) {
+                    if (i > 1) {
+                        strRelatedOperators.append("...");
+                        break;
+                    }
+                    strRelatedOperators.append("【");
+                    strRelatedOperators.append(relatedOperators.get(i).getRealName());
+                    strRelatedOperators.append("】");
+                }
+                lineInfoVO.setBitRelatedOperator(strRelatedOperators.toString());
+
+                lineInfoVOS.add(lineInfoVO);
+            }
+        } catch (Exception e) {
+            logger.error(String.format("获取所有线路出现异常"), e);
+        }
+        return lineInfoVOS;
+    }
+
+    /**
+     * 获取指定线路
+     * @param lineId
+     * @param entCode
+     * @return
+     */
+    @Override
+    public LineInfoVO queryLine(String lineId, String entCode) {
+        LineInfoVO lineInfoVO = null;
+        try {
+            LineEntityInfo lineEntityInfo = lineDao.queryLine(lineId, entCode);
+            if (lineEntityInfo != null) {
+                lineInfoVO = toLineInfoVO(lineEntityInfo);
+            }
+        } catch (Exception e) {
+            logger.error(String.format("获取线路信息(%s)出现异常", lineId), e);
+        }
+        return lineInfoVO;
+    }
+
+    /**
+     * 检测重名
+     * @param lineId
+     * @param lineName
+     * @param userId
+     * @param entCode
+     * @return
+     */
+    @Override
+    public boolean checkLineName(String lineId, String lineName, String userId, String entCode) {
+        boolean res = false;
+        if (StringUtils.isBlank(lineId)) {
+            Integer resCount = lineDao.checkLineNameForAdd(userId, lineName, entCode);
+            if (resCount > 0) {
+                res = true;
+            }
+        } else {
+            Integer resCount = lineDao.checkLineNameForEdit(userId, lineName, lineId, entCode);
+            if (resCount > 0) {
+                res = true;
+            }
+        }
+        return res;
+    }
+
+    /**
+     * 保存线路
+     * @param lineInfo
+     * @param entCode
+     * @return
+     */
+    @Override
+    public boolean saveLine(LineInfoVO lineInfo, String entCode) {
+        boolean res = false;
+        try {
+            lineInfo.setLineId(LineIdBuilder.geneate());
+            lineInfo.setCreateTime(new Date());
+            lineInfo.setCreateTimeStr(new DateTime().toString("yyyy-MM-dd HH:mm:ss"));
+            lineInfo.setModifyTime(new Date());
+            lineInfo.setModifyTimeStr(new DateTime().toString("yyyy-MM-dd HH:mm:ss"));
+            LineEntityInfo lineEntityInfo = toLineInfo(lineInfo);
+            Integer resSave = lineDao.saveLine(lineEntityInfo, entCode);
+            if (resSave > 0) {
+                res = true;
+            }
+        } catch (Exception e) {
+            logger.error(String.format("保存线路信息出现异常"), e);
+        }
+        return res;
+    }
+
+    /**
+     * 删除线路
+     * @param lineId
+     * @param entCode
+     * @return
+     */
+    @Override
+    public boolean removeLine(final String lineId, final String entCode) {
+
+        return transactionTemplate.execute(new TransactionCallback<Boolean>() {
+            @Override
+            public Boolean doInTransaction(TransactionStatus transactionStatus) {
+                boolean res = false;
+                try {
+                    Integer resDel = lineDao.removeLine(lineId, entCode);
+                    if (resDel > 0) {
+                        lineDao.removeLineRelated(lineId, entCode);
+                        lineDao.removeLineRelatedOperator(lineId, entCode);
+                        res = true;
+                    }
+                } catch (Exception e) {
+                    logger.error(String.format("删除线路信息出现异常"), e);
+                    transactionStatus.setRollbackOnly();
+                }
+                return res;
+            }
+        });
+    }
+
+    /**
+     * 修改线路
+     * @param lineInfo
+     * @param entCode
+     * @return
+     */
+    @Override
+    public boolean updateLine(LineInfoVO lineInfo, String entCode) {
+        boolean res = false;
+        try {
+            lineInfo.setModifyTime(new Date());
+            lineInfo.setModifyTimeStr(new DateTime().toString("yyyy-MM-dd HH:mm:ss"));
+            Integer resUpdate = lineDao.updateLine(toLineInfo(lineInfo), entCode);
+            if (resUpdate > 0) {
+                res = true;
+            }
+        } catch (Exception e) {
+            logger.error(String.format("更新线路出现异常"), e);
+        }
+        return res;
+    }
+
+    /**
+     * 保存线路-用户关联
+     * @param lineId
+     * @param customIds
+     * @return
+     */
+    @Override
+    public boolean saveLineAndCustom(final String lineId, final String[] customIds, final String entCode) {
+
+        return transactionTemplate.execute(new TransactionCallback<Boolean>() {
+
+            @Override
+            public Boolean doInTransaction(TransactionStatus transactionStatus) {
+                boolean res = false;
+                try {
+                    if (customIds != null) {
+                        for (String customId : customIds) {
+                            lineDao.removeLineAndCustom(lineId, customId, LineRelatedType.CUSTOM.getIndex().byteValue(), entCode);
+                            lineDao.saveLineAndCustom(lineId, customId, LineRelatedType.CUSTOM.getIndex().byteValue(), entCode);
+                        }
+                        res = true;
+                    }
+                } catch (Exception e) {
+                    transactionStatus.setRollbackOnly();
+                    logger.error(String.format("保存线路(%s)-客户关联出现异常", lineId), e);
+                }
+                return res;
+            }
+        });
+    }
+
+    /**
+     * 保存线路-用户关联
+     * @param lineId
+     * @param userIds
+     * @return
+     */
+    @Override
+    public boolean saveLineAndTransfer(final String lineId, final String[] userIds, final String entCode) {
+
+        return transactionTemplate.execute(new TransactionCallback<Boolean>() {
+
+            @Override
+            public Boolean doInTransaction(TransactionStatus transactionStatus) {
+                boolean res = false;
+                try {
+                    if (userIds != null) {
+                        for (String userId : userIds) {
+                            lineDao.removeLineAndCustom(lineId, userId, LineRelatedType.TRANSFER_STATION.getIndex().byteValue(), entCode);
+                            lineDao.saveLineAndCustom(lineId, userId, LineRelatedType.TRANSFER_STATION.getIndex().byteValue(), entCode);
+                        }
+                        res = true;
+                    }
+                } catch (Exception e) {
+                    transactionStatus.setRollbackOnly();
+                    logger.error(String.format("保存线路(%s)-中转站关联出现异常", lineId), e);
+                }
+                return res;
+            }
+        });
+    }
+
+    /**
+     * 保存线路-用户关联
+     * @param lineId
+     * @param operatorIds
+     * @return
+     */
+    @Override
+    public boolean saveLineAndOperator(final String lineId, final String[] operatorIds, final String entCode) {
+
+        return transactionTemplate.execute(new TransactionCallback<Boolean>() {
+
+            @Override
+            public Boolean doInTransaction(TransactionStatus transactionStatus) {
+                boolean res = false;
+                try {
+                    if (operatorIds != null) {
+                        for (String operatorId : operatorIds) {
+                            lineDao.removeLineAndOperator(lineId, operatorId, entCode);
+                            lineDao.saveLineAndOperator(lineId, operatorId, entCode);
+                        }
+                        res = true;
+                    }
+                } catch (Exception e) {
+                    transactionStatus.setRollbackOnly();
+                    logger.error(String.format("保存线路(%s)-操作员关联出现异常", lineId), e);
+                }
+                return res;
+            }
+        });
+    }
+
+    /**
+     * 删除线路-客户关联
+     * @param lineId
+     * @param customIds
+     * @param entCode
+     * @return
+     */
+    @Override
+    public boolean removeLineAndCustom(final String lineId, final String[] customIds, final String entCode) {
+
+        return transactionTemplate.execute(new TransactionCallback<Boolean>() {
+
+            @Override
+            public Boolean doInTransaction(TransactionStatus transactionStatus) {
+                boolean res = false;
+                try {
+                    for (String customId : customIds) {
+                        lineDao.removeLineAndCustom(lineId, customId, LineRelatedType.CUSTOM.getIndex().byteValue(), entCode);
+                    }
+                    res = true;
+                } catch (Exception e) {
+                    transactionStatus.setRollbackOnly();
+                    logger.error(String.format("删除线路(%s)-客户关联出现异常", lineId), e);
+                }
+                return res;
+            }
+        });
+    }
+
+    /**
+     * 删除线路-中转站关联
+     * @param lineId
+     * @param userIds
+     * @param entCode
+     * @return
+     */
+    @Override
+    public boolean removeLineAndTransfer(final String lineId, final String[] userIds, final String entCode) {
+
+        return transactionTemplate.execute(new TransactionCallback<Boolean>() {
+
+            @Override
+            public Boolean doInTransaction(TransactionStatus transactionStatus) {
+                boolean res = false;
+                try {
+                    for (String userId : userIds) {
+                        lineDao.removeLineAndCustom(lineId, userId, LineRelatedType.TRANSFER_STATION.getIndex().byteValue(), entCode);
+                    }
+                    res = true;
+                } catch (Exception e) {
+                    transactionStatus.setRollbackOnly();
+                    logger.error(String.format("删除线路(%s)-中转站关联出现异常", lineId), e);
+                }
+                return res;
+            }
+        });
+    }
+
+    /**
+     * 获取操作人的线路信息
+     * @param operatorId
+     * @param entCode
+     * @return
+     */
+    @Override
+    public List<LineInfo> getLinesWithOperatorId(String operatorId, String entCode) {
+        List<LineInfo> lineInfos = null;
+        try {
+            String parentTransferId = "";
+            try {
+                OperatorInfo operatorInfo = operatorInfoDao.getInfoByOpId(operatorId, entCode);
+                parentTransferId = operatorInfo.getUserId();
+            } catch (Exception e) {
+                logger.error(String.format("通过配送员ID（%s）获取配送员信息出现异常", operatorId), e);
+            }
+            List<String> transferIds = lineTransferDao.getTransferIdsByOperatorId(operatorId, entCode);
+            if (StringUtils.isNotBlank(parentTransferId)) {
+                transferIds.add(0, parentTransferId);
+            }
+            if (transferIds != null && transferIds.size() > 0) {
+                lineInfos = lineDao.queryLines(operatorId, transferIds, entCode);
+            } else {
+                lineInfos = Lists.newArrayList();
+            }
+        } catch (Exception e) {
+            logger.error(String.format("获取操作人(%s)关联出现异常", operatorId), e);
+        }
+        if (lineInfos == null) {
+            lineInfos = Lists.newArrayList();
+        }
+        return lineInfos;
+    }
+
+    /**
+     * 设置操作人的线路
+     * @param operatorId
+     * @param lineIds
+     * @param entCode
+     * @return
+     */
+    @Override
+    public boolean settingLines(final String operatorId, final List<String> lineIds, final String entCode) {
+        return transactionTemplate.execute(new TransactionCallback<Boolean>() {
+            @Override
+            public Boolean doInTransaction(TransactionStatus transactionStatus) {
+                boolean res = false;
+                try {
+                    // 先移除，后增加
+                    lineDao.removeOperatorAndLine(operatorId, entCode);
+                    LineAndOperatorInfo lineAndOperatorInfo = null;
+                    for (String lineId : lineIds) {
+                        lineAndOperatorInfo = new LineAndOperatorInfo();
+                        lineAndOperatorInfo.setLineId(lineId);
+                        lineAndOperatorInfo.setOperatorId(operatorId);
+                        lineAndOperatorInfo.setCreateDate(new Date());
+                        lineAndOperatorInfo.setCreateDateStr(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
+                        lineDao.saveOperatorAndLine(lineAndOperatorInfo, entCode);
+                    }
+                    res = true;
+                } catch (Exception e) {
+                    transactionStatus.setRollbackOnly();
+                    logger.error(String.format("设置操作人(%s)线路出现异常", operatorId), e);
+                }
+                return res;
+            }
+        });
+    }
+
+    /**
+     * 获取DataTable表格类型的客户信息以及线路关联信息
+     * @param lineId
+     * @param entCode
+     * @return
+     */
+    @Override
+    public DataTableResDataVO queryDtDataAssociatedCustom(String lineId,
+                                                          DataTableReqDataVO dtReqData,
+                                                          String entId,
+                                                          String entCode) {
+        DataTableResDataVO dtResData = new DataTableResDataVO();
+        try {
+            List<CustomerInfoVO> customerInfoVOS = null;
+
+            List<CustomerInfo> customerInfos = lineDao.queryAssociatedCustom(lineId, dtReqData.getStart(), dtReqData.getLength(), dtReqData.getSearch().get(DataTableReqDataVO.Search.value), entId, entCode);
+            if (customerInfos != null) {
+                customerInfoVOS = Lists.newArrayList();
+                CustomerInfoVO customerInfoVO = null;
+                for (CustomerInfo customerInfo : customerInfos) {
+                    customerInfoVO = new CustomerInfoVO();
+                    customerInfoVO.setCustomerId(customerInfo.getCustomerId());
+                    customerInfoVO.setName(customerInfo.getName());
+                    customerInfoVO.setAddress(customerInfo.getAddress());
+                    customerInfoVO.setLastModify(customerInfo.getLastModify());
+                    customerInfoVO.setLineRelated(customerInfo.isLineRelated());
+                    customerInfoVO.setLineId(lineId);
+                    customerInfoVOS.add(customerInfoVO);
+                }
+            }
+
+            dtResData.setData(customerInfoVOS);
+            dtResData.setDraw(dtReqData.getDraw());
+            dtResData.setRecordsFiltered(lineDao.countAssociatedCustom(lineId, dtReqData.getSearch().get(DataTableReqDataVO.Search.value), entId, entCode));
+            dtResData.setRecordsTotal(lineDao.countAllCustom(entId));
+        } catch (Exception e) {
+            logger.error("获取客户信息及线路关联信息出现异常", e);
+        }
+
+        return dtResData;
+    }
+
+    /**
+     * 获取客户信息以及线路关联信息
+     * @param lineId
+     * @param entCode
+     * @return
+     */
+    @Override
+    public List<CustomerInfoVO> queryAssociatedCustom(String lineId, String entId, String entCode) {
+        List<CustomerInfoVO> customerInfoVOS = null;
+//        try {
+//            List<CustomerInfo> customerInfos = lineDao.queryAssociatedCustom(lineId, entId, entCode);
+//            if (customerInfos != null) {
+//                customerInfoVOS = Lists.newArrayList();
+//                CustomerInfoVO customerInfoVO = null;
+//                for (CustomerInfo customerInfo : customerInfos) {
+//                    customerInfoVO = new CustomerInfoVO();
+//                    customerInfoVO.setCustomerId(customerInfo.getCustomerId());
+//                    customerInfoVO.setName(customerInfo.getName());
+//                    customerInfoVO.setAddress(customerInfo.getAddress());
+//                    customerInfoVO.setLastModify(customerInfo.getLastModify());
+//                    customerInfoVO.setLineRelated(customerInfo.isLineRelated());
+//                    customerInfoVO.setLineId(lineId);
+//                    customerInfoVOS.add(customerInfoVO);
+//                }
+//            }
+//        } catch (Exception e) {
+//            logger.error("获取客户信息及线路关联信息出现异常", e);
+//        }
+//
+//        if (customerInfoVOS == null) {
+//            customerInfoVOS = Lists.newArrayList();
+//        }
+        return customerInfoVOS;
+    }
+
+    /**
+     * 获取中转信息以及其线路关联信息
+     * @param lineId
+     * @param userId
+     * @param entCode
+     * @return
+     */
+    @Override
+    public List<RelatedSysUserVO> queryAssociatedTransfer(String lineId, String userId, String entCode) {
+        List<RelatedSysUserVO> sysUserVOS = null;
+        try {
+            List<String> userIds = sysUserService.getDeepSysUserIds(userId);
+            if (userIds != null) {
+                userIds.add(0, userId);
+            } else {
+                userIds = Lists.newArrayList();
+                userIds.add(userId);
+            }
+            List<RelatedSysUserInfo> sysUserInfos = lineDao.queryAssociatedTransfer(lineId, userIds, entCode);
+            sysUserVOS = Lists.newArrayList();
+            for (RelatedSysUserInfo userInfo : sysUserInfos) {
+                sysUserVOS.add(toRelatedSysUserVO(userInfo));
+            }
+        } catch (Exception e) {
+            logger.error("获取中转信息及线路关联信息出现异常", e);
+        }
+        if (sysUserVOS == null) {
+            sysUserVOS = Lists.newArrayList();
+        }
+        return sysUserVOS;
+    }
+
+    /**
+     * 获取该站点下及子站点下所有配送员信息，以及该线路和配送员的关联信息
+     * @param lineId
+     * @param userId
+     * @param entCode
+     * @return
+     */
+    @Override
+    public List<RelatedOperatorVO> queryAssociatedOperator(String lineId, String userId, String entCode) {
+
+        List<RelatedOperatorVO> operatorVOS = null;
+        try {
+
+            List<String> userIds = sysUserService.getDeepSysUserIds(userId);
+            userIds.add(0, userId);
+
+            operatorVOS = Lists.newArrayList();
+//            for (String itemId : userIds) {
+//                List<RelatedOperatorInfo> operatorInfos = lineDao.queryAssociatedOperator(lineId, itemId, entCode);
+//                for (RelatedOperatorInfo operatorInfo : operatorInfos) {
+//                    operatorVOS.add(toRelatedOperatorVO(operatorInfo));
+//                }
+//            }
+
+            List<RelatedOperatorInfo> operatorInfos = lineDao.queryAssociatedOperator(lineId, userIds, entCode);
+            for (RelatedOperatorInfo operatorInfo : operatorInfos) {
+                operatorVOS.add(toRelatedOperatorVO(operatorInfo));
+            }
+
+            Collections.sort(operatorVOS, new Comparator<RelatedOperatorVO>() {
+                @Override
+                public int compare(RelatedOperatorVO o1, RelatedOperatorVO o2) {
+                    if (o1.isLineRelated() && !o2.isLineRelated()) {
+                        return -1;
+                    } else {
+                        return 1;
+                    }
+                }
+            });
+
+        } catch (Exception e) {
+            logger.error("获取配送员信息及线路关联信息出现异常", e);
+        }
+        if (operatorVOS == null) {
+            operatorVOS = Lists.newArrayList();
+        }
+        return operatorVOS;
+    }
+
+
+    /**
+     * 删除线路-中转站关联
+     * @param lineId
+     * @param operatorIds
+     * @param entCode
+     * @return
+     */
+    @Override
+    public boolean removeLineAndOperator(final String lineId, final String[] operatorIds, final String entCode) {
+
+        return transactionTemplate.execute(new TransactionCallback<Boolean>() {
+
+            @Override
+            public Boolean doInTransaction(TransactionStatus transactionStatus) {
+                boolean res = false;
+                try {
+                    for (String operatorId : operatorIds) {
+                        lineDao.removeLineAndOperator(lineId, operatorId, entCode);
+                    }
+                    res = true;
+                } catch (Exception e) {
+                    transactionStatus.setRollbackOnly();
+                    logger.error(String.format("删除线路(%s)-配送员关联出现异常", lineId), e);
+                }
+                return res;
+            }
+        });
+    }
+
+    /**
+     * 获取客户的线路
+     * @param customId
+     * @return
+     */
+    @Override
+    public String getLineNamesByCustomId(String customId, String entCode) {
+        String lineNames = "";
+        List<LineEntityInfo> lineEntityInfos = lineDao.queryLinesByCustomId(customId, entCode);
+        StringBuilder sb = new StringBuilder();
+        for (LineEntityInfo entityInfo : lineEntityInfos) {
+            sb.append(entityInfo.getLineName());
+            sb.append(",");
+        }
+
+        // 获取线路所有上级中转线路
+        List<String> lines = Lists.newArrayList();
+        for (LineEntityInfo entityInfo : lineEntityInfos) {
+            getUpperLines(entityInfo.getLineId(), entCode, lines);
+        }
+        for (String lineName : lines) {
+            sb.append(lineName);
+            sb.append(",");
+        }
+
+        if (sb.length() > 0) {
+            lineNames = sb.substring(0,sb.length() - 1);
+        }
+        return lineNames;
+    }
+
+    /**
+     * 获取该线路的所有上级线路信息
+     * @param lineId
+     * @param entCode
+     * @param lineNames
+     */
+    private void getUpperLines(String lineId, String entCode, List<String> lineNames) {
+        List<LineEntityInfo> lineEntityInfos = lineDao.queryUpperLines(lineId, entCode);
+        for (LineEntityInfo lineEntityInfo : lineEntityInfos) {
+            if (!lineNames.contains(lineEntityInfo.getLineName())) {
+                lineNames.add(lineEntityInfo.getLineName());
+            }
+            getUpperLines(lineEntityInfo.getLineId(), entCode, lineNames);
+        }
+    }
+
+    /**
+     * LineInfo --> lineInfoVO
+     * @param lineInfo
+     * @return
+     */
+    private LineInfoVO toLineInfoVO(LineEntityInfo lineInfo) {
+        LineInfoVO lineInfoVO = new LineInfoVO();
+        lineInfoVO.setId(lineInfo.getId());
+        lineInfoVO.setLineId(lineInfo.getLineId());
+        lineInfoVO.setLineName(lineInfo.getLineName());
+        lineInfoVO.setCreateTime(lineInfo.getCreateTime());
+        lineInfoVO.setModifyTime(lineInfo.getModifyTime());
+        lineInfoVO.setDescr(lineInfo.getDescr());
+        lineInfoVO.setTrack(lineInfo.getTrack());
+        lineInfoVO.setUserId(lineInfo.getUserId());
+        lineInfoVO.setUserNickName(lineInfo.getUserNickName());
+        return lineInfoVO;
+    }
+
+    /**
+     * LineInfo --> lineInfoVO
+     * @param lineInfoVO
+     * @return
+     */
+    private LineEntityInfo toLineInfo(LineInfoVO lineInfoVO) {
+        LineEntityInfo lineEntityInfo = new LineEntityInfo();
+        lineEntityInfo.setId(lineInfoVO.getId());
+        lineEntityInfo.setLineId(lineInfoVO.getLineId());
+        lineEntityInfo.setLineName(lineInfoVO.getLineName());
+        lineEntityInfo.setCreateTime(lineInfoVO.getCreateTime());
+        lineEntityInfo.setCreateTimeStr(lineInfoVO.getCreateTimeStr());
+        lineEntityInfo.setModifyTime(lineInfoVO.getModifyTime());
+        lineEntityInfo.setModifyTimeStr(lineInfoVO.getModifyTimeStr());
+        lineEntityInfo.setDescr(lineInfoVO.getDescr());
+        lineEntityInfo.setTrack(lineInfoVO.getTrack());
+        lineEntityInfo.setUserId(lineInfoVO.getUserId());
+        return lineEntityInfo;
+    }
+
+    /**
+     * RelatedSysUserInfo --> RelatedSysUserVO
+     * @param userInfo
+     * @return
+     */
+    private RelatedSysUserVO toRelatedSysUserVO(RelatedSysUserInfo userInfo) {
+        RelatedSysUserVO vo = new RelatedSysUserVO();
+        vo.setId(userInfo.getId());
+        vo.setUserName(userInfo.getUserName());
+        vo.setLevel(userInfo.getLevel());
+        vo.setLineRelated(userInfo.isLineRelated());
+        vo.setNickname(userInfo.getNickname());
+        vo.setRealName(userInfo.getRealName());
+        vo.setpNickname(userInfo.getpNickname());
+        vo.setUserId(userInfo.getUserId());
+        return vo;
+    }
+
+    /**
+     * RelatedOperatorInfo --> RelatedOperatorVO
+     * @param operatorInfo
+     * @return
+     */
+    private RelatedOperatorVO toRelatedOperatorVO(RelatedOperatorInfo operatorInfo) {
+        RelatedOperatorVO vo = new RelatedOperatorVO();
+        vo.setId(operatorInfo.getId());
+        vo.setLineRelated(operatorInfo.isLineRelated());
+        vo.setOperatorId(operatorInfo.getOperatorId());
+        vo.setParentNickName(operatorInfo.getParentNickName());
+        vo.setRealName(operatorInfo.getRealName());
+        vo.setTel(operatorInfo.getTel());
+        vo.setUserId(operatorInfo.getUserId());
+        vo.setUserName(operatorInfo.getUserName());
+        return vo;
+    }
+
+}

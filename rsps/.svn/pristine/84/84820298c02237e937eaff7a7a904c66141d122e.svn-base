@@ -1,0 +1,299 @@
+package com.izhuixin.rsps.dao.manual;
+
+import com.izhuixin.rsps.domain.manual.*;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+
+@Repository
+public interface LineDao {
+
+    /**
+     * 查询线路及关联信息
+     * @return
+     */
+    List<LineInfo> queryLines(@Param("operatorId") String operatorId,
+                              @Param("transferIds") List<String> transferIds,
+                              @Param("entCode") String entCode);
+
+    /**
+     * 查询所有线路
+     * @param entCode
+     * @return
+     */
+    List<LineEntityInfo> queryUserLines(@Param("userIds") List<String> userIds,
+                                        @Param("entCode") String entCode);
+
+    /**
+     * 查询线路
+     * @param lineId
+     * @param entCode
+     * @return
+     */
+    LineEntityInfo queryLine(@Param("lineId") String lineId,
+                             @Param("entCode") String entCode);
+
+    /**
+     * 保存线路
+     * @param lineInfo
+     * @param entCode
+     * @return
+     */
+    Integer saveLine(@Param("lineInfo") LineEntityInfo lineInfo, @Param("entCode") String entCode);
+
+    /**
+     * 删除线路
+     * @param lineId
+     * @param entCode
+     * @return
+     */
+    Integer removeLine(@Param("lineId") String lineId, @Param("entCode") String entCode);
+
+    /**
+     * 修改线路
+     * @param lineInfo
+     * @param entCode
+     * @return
+     */
+    Integer updateLine(@Param("lineInfo") LineEntityInfo lineInfo, @Param("entCode") String entCode);
+
+    /**
+     * 保存线路-用户关联
+     * @param lineId
+     * @param customId
+     * @return
+     */
+    Integer saveLineAndCustom(@Param("lineId") String lineId,
+                              @Param("customId") String customId,
+                              @Param("relatedType") byte relatedType,
+                              @Param("entCode") String entCode);
+
+    /**
+     * 删除线路所有关联
+     * @param lineId
+     * @param entCode
+     * @return
+     */
+    Integer removeLineAndCustom(@Param("lineId") String lineId,
+                                @Param("customId") String customId,
+                                @Param("relatedType") byte relatedType,
+                                @Param("entCode") String entCode);
+
+    /**
+     * 删除配送员和线路的关联
+     * @param operatorId
+     * @param entCode
+     * @return
+     */
+    Integer removeOperatorAndLine(@Param("operatorId") String operatorId,
+                                  @Param("entCode") String entCode);
+
+
+    /**
+     * 删除线路客户关联
+     * @param lineId
+     * @param entCode
+     * @return
+     */
+    Integer removeLineRelated(@Param("lineId") String lineId,
+                              @Param("entCode") String entCode);
+
+    /**
+     * 删除线路关联配送员
+     * @param lineId
+     * @param entCode
+     * @return
+     */
+    Integer removeLineRelatedOperator(@Param("lineId") String lineId,
+                                      @Param("entCode") String entCode);
+
+    /**
+     * 保存配送员和线路的关联
+     * @param lineAndOperatorInfo
+     * @param entCode
+    @return
+     */
+    Integer saveOperatorAndLine(@Param("lineAndOperatorInfo") LineAndOperatorInfo lineAndOperatorInfo,
+                                @Param("entCode") String entCode);
+
+
+    /**
+     * 获取客户总数
+     * @param entId
+     * @return
+     */
+    Integer countAllCustom(@Param("entId") String entId);
+
+    /**
+     * 获取线路的客户信息及关联的记录数
+     * @param lineId
+     * @param entCode
+     * @return
+     */
+    Integer countAssociatedCustom(@Param("lineId") String lineId,
+                                  @Param("search") String search,
+                                  @Param("entId") String entId,
+                                  @Param("entCode") String entCode);
+    /**
+     * 获取线路的客户信息及关联
+     * @param lineId
+     * @param entCode
+     * @return
+     */
+    List<CustomerInfo> queryAssociatedCustom(@Param("lineId") String lineId,
+                                             @Param("start") Integer start,
+                                             @Param("length") Integer length,
+                                             @Param("search") String search,
+                                             @Param("entId") String entId,
+                                             @Param("entCode") String entCode);
+
+    /***
+     * 获取线路的中转信息及关联
+     * @param lineId
+     * @param userIds
+     * @param entCode
+     * @return
+     */
+    List<RelatedSysUserInfo> queryAssociatedTransfer(@Param("lineId") String lineId,
+                                                     @Param("userIds") List<String> userIds,
+                                                     @Param("entCode") String entCode);
+
+
+    /**
+     * 获取当前站点下配送员信息以及配送员与该线路的关联信息
+     * @param lineId
+     * @param userIds
+     * @param entCode
+     * @return
+     */
+    List<RelatedOperatorInfo> queryAssociatedOperator(@Param("lineId") String lineId,
+                                                      @Param("userIds") List<String> userIds,
+                                                      @Param("entCode") String entCode);
+
+    /**
+     * 保存线路-配送员关联
+     * @param lineId
+     * @param operatorId
+     * @return
+     */
+    Integer saveLineAndOperator(@Param("lineId") String lineId,
+                                @Param("operatorId") String operatorId,
+                                @Param("entCode") String entCode);
+
+    /**
+     * 删除线路和操作人关联
+     * @param lineId
+     * @param operatorId
+     * @param entCode
+     * @return
+     */
+    Integer removeLineAndOperator(@Param("lineId") String lineId,
+                                  @Param("operatorId") String operatorId,
+                                  @Param("entCode") String entCode);
+
+    /**
+     * 检测线路重名
+     * @param userId
+     * @param lineName
+     * @param entCode
+     * @return
+     */
+    Integer checkLineNameForAdd(@Param("userId") String userId,
+                                @Param("lineName") String lineName,
+                                @Param("entCode") String entCode);
+
+    /**
+     * 检测线路重名
+     * @param userId
+     * @param lineName
+     * @param entCode
+     * @return
+     */
+    Integer checkLineNameForEdit(@Param("userId") String userId,
+                                 @Param("lineName") String lineName,
+                                 @Param("lineId") String lineId,
+                                 @Param("entCode") String entCode);
+
+    /**
+     * 查询线路关联客户数量
+     * @param lineId
+     * @param entCode
+     * @return
+     */
+    Integer countRelatedCustom(@Param("lineId") String lineId, @Param("entCode") String entCode);
+
+    /**
+     * 查询线路关联中转站
+     * @param lineId
+     * @param entCode
+     * @return
+     */
+    Integer countRelatedTransfer(@Param("lineId") String lineId, @Param("entCode") String entCode);
+
+    /**
+     * 查询线路关联配送员数量
+     * @param lineId
+     * @param entCode
+     * @return
+     */
+    Integer countRelatedOperator(@Param("lineId") String lineId, @Param("entCode") String entCode);
+
+    /**
+     * 获取线路关联的中转站信息
+     * @param lineId
+     * @param entCode
+     * @return
+     */
+    List<RelatedSysUserInfo> queryRelatedTransfer(@Param("lineId") String lineId, @Param("entCode") String entCode);
+
+    /**
+     * 获取线路关联的配送员信息
+     * @param lineId
+     * @param entCode
+     * @return
+     */
+    List<RelatedOperatorInfo> queryRelatedOperator(@Param("lineId") String lineId, @Param("entCode") String entCode);
+
+
+    /**
+     * 获取所有线路关联的中转站信息
+     * @param entCode
+     * @return
+     */
+    List<RelatedSysUserInfo> queryAllRelatedTransfer(@Param("entCode") String entCode);
+
+    /**
+     * 获取所有线路关联的配送员信息
+     * @param entCode
+     * @return
+     */
+    List<RelatedOperatorInfo> queryAllRelatedOperator(@Param("entCode") String entCode);
+
+
+    /**
+     * 获取所有线路关联客户的数量
+     * @param entCode
+     * @return
+     */
+    List<RelatedCustomCountInfo> queryRelatedCustomCount(@Param("entCode") String entCode);
+
+
+    /**
+     * 获取客户直接关联的线路信息
+     * @param customId
+     * @return
+     */
+    List<LineEntityInfo> queryLinesByCustomId(@Param("customId") String customId, @Param("entCode") String entCode);
+
+
+    /**
+     * 获取线路上级站点关联的线路
+     * @param lineId
+     * @param entCode
+     * @return
+     */
+    List<LineEntityInfo> queryUpperLines(@Param("lineId") String lineId, @Param("entCode") String entCode);
+
+}

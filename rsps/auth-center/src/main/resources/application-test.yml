@@ -1,0 +1,37 @@
+server:
+  port: 9400
+  tomcat:
+    max-threads: 50
+spring:
+  application:
+    name: auth-center
+#  jpa:
+#    show-sql: true
+  datasource:
+    url: jdbc:mysql://localhsot/rspsdb?useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: root
+    druid:
+      driver-class-name: com.mysql.jdbc.Driver
+  zipkin:
+      base-url: http://localhost:9300
+  sleuth:
+    sampler:
+      percentage: 1.0
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:9100/eureka/
+endpoints:
+  health:
+    sensitive: false
+    enabled: true
+management:
+  security:
+    enabled: false
+security:
+  oauth2:
+    resource:
+      filter-order: 3
+

@@ -1,0 +1,11 @@
+package com.izhuixin.rsps.service;
+
+import com.izhuixin.rsps.proto.BoxBaseStationInfo;
+import com.izhuixin.rsps.proto.CellsInfo;
+
+public interface CellService {
+
+   void sendCellsInfo(CellsInfo cellsInfo);
+
+   void sendBaseStation(BoxBaseStationInfo boxBaseStationInfo);
+}

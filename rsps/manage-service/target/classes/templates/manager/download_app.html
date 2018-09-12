@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>RSPS可循环智能包装系统管理平台</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="_csrf" content="${_csrf.token}"/>
+    <meta name="_csrf_header" content="${_csrf.headerName}"/>
+
+    <link rel="icon" type="image/x-icon" th:href="@{/assets/images/manager/favicon.png}">
+
+    <!-- CSS Libs -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap.min.css}" href="../../lib/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/font-awesome.min.css}" href="../../lib/css/font-awesome.min.css">
+
+    <!-- CSS App -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/style.css}" href="../../css/style.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/themes/flat-blue.css}" href="../../css/themes/flat-blue.css">
+</head>
+
+<body class="flat-blue login-page">
+    <div class="container">
+        <div style="color: whitesmoke;margin: auto;margin-top: 5%;width: 60%;height: 450px;background-color: rgba(138, 146, 154, 0.58);padding: 10px;border-radius: 10px;letter-spacing:1px;">
+            <h4>芯翼APP目前提供2种下载方式：</h4>
+            <h4>
+                1.<a href="https://cdn.izhuixin.net/files/rsps/app-release-latest.apk" target="_blank">直接点击下载</a>,下载到电脑后，通过工具安装到手机。
+            </h4>
+            <h4>2.扫描下面二维码进行下载</h4>
+            <img th:src="@{/assets/images/manager/app_download.png}" alt="芯翼APP下载二维码" style="width:250px;" />
+            <br/>
+            <h4>
+                <a href="/manager/login" style="color: #022a56">返回登录页面</a>
+            </h4>
+        </div>
+    </div>
+    <!-- Javascript Libs -->
+    <script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.min.js}" src="../../lib/js/jquery.min.js"></script>
+</body>
+
+</html>

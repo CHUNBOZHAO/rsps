@@ -1,0 +1,215 @@
+package com.izhuixin.rsps.dao.manual;
+
+import com.izhuixin.rsps.domain.manual.OperatorInfo;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface OperatorInfoDao {
+
+    /**
+     * 通过用户名、状态获取用户数量
+     * @param userName
+     * @param status
+     * @param entCode
+     * @return
+     */
+    Integer getUserCountByUserName(@Param("userName") String userName,
+                                   @Param("status") Integer status,
+                                   @Param("entCode") String entCode);
+
+    /**
+     * 通过用户名、密码获取用户数量
+     * @param userName
+     * @param userPwd
+     * @param entCode
+     * @return
+     */
+    Integer getUserCountByPwd(@Param("userName") String userName,
+                              @Param("userPwd") String userPwd,
+                              @Param("entCode") String entCode);
+
+
+    /**
+     * 更新用户登录AppSessionID
+     * @param appSessionId
+     * @param userName
+     * @param userPwd
+     * @return
+     */
+    Integer updateAppSessionId(@Param("appSessionId") String appSessionId,
+                               @Param("userName") String userName,
+                               @Param("userPwd") String userPwd,
+                               @Param("entCode") String entCode);
+
+
+    /***
+     * 通过用户名修改用户密码
+     * @param userName
+     * @param userPwd
+     * @param entCode
+     * @return
+     */
+    Integer upatePwdByUserName(@Param("userName") String userName,
+                               @Param("userPwd") String userPwd,
+                               @Param("entCode") String entCode);
+
+
+    /***
+     * 通过用户名获取用户信息
+     * @param userName
+     * @param entCode
+     * @return
+     */
+    OperatorInfo getOperatorInfoByUserName(@Param("userName") String userName,
+                                           @Param("operatorType") Byte operatorType,
+                                           @Param("entCode") String entCode);
+
+    /***
+     * 通过用户姓名获取用户信息
+     * @param name
+     * @param entCode
+     * @return
+     */
+    OperatorInfo getOperatorInfoByName(@Param("name") String name,
+                                       @Param("operatorType") Byte operatorType,
+                                       @Param("entCode") String entCode);
+
+    /**
+     * 获取企业所有操作员信息
+     * @param entCode
+     * @return
+     */
+    List<OperatorInfo> getOperatorInfos(@Param("entCode") String entCode);
+
+    /**
+     * 获取当前管理用户的操作员信息
+     * @param entCode
+     * @return
+     */
+    List<OperatorInfo> getOperatorInfosByUserId(@Param("entCode") String entCode,
+                                                @Param("userIds") List<String> userIds);
+
+    /**
+     * 保存用户信息
+     * @param operatorInfo
+     * @return
+     */
+    Integer saveOperator(@Param("operatorInfo") OperatorInfo operatorInfo, @Param("entCode") String entCode);
+
+    /**
+     * 更新用户信息
+     * @param operatorInfo
+     * @return
+     */
+    Integer updateOperatorById(@Param("operatorInfo") OperatorInfo operatorInfo, @Param("entCode") String entCode);
+
+    /**
+     * 更新用户信息
+     * @param operatorInfo
+     * @return
+     */
+    Integer updateOperatorByOperatorId(@Param("operatorInfo") OperatorInfo operatorInfo, @Param("entCode") String entCode);
+
+
+    /**
+     * 通过ID获取操作人员信息
+     * @param id
+     * @param entCode
+     * @return
+     */
+    OperatorInfo getInfoById(@Param("id") Long id, @Param("entCode") String entCode);
+
+
+    /**
+     * 通过operatorId获取操作人员信息
+     * @param operatorId
+     * @param entCode
+     * @return
+     */
+    OperatorInfo getInfoByOpId(@Param("operatorId") String operatorId, @Param("entCode") String entCode);
+
+    /***
+     * 检测用户密码
+     * @param id
+     * @param oldPwd
+     * @return
+     */
+    Integer checkPwd(@Param("id") Integer id, @Param("oldPwd") String oldPwd, @Param("entCode") String entCode);
+
+    /***
+     * 修改用户密码
+     * @param id
+     * @param pwd
+     * @return
+     */
+    Integer updatePwd(@Param("id") Integer id, @Param("pwd") String pwd, @Param("entCode") String entCode);
+
+    /***
+     * 删除用户
+     * @param id
+     * @param entCode
+     * @return
+     */
+    Integer deleteByid(@Param("id") Integer id, @Param("entCode") String entCode);
+
+    /**
+     * 检测用户AppSessionID是否有效
+     * @param id
+     * @param appSessionId
+     * @param entCode
+     * @return
+     */
+    Integer checkValidAppSessionId(@Param("id") String id,
+                                   @Param("appSessionId") String appSessionId,
+                                   @Param("entCode") String entCode);
+
+    /**
+     * 获取操作人数量
+     * @param operatorId
+     * @param entCode
+     * @return
+     */
+    Integer countOperator(@Param("operatorId") String operatorId,
+                          @Param("entCode") String entCode);
+
+    /**
+     * 通过管理用户删除配送员
+     * @param userId
+     * @param entCode
+     * @return
+     */
+    Integer deleteByUserId(@Param("userId") String userId,
+                           @Param("entCode") String entCode);
+
+    /**
+     * 检测配送员编号是否存在
+     */
+    Integer checkOperatorNo(@Param("operatorNo") String operatorNo, @Param("entCode") String entCode,@Param("id") Integer id);
+
+
+    /**
+     * 通过配送员编号获取
+     * @param operatorNo
+     * @param entCode
+     * @return
+     */
+    OperatorInfo getOperatorByNo(@Param("operatorNo") String operatorNo, @Param("entCode") String entCode);
+
+
+    /**
+     * 检查配送员当前的IMEI
+     * @param userName
+     * @param operatorId
+     * @param imei
+     * @param entCode
+     * @return
+     */
+    Integer checkImei(@Param("userName") String userName,
+                      @Param("operatorId") String operatorId,
+                      @Param("imei") String imei,
+                      @Param("entCode") String entCode);
+
+}

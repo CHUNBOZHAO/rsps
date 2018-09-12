@@ -1,0 +1,88 @@
+package com.izhuixin.rsps.controller;
+
+import com.izhuixin.rsps.domain.Order;
+import com.izhuixin.rsps.domain.SignInfo;
+import com.izhuixin.rsps.service.OrderMsgService;
+import com.izhuixin.rsps.task.DaySignReport;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.filter.OrderedRequestContextFilter;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("v1/")
+/**
+ * @author zcb
+ */
+public class OrderController {
+
+
+    @Autowired
+    private OrderMsgService orderMsgService;
+
+    @Autowired
+    private DaySignReport daySignReport;
+    /**
+     * 根据司机编号获取订单集合
+     * @param motorId
+     * @return
+     */
+    @RequestMapping("orderData/commonOrder/list")
+    public List<Order> getAllOrderByMotorId(String motorId){
+
+        return orderMsgService.getAllOrderByMotorId(motorId);
+
+    }
+    /**
+     **保存订单信息
+     * @param order
+     * @return
+     */
+    @RequestMapping("orderData/commonOrder/truckingOrder")
+    public boolean saveOrder(@RequestBody Order order){
+
+       return orderMsgService.saveOrder(order);
+    }
+
+    /**
+     **更新签收状态
+     * @param orderId
+     * @return
+     */
+    @RequestMapping("orderData/commonOrder/update")
+    public boolean updateOrderStatus(String orderId){
+
+        return orderMsgService.updateOrderStatus(orderId);
+    }
+
+    /**
+     * 发送签收消息
+     * @param signInfo
+     * @return
+     */
+    @RequestMapping("orderData/commonOrder/sign")
+    public boolean sendOrder(@RequestBody SignInfo signInfo) throws Exception{
+
+        return orderMsgService.sendOrder(signInfo);
+    }
+
+    /**
+     * 获取一天的签收量
+     */
+    @RequestMapping("orderData/commonOrder/DaySignCount")
+    public Integer daySignCount() throws Exception{
+      return daySignReport.getSignCount();
+    }
+
+    /**
+     * 更新订单
+     */
+    @RequestMapping("orderData/commonOrder/updateOrder")
+    public boolean updateOrder(@RequestBody Order order){
+
+        return  orderMsgService.updateOrder(order);
+    }
+}

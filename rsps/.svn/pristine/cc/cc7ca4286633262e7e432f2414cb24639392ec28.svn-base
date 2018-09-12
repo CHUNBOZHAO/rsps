@@ -1,0 +1,163 @@
+package com.izhuixin.rsps.resource;
+
+import com.izhuixin.rsps.proto.*;
+import com.izhuixin.rsps.util.SpringContext;
+import com.izhuixin.rsps.model.BoxCmd;
+import com.izhuixin.rsps.service.CellService;
+import com.izhuixin.rsps.util.Triangulation;
+import com.izhuixin.rsps.util.Util;
+import org.eclipse.californium.core.CoapResource;
+import org.eclipse.californium.core.server.resources.CoapExchange;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.core.RedisKeyValueTemplate;
+import java.awt.geom.Point2D;
+
+import static org.eclipse.californium.core.coap.CoAP.ResponseCode.CHANGED;
+import static org.eclipse.californium.core.coap.CoAP.ResponseCode._UNKNOWN_SUCCESS_CODE;
+
+public class CellResource extends CoapResource {
+
+    private CellService cellService =null;
+    private RedisKeyValueTemplate redisKeyValueTemplate = null;
+    private static Logger logger = LoggerFactory.getLogger(CellResource.class);
+
+    private CellService getCellService(){
+        if(null == cellService){
+            cellService = SpringContext.getBean(CellService.class);
+        }
+
+        return cellService;
+    }
+
+    private RedisKeyValueTemplate getRedisKeyValueTemplate(){
+        if(null == redisKeyValueTemplate){
+            redisKeyValueTemplate = SpringContext.getBean(RedisKeyValueTemplate.class);
+        }
+
+        return redisKeyValueTemplate;
+    }
+
+    public CellResource() {
+
+        // set resource identifier
+        super("Cell");
+
+        // set display name
+        getAttributes().setTitle("Cell Resource");
+    }
+
+    @Override
+    public void handlePOST(CoapExchange exchange) {
+        byte[] data = exchange.getRequestPayload();
+        String devid = null;
+        String devidsplit = null;
+        CellsInfo cellsInfo = null;
+        Status status = null;
+        Param param = null;
+        BoxCmd boxCmd = null;
+
+        logger.info("Receive message : " + Util.bytesToHexString(data, "").toUpperCase());
+
+        /* 消息解析 */
+        for (int i = 0; i < data.length; ) {
+            byte type = data[i];
+            i++;
+            byte len = data[i];
+            i++;
+            byte[] d = new byte[len];
+            System.arraycopy(data, i, d, 0, len);
+            i+=len;
+            switch (type){
+                case 1:
+                    devid = ProtoUtil.getDevId(d);
+                    devidsplit = ProtoUtil.getDevId(d, ":");
+                    break;
+                case 2:
+                    cellsInfo = ProtoUtil.getCellsInfo(d);
+                    break;
+                case 3:
+                    status = ProtoUtil.getStatus(d);
+                    logger.info("Status: " + "Opentime:"+status.getOpentime()+", "
+                                                  + "Closetime:"+status.getClosetime()+", "
+                                                  + "VibrationCount:"+status.getVibrationCount()+", "
+                                                  + "Voltage:"+status.getVoltage()+", "
+                                                  + "Temperature:"+status.getTemperature()+", "
+                                                  + "Errcode:"+status.getErrcode());
+                    break;
+                case 4:
+                    param = ProtoUtil.getParam(d);
+                    logger.info("Param: " + "Brcycle:"+param.getBrcycle()+", "
+                                                 + "Canconnect:"+param.getCanconnect() +", "
+                                                 + "Brpower:"+param.getBrpower()+", "
+                                                 + "Tempcycle:"+param.getTempcycle()+", "
+                                                 + "Volcycle:"+ param.getVolcycle()+", "
+                                                 + "Rfidcycle:"+param.getRfidcycle()
+                    );
+                    break;
+                default:
+
+            }
+        }
+
+        if(null == devid){
+            exchange.respond(_UNKNOWN_SUCCESS_CODE);
+            logger.info("ack: "+_UNKNOWN_SUCCESS_CODE);
+            return;
+        }
+
+        if(null != cellsInfo) {
+            BoxBaseStationInfo boxBaseStationInfo = new BoxBaseStationInfo();
+
+            boxBaseStationInfo.setBoxid(devidsplit);
+            boxBaseStationInfo.setCells(cellsInfo.getCells());
+            boxBaseStationInfo.setMcc(cellsInfo.getMcc());
+            boxBaseStationInfo.setMnc(cellsInfo.getMnc());
+            boxBaseStationInfo.setType(cellsInfo.getType());
+
+            getCellService().sendBaseStation(boxBaseStationInfo);
+        }
+        /*
+        Triangulation triangulation = new Triangulation(cellsInfo.getCells().size());
+
+        for (int i = 0; i < cellsInfo.getCells().size(); i++) {
+            String baseId = String.format("%0"+4+"d", cellsInfo.getMcc()*10)
+                          + String.format("%0"+2+"d", cellsInfo.getMnc())
+                          + String.format("%0"+5+"d", cellsInfo.getCells().get(i).getLac())
+                          + String.format("%0"+9+"d", cellsInfo.getCells().get(i).getCellid());
+            BaseStation baseStation = null;
+            try {
+                baseStation = getCellService().getBaseStation(baseId);
+            }catch (Exception e){
+                exchange.respond(_UNKNOWN_SUCCESS_CODE);
+                return;
+            }
+
+            if(null != baseStation) {
+                triangulation.add(new Point2D.Double(baseStation.getLnga(), baseStation.getLata()), cellsInfo.getCells().get(i).getMciss() * -1);
+                System.err.println("cell location: " + baseStation.getLnga()+", "+baseStation.getLata());
+            }
+        }
+        Point2D result = triangulation.location();
+        System.err.println("Calculate location: " + result.getX()+", "+result.getY());
+        */
+        /* 回复请求并下发命令 */
+        try {
+            boxCmd = getRedisKeyValueTemplate().findById(devid, BoxCmd.class);
+        }catch (Exception e){
+            //e.printStackTrace();
+        }
+
+
+        if(null != boxCmd){
+            getRedisKeyValueTemplate().delete(boxCmd);
+            byte[] cmd = ProtoUtil.setCmd(boxCmd);
+            exchange.respond(CHANGED, cmd);
+            logger.info("ack: "+CHANGED+" with cmd");
+        }
+        else{
+            exchange.respond(CHANGED);
+            logger.info("ack: "+CHANGED);
+        }
+    }
+}

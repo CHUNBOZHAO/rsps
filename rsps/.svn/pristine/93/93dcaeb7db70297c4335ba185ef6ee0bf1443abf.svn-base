@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>RSPS智能包装系统</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- CSS Libs -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap.min.css}" href="../../lib/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/font-awesome.min.css}" href="../../lib/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/animate.min.css}" href="../../lib/css/animate.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap-switch.min.css}" href="../../lib/css/bootstrap-switch.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/checkbox3.min.css}" href="../../lib/css/checkbox3.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/jquery.dataTables.min.css}" href="../../lib/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/dataTables.bootstrap.css}" href="../../lib/css/dataTables.bootstrap.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/select2.min.css}" href="../../lib/css/select2.min.css">
+
+    <!-- CSS App -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/style.css}" href="../../css/style.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/themes/flat-green.css}" href="../../css/themes/flat-green.css">
+</head>
+
+<body class="flat-blue login-page" style="background: url('/assets/images/custom_bg.jpg') no-repeat center center fixed !important;">
+    <div class="container" style="text-align: center;padding:0px;">
+        <div style="margin-top: 10%">
+            <h4>请将您的个人真实信息发送到</h4>
+            <h4>追新科技企业邮箱</h4>
+            <h4>support@izhuixin.com</h4>
+        </div>
+
+        <div style="margin-top: 20%">
+            <h4>紧急联系电话</h4>
+            <h4>0571-87897558</h4>
+        </div>
+
+        <div style="position: fixed;bottom: 0px;width:100%">
+            <h5>2014-2018 @Copyright 杭州追新科技有限公司</h5>
+            <h5>浙公安备33010802007823号 浙ICP备14036419号</h5>
+        </div>
+    </div>
+    <!-- Javascript Libs -->
+    <script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.min.js}" src="../../lib/js/jquery.min.js"></script>
+    <script type="text/javascript" th:src="@{/assets/btzero/lib/js/bootstrap.min.js}" src="../../lib/js/bootstrap.min.js"></script>
+    <script type="text/javascript" th:src="@{/assets/btzero/lib/js/Chart.min.js}" src="../../lib/js/Chart.min.js"></script>
+    <script type="text/javascript" th:src="@{/assets/btzero/lib/js/bootstrap-switch.min.js}" src="../../lib/js/bootstrap-switch.min.js"></script>
+    
+    <script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.matchHeight-min.js}" src="../../lib/js/jquery.matchHeight-min.js"></script>
+    <script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.dataTables.min.js}" src="../../lib/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" th:src="@{/assets/btzero/lib/js/dataTables.bootstrap.min.js}" src="../../lib/js/dataTables.bootstrap.min.js"></script>
+    <script type="text/javascript" th:src="@{/assets/btzero/lib/js/select2.full.min.js}" src="../../lib/js/select2.full.min.js"></script>
+    <script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/ace.js}" src="../../lib/js/ace/ace.js"></script>
+    <script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/mode-html.js}" src="../../lib/js/ace/mode-html.js"></script>
+    <script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/theme-github.js}" src="../../lib/js/ace/theme-github.js"></script>
+    <!-- Javascript -->
+    <!--<script type="text/javascript" src="../../js/app.js"></script>-->
+</body>
+
+</html>

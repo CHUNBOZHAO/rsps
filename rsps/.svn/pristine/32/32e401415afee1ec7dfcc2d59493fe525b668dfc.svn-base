@@ -1,0 +1,58 @@
+package com.izhuixin.rsps.controller;
+
+import com.izhuixin.rsps.pojo.Order;
+import com.izhuixin.rsps.service.OrderMsgService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+public class OrderController {
+
+    @Autowired
+    private OrderMsgService orderMsgService;
+
+//    @RequestMapping("/test")
+//    public String test(){
+//
+//        return "test";
+//    }
+
+    /**
+     * 根据司机编号获取订单集合
+     * @param motorId
+     * @return
+     */
+    @RequestMapping("/getAllOrderByMotorId")
+    public List<Order> getAllOrderByMotorId(String motorId){
+
+        return orderMsgService.getAllOrderByMotorId(motorId);
+
+    }
+
+    /**
+     **保存订单信息
+     * @param order
+     * @return
+     */
+    @RequestMapping("/saveOrder")
+    public boolean saveOrder(@RequestBody Order order){
+
+       return orderMsgService.saveOrder(order);
+    }
+
+    /**
+     **更新签收状态
+     * @param orderId
+     * @return
+     */
+    @RequestMapping("/updateOrderStatusByOrderId")
+    public boolean updateOrderStatus(Integer orderId){
+
+        return orderMsgService.updateOrderStatus(orderId);
+    }
+
+}

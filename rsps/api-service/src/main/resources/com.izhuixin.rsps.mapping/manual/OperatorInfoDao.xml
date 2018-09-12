@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.izhuixin.rsps.dao.manual.OperatorInfoDao" >
+
+  <resultMap id="BaseResultMap" type="com.izhuixin.rsps.domain.manual.OperatorInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="operator_id" jdbcType="VARCHAR" property="operatorId" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="user_pwd" jdbcType="VARCHAR" property="userPwd" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="tel" jdbcType="VARCHAR" property="tel" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="age" jdbcType="TINYINT" property="age" />
+    <result column="sex" jdbcType="TINYINT" property="sex" />
+    <result column="company_id" jdbcType="INTEGER" property="companyId" />
+    <result column="head_url" jdbcType="VARCHAR" property="headUrl" />
+    <result column="app_session_id" jdbcType="VARCHAR" property="appSessionId" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="p_name" jdbcType="VARCHAR" property="parentName" />
+    <result column="operator_no" jdbcType="VARCHAR" property="operatorNo"/>
+    <result column="plate_number" jdbcType="VARCHAR" property="plateNumber"/>
+  </resultMap>
+
+  <!-- 通过用户名、状态获取用户数量 -->
+  <select id="getUserCountByUserName" resultType="Integer" statementType="STATEMENT">
+    select count(*) from rsps_${entCode}operator_info where user_name = '${userName}' and status = ${status}
+  </select>
+
+  <!-- 通过用户名、密码获取用户数量 -->
+  <select id="getUserCountByPwd" resultType="Integer" statementType="STATEMENT">
+    select count(*) from rsps_${entCode}operator_info where user_name = '${userName}' and user_pwd = '${userPwd}' and status = 1
+  </select>
+
+  <!-- 更新用户登录AppSessionID -->
+  <update id="updateAppSessionId" statementType="STATEMENT">
+    update rsps_${entCode}operator_info set app_session_id = '${appSessionId}' WHERE
+    user_name = '${userName}' and user_pwd = '${userPwd}'
+  </update>
+
+  <!-- 通过用户名获取用户信息 -->
+  <select id="getOperatorInfoByUserName" resultMap="BaseResultMap" statementType="STATEMENT">
+    select * from rsps_${entCode}operator_info where user_name = '${userName}' and status = 1
+    <if test="operatorType != null">
+      and type = ${operatorType}
+    </if>
+  </select>
+
+  <!-- 通过用户名称获取用户信息 -->
+  <select id="getOperatorInfoByName" resultMap="BaseResultMap" statementType="STATEMENT">
+    select * from rsps_${entCode}operator_info where name = '${name}' and status = 1
+    <if test="operatorType != null">
+      and type = ${operatorType}
+    </if>
+  </select>
+
+  <!-- 获取指定类型的用户信息 -->
+  <select id="getOperatorInfosByUserId" resultMap="BaseResultMap" statementType="STATEMENT">
+    select o.*, u.nickname as p_name from sys_user as u right join (select * from rsps_${entCode}operator_info where
+    status = 1 and user_id in
+    <foreach item="item" collection="userIds" index="index" open="(" separator="," close=")">'${item}'</foreach>
+    ) as o on u.user_id = o.user_id order by u.level, u.user_id
+  </select>
+
+  <!-- 获取指定类型的用户信息 -->
+  <select id="getOperatorInfos" resultMap="BaseResultMap" statementType="STATEMENT">
+    select * from rsps_${entCode}operator_info where status = 1
+  </select>
+
+  <!-- 保存用户信息 -->
+  <insert id="saveOperator" parameterType="com.izhuixin.rsps.domain.manual.OperatorInfo" statementType="STATEMENT">
+    insert into rsps_${entCode}operator_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="operatorInfo.operatorId != null">
+        operator_id,
+      </if>
+      <if test="operatorInfo.userName != null">
+        user_name,
+      </if>
+      <if test="operatorInfo.userPwd != null">
+        user_pwd,
+      </if>
+      <if test="operatorInfo.name != null">
+        name,
+      </if>
+      <if test="operatorInfo.tel != null">
+        tel,
+      </if>
+      <if test="operatorInfo.type != null">
+        type,
+      </if>
+      <if test="operatorInfo.createTimeStr != null">
+        create_time,
+      </if>
+      <if test="operatorInfo.modifyTimeStr != null">
+        modify_time,
+      </if>
+      <if test="operatorInfo.status != null">
+        status,
+      </if>
+      <if test="operatorInfo.age != null">
+        age,
+      </if>
+      <if test="operatorInfo.sex != null">
+        sex,
+      </if>
+      <if test="operatorInfo.companyId != null">
+        company_id,
+      </if>
+      <if test="operatorInfo.headUrl != null">
+        head_url,
+      </if>
+      <if test="operatorInfo.appSessionId != null">
+        app_session_id,
+      </if>
+      <if test="operatorInfo.appSessionId != null">
+        app_session_id,
+      </if>
+      <if test="operatorInfo.userId != null">
+        user_id,
+      </if>
+      <if test="operatorInfo.operatorNo != null">
+        operator_no,
+      </if>
+      <if test="operatorInfo.plateNumber != null">
+        plate_number,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="operatorInfo.operatorId != null">
+        '${operatorInfo.operatorId}',
+      </if>
+      <if test="operatorInfo.userName != null">
+        '${operatorInfo.userName}',
+      </if>
+      <if test="operatorInfo.userPwd != null">
+        '${operatorInfo.userPwd}',
+      </if>
+      <if test="operatorInfo.name != null">
+        '${operatorInfo.name}',
+      </if>
+      <if test="operatorInfo.tel != null">
+        '${operatorInfo.tel}',
+      </if>
+      <if test="operatorInfo.type != null">
+        ${operatorInfo.type},
+      </if>
+      <if test="operatorInfo.createTimeStr != null">
+        '${operatorInfo.createTimeStr}',
+      </if>
+      <if test="operatorInfo.modifyTimeStr != null">
+        '${operatorInfo.modifyTimeStr}',
+      </if>
+      <if test="operatorInfo.status != null">
+        ${operatorInfo.status},
+      </if>
+      <if test="operatorInfo.age != null">
+        ${operatorInfo.age},
+      </if>
+      <if test="operatorInfo.sex != null">
+        ${operatorInfo.sex},
+      </if>
+      <if test="operatorInfo.companyId != null">
+        ${operatorInfo.companyId},
+      </if>
+      <if test="operatorInfo.headUrl != null">
+        '${operatorInfo.headUrl}',
+      </if>
+      <if test="operatorInfo.appSessionId != null">
+        '${operatorInfo.appSessionId}',
+      </if>
+      <if test="operatorInfo.userId != null">
+        '${operatorInfo.userId}',
+      </if>
+      <if test="operatorInfo.operatorNo != null">
+        '${operatorInfo.operatorNo}',
+      </if>
+      <if test="operatorInfo.plateNumber != null">
+        '${operatorInfo.plateNumber}',
+      </if>
+    </trim>
+  </insert>
+
+  <!-- 更新用户信息 -->
+  <update id="updateOperatorById" parameterType="com.izhuixin.rsps.domain.manual.OperatorInfo" statementType="STATEMENT">
+    update rsps_${entCode}operator_info
+    <set>
+      <if test="operatorInfo.operatorId != null">
+        operator_id = '${operatorInfo.operatorId}',
+      </if>
+      <if test="operatorInfo.userName != null">
+        user_name = '${operatorInfo.userName}',
+      </if>
+      <if test="operatorInfo.userPwd != null">
+        user_pwd = '${operatorInfo.userPwd}',
+      </if>
+      <if test="operatorInfo.name != null">
+        name = '${operatorInfo.name}',
+      </if>
+      <if test="operatorInfo.tel != null">
+        tel = '${operatorInfo.tel}',
+      </if>
+      <if test="operatorInfo.type != null">
+        type = ${operatorInfo.type},
+      </if>
+      <if test="operatorInfo.modifyTimeStr != null">
+        modify_time = '${operatorInfo.modifyTimeStr}',
+      </if>
+      <if test="operatorInfo.status != null">
+        status = ${operatorInfo.status},
+      </if>
+      <if test="operatorInfo.age != null">
+        age = ${operatorInfo.age},
+      </if>
+      <if test="operatorInfo.sex != null">
+        sex = ${operatorInfo.sex},
+      </if>
+      <if test="operatorInfo.companyId != null">
+        company_id = ${operatorInfo.companyId},
+      </if>
+      <if test="operatorInfo.headUrl != null">
+        head_url = '${operatorInfo.headUrl}',
+      </if>
+      <if test="operatorInfo.appSessionId != null">
+        app_session_id = '${operatorInfo.appSessionId}',
+      </if>
+      <if test="operatorInfo.operatorNo != null">
+        operator_no = '${operatorInfo.operatorNo}',
+      </if>
+      <if test="operatorInfo.plateNumber != null">
+        plate_number = '${operatorInfo.plateNumber}',
+      </if>
+    </set>
+    where id = ${operatorInfo.id}
+  </update>
+
+  <!-- 通过操作人ID更新用户信息 -->
+  <update id="updateOperatorByOperatorId" parameterType="com.izhuixin.rsps.domain.manual.OperatorInfo" statementType="STATEMENT">
+    update rsps_${entCode}operator_info
+    <set>
+      <if test="operatorInfo.userName != null">
+        user_name = '${operatorInfo.userName}',
+      </if>
+      <if test="operatorInfo.userPwd != null">
+        user_pwd = '${operatorInfo.userPwd}',
+      </if>
+      <if test="operatorInfo.name != null">
+        name = '${operatorInfo.name}',
+      </if>
+      <if test="operatorInfo.tel != null">
+        tel = '${operatorInfo.tel}',
+      </if>
+      <if test="operatorInfo.type != null">
+        type = ${operatorInfo.type},
+      </if>
+      <if test="operatorInfo.modifyTimeStr != null">
+        modify_time = '${operatorInfo.modifyTimeStr}',
+      </if>
+      <if test="operatorInfo.status != null">
+        status = ${operatorInfo.status},
+      </if>
+      <if test="operatorInfo.age != null">
+        age = ${operatorInfo.age},
+      </if>
+      <if test="operatorInfo.sex != null">
+        sex = ${operatorInfo.sex},
+      </if>
+      <if test="operatorInfo.companyId != null">
+        company_id = ${operatorInfo.companyId},
+      </if>
+      <if test="operatorInfo.headUrl != null">
+        head_url = '${operatorInfo.headUrl}',
+      </if>
+      <if test="operatorInfo.appSessionId != null">
+        app_session_id = '${operatorInfo.appSessionId}',
+      </if>
+    </set>
+    where operator_id = '${operatorInfo.operatorId}'
+  </update>
+
+  <!-- 通过ID获取操作人员信息 -->
+  <select id="getInfoById" resultMap="BaseResultMap" statementType="STATEMENT">
+    select * from rsps_${entCode}operator_info where id = ${id}
+  </select>
+
+  <!-- 通过operatorId获取操作人员信息 -->
+  <select id="getInfoByOpId" resultMap="BaseResultMap" statementType="STATEMENT">
+    select * from rsps_${entCode}operator_info where operator_id = '${operatorId}'
+  </select>
+
+  <!-- 检测密码 -->
+  <select id="checkPwd" resultType="Integer" statementType="STATEMENT">
+    SELECT count(*) from rsps_${entCode}operator_info where id = ${id} and user_pwd = '${oldPwd}'
+  </select>
+
+  <!-- 更新密码 -->
+  <update id="updatePwd" statementType="STATEMENT">
+    update rsps_${entCode}operator_info set user_pwd = '${pwd}' where id = ${id}
+  </update>
+
+  <!-- 删除用户 -->
+  <delete id="deleteByid" statementType="STATEMENT">
+    delete from rsps_${entCode}operator_info where id = ${id}
+  </delete>
+
+  <!-- 检测用户AppSessionID是否有效 -->
+  <select id="checkValidAppSessionId" resultType="Integer" statementType="STATEMENT">
+    select count(*) from rsps_${entCode}operator_info where id = ${id} and app_session_id='${appSessionId}'
+  </select>
+
+  <!-- 获取操作人数量 -->
+  <select id="countOperator" resultType="Integer" statementType="STATEMENT">
+    select count(*) from rsps_${entCode}operator_info where operator_id = '${operatorId}'
+  </select>
+
+  <!-- 通过管理用户删除配送员 -->
+  <delete id="deleteByUserId" statementType="STATEMENT">
+    delete from rsps_${entCode}operator_info where user_id = '${userId}'
+  </delete>
+
+  <!--Integer checkOperatorNo(String operatorNo,String entCode);检测配送员编号是否存在-->
+  <select id="checkOperatorNo" resultType="INTEGER" statementType="STATEMENT">
+      select count(*) from rsps_${entCode}operator_info where operator_no = '${operatorNo}'
+      <if test="id != null">
+       and id != ${id}
+      </if>
+  </select>
+
+  <select id="getOperatorByNo" resultMap="BaseResultMap" statementType="STATEMENT">
+      select * from rsps_${entCode}operator_info where operator_no = '${operatorNo}'
+  </select>
+
+  <!-- 检查IMEI -->
+  <select id="checkImei" resultType="INTEGER" statementType="STATEMENT">
+    select count(*) from rsps_${entCode}operator_info where app_session_id = '${imei}'
+    <if test="userName != null">
+      and user_name = '${userName}'
+    </if>
+    <if test="operatorId != null">
+      and operator_id = '${operatorId}'
+    </if>
+  </select>
+
+  <select id="testCheck" resultType="INTEGER" statementType="STATEMENT">
+    select count(*) from rsps_operator_location
+  </select>
+
+</mapper>

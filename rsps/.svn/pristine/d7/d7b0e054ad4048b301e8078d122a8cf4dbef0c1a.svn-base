@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>RSPS管理平台</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="icon" type="image/x-icon" th:href="@{/assets/images/manager/favicon.png}">
+
+    <!-- CSS Libs -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap.min.css}" href="../../lib/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/font-awesome.min.css}" href="../../lib/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/animate.min.css}" href="../../lib/css/animate.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap-switch.min.css}" href="../../lib/css/bootstrap-switch.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/checkbox3.min.css}" href="../../lib/css/checkbox3.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/jquery.dataTables.min.css}" href="../../lib/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/dataTables.bootstrap.css}" href="../../lib/css/dataTables.bootstrap.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/select2.min.css}" href="../../lib/css/select2.min.css">
+
+    <!-- CSS App -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/style.css}" href="../../css/style.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/themes/flat-blue.css}" href="../../css/themes/flat-green.css">
+
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/css/common/status-process/status-process.css}" href="../../css/themes/flat-green.css">
+
+    <!-- jquery plugin css -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/toastr/toastr.min.css}" >
+
+</head>
+<body class="flat-blue">
+<div class="app-container">
+    <div class="row content-container">
+        <nav th:replace="manager/common/header::manager_navbar_top('总览','包装箱详情')">
+        </nav>
+        <div th:replace="manager/common/menu::manager_side_menu(800)"></div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="container-fluid">
+            <div class="side-body" style="padding-top: 10px;">
+                <div class="page-title">
+                <span class="title">"<span></span>"包装箱详情</span>
+                <!--<div class="description">A bootstrap table for display list of data.</div>-->
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <div class="title">
+                                        包装箱详情
+                                    </div>
+                                </div>
+                                <div style="float: right; padding-right: 1em;padding-top: 0.5em;">
+                                    <button type="button" class="btn btn-default" onclick="history.go(-1)">返  回</button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <table id="box_detail_list_table" class="table table-striped" cellspacing="0" width="100%" style="border-bottom: 0px;">
+                                    <tr>
+                                        <td class="col-sm-2 control-label" style="font-weight:bold;">包装箱ID</td>
+                                        <td><span th:text="${boxDetail.rfid}">123</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-sm-2 control-label" style="font-weight:bold;">包装箱型号</td>
+                                        <td><span th:text="${boxDetail.type}">123</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-sm-2 control-label" style="font-weight:bold;">所属企业</td>
+                                        <td><span th:text="${boxDetail.entName}">123</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-sm-2 control-label" style="font-weight:bold;">蓝牙地址</td>
+                                        <td><span th:text="${boxDetail.uuid}">123</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-sm-2 control-label" style="font-weight:bold;">创建时间</td>
+                                        <td><span th:text="${boxDetail.createTime}">123</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-sm-2 control-label" style="font-weight:bold;">软件版本</td>
+                                        <td><span th:text="${boxDetail.softwareVersion}">123</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-sm-2 control-label" style="font-weight:bold;">硬件版本</td>
+                                        <td><span th:text="${boxDetail.hardwareVersion}"></span></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <hr style="height:1px;border:none;border-top:1px solid #555555;" />
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <div class="title">
+                                        包装箱状态
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <table id="box_detail_list_table1" class="table table-striped" cellspacing="0" width="100%" style="border-bottom: 0px;">
+                                    <tr>
+                                        <td class="col-sm-2 control-label" style="font-weight:bold;">包装箱温度（摄氏度）</td>
+                                        <td><span th:text="${boxDetailInfo.temperature}">123</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-sm-2 control-label" style="font-weight:bold;">包装箱电压（伏）</td>
+                                        <td><span th:text="${boxDetailInfo.voltage}">123</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-sm-2 control-label" style="font-weight:bold;">包装箱最长开箱时间（秒）</td>
+                                        <td><span th:text="${boxDetailInfo.opentimeLongest}">123</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-sm-2 control-label" style="font-weight:bold;">包装箱最近开箱时间（秒）</td>
+                                        <td><span th:text="${boxDetailInfo.closetimeLongest}">123</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-sm-2 control-label" style="font-weight:bold;">包装箱最长开箱操作后持续时间（分钟）</td>
+                                        <td><span th:text="${boxDetailInfo.opentimeLast}">123</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-sm-2 control-label" style="font-weight:bold;">包装箱最近开箱操作后持续时间（分钟）</td>
+                                        <td><span th:text="${boxDetailInfo.closetimeLast}">123</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-sm-2 control-label" style="font-weight:bold;">振动次数值（次）</td>
+                                        <td><span th:text="${boxDetailInfo.vibrationCount}">123</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-sm-2 control-label" style="font-weight:bold;">设备重启次数（次）</td>
+                                        <td><span th:text="${boxDetailInfo.errcode}">123</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-sm-2 control-label" style="font-weight:bold;">当前状态</td>
+                                        <td><span th:text="${boxDetail.status}">123</span></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <hr style="height:1px;border:none;border-top:1px solid #555555;" />
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <div class="title">
+                                        包装箱参数
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <form class="form-horizontal" id="box_detail_save" th:action="@{/manager/boxBase/boxDetail/save/handle}" th:object="${boxDetailInfo}" method="post" accept-charset="utf-8">
+                                <table id="box_detail_list_table2" class="table table-striped" cellspacing="0" width="100%" style="border-bottom: 0px;">
+                                    <div class="form-group">
+                                        <label for="brcycle" class="col-sm-2"><span style="color: red">*</span>&nbsp;蓝牙广播间隔（毫秒）</label>
+                                        <div class="col-sm-10">
+                                            <input class="form-control" th:field="*{brcycle}" id="brcycle" maxlength="20" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2">可连接标志</label>
+                                        <div class="col-sm-10" style="margin-top: 5px;">
+                                            <div class="radio3 radio-check radio-success radio-inline">
+                                                <input type="radio" id="user_sex_man_radio" name="canconnect" value="0" th:checked="*{canconnect == 0}" />
+                                                <label for="user_sex_man_radio">
+                                                    关闭
+                                                </label>
+                                            </div>
+                                            <div class="radio3 radio-check radio-success radio-inline" >
+                                                <input type="radio" id="user_sex_woman_radio" name="canconnect" value="1" th:checked="*{canconnect == 1}">
+                                                <label for="user_sex_woman_radio">
+                                                    使能
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2">中断使能标志</label>
+                                        <div class="col-sm-10" style="margin-top: 5px;">
+                                            <div class="radio3 radio-check radio-success radio-inline">
+                                                <input type="radio" id="user_sex_man_radio1" name="caninterrupt" value="0" th:checked="*{caninterrupt == 0}" />
+                                                <label for="user_sex_man_radio1">
+                                                    关闭
+                                                </label>
+                                            </div>
+                                            <div class="radio3 radio-check radio-success radio-inline" >
+                                                <input type="radio" id="user_sex_woman_radio1" name="caninterrupt" value="1" th:checked="*{caninterrupt == 1}">
+                                                <label for="user_sex_woman_radio1">
+                                                    使能
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="brpower" class="col-sm-2"><span style="color: red">*</span>&nbsp;广播功率（DBM）</label>
+                                        <div class="col-sm-10">
+                                            <input class="form-control" th:field="*{brpower}" id="brpower" maxlength="16" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tempcycle" class="col-sm-2"><span style="color: red">*</span>&nbsp;温度采样间隔（分钟）</label>
+                                        <div class="col-sm-10">
+                                            <input class="form-control" th:field="*{tempcycle}" id="tempcycle" maxlength="16" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="volcycle" class="col-sm-2"><span style="color: red">*</span>&nbsp;电压采样间隔（分钟）</label>
+                                        <div class="col-sm-10">
+                                            <input class="form-control" th:field="*{volcycle}" id="volcycle" maxlength="16" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="rfidcycle" class="col-sm-2"><span style="color: red">*</span>&nbsp;RFID写参数间隔(分钟)</label>
+                                        <div class="col-sm-10">
+                                            <input class="form-control" th:field="*{rfidcycle}" id="rfidcycle" maxlength="16" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="opencheckdelay" class="col-sm-2"><span style="color: red">*</span>&nbsp;开盖检测延时时间（分钟）</label>
+                                        <div class="col-sm-10">
+                                            <input class="form-control" th:field="*{opencheckdelay}" id="opencheckdelay" maxlength="16" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="vibrationCount1" class="col-sm-2"><span style="color: red">*</span>&nbsp;震动门限次数（次）</label>
+                                        <div class="col-sm-10">
+                                            <input class="form-control" th:field="*{vibrationCount1}" id="vibrationCount1" maxlength="16" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="communicateMode" class="col-sm-2"><span style="color: red">*</span>&nbsp;通信模式</label>
+                                        <div class="col-sm-10">
+                                            <input class="form-control" th:field="*{communicateMode}" id="communicateMode" maxlength="16" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="communicateRate" class="col-sm-2"><span style="color: red">*</span>&nbsp;通信模式（倍率）</label>
+                                        <div class="col-sm-10">
+                                            <input class="form-control" th:field="*{communicateRate}" id="communicateRate" maxlength="16" />
+                                        </div>
+                                    </div>
+
+                                </table>
+                                <div class="form-group">
+                                    <div class="col-sm-offset-2 col-sm-10">
+                                        <input type="hidden" th:field="*{boxId}">
+                                        <input type="hidden" th:field="*{id}">
+                                        <input type="hidden" th:field="*{uuid}">
+                                        <button type="submit" class="btn btn-default">保存</button>
+                                    </div>
+                                </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer th:replace="manager/common/footer::manager_footer">
+    </footer>
+</div>
+
+<!-- Javascript Libs -->
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.min.js}" src="../../lib/js/jquery.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/bootstrap.min.js}" src="../../lib/js/bootstrap.min.js"></script>
+<!--<script type="text/javascript" th:src="@{/assets/btzero/lib/js/Chart.min.js}" src="../../lib/js/Chart.min.js"></script>-->
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/bootstrap-switch.min.js}" src="../../lib/js/bootstrap-switch.min.js"></script>
+
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.matchHeight-min.js}" src="../../lib/js/jquery.matchHeight-min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.dataTables.min.js}" src="../../lib/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/dataTables.bootstrap.min.js}" src="../../lib/js/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/select2.full.min.js}" src="../../lib/js/select2.full.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/ace.js}" src="../../lib/js/ace/ace.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/mode-html.js}" src="../../lib/js/ace/mode-html.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/theme-github.js}" src="../../lib/js/ace/theme-github.js"></script>
+
+<script type="text/javascript" th:src="@{/assets/echarts/echarts.common.min.js}"></script>
+
+<script type="text/javascript" th:src="@{/assets/btzero/js/app.js}" src="../../js/app.js"></script>
+<!--<script type="text/javascript" th:src="@{/assets/btzero/js/index.js}" src="../../js/index.js"></script>-->
+<!-- jQuery plugin js -->
+<script type="text/javascript" th:src="@{/assets/toastr/toastr.min.js}"></script>
+<script type="text/javascript" th:src="@{/assets/js/common/jquery.form.min.js}"></script>
+<script type="text/javascript" th:src="@{/assets/js/common/validate/jquery.validate.min.js}"></script>
+<script type="text/javascript" th:src="@{/assets/js/common/validate/message_cn.js}"></script>
+<!-- 自定义js -->
+<script type="text/javascript" th:src="@{/assets/js/manager/boxBase/box-base-detail.js}"></script>
+<script type="text/javascript" th:src="@{/assets/js/manager/header.js}"></script>
+</body>
+
+</html>

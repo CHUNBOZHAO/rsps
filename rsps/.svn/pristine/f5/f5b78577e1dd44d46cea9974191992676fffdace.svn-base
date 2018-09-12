@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.izhuixin.rsps.dao.manual.BoxRecordDao" >
+
+  <resultMap id="BaseResultMap" type="com.izhuixin.rsps.domain.manual.BoxRecordInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="rfid" jdbcType="VARCHAR" property="rfid" />
+    <result column="order_id" jdbcType="VARCHAR" property="orderId" />
+    <result column="operate_type" jdbcType="TINYINT" property="operateType" />
+    <result column="operator_id" jdbcType="VARCHAR" property="operatorId" />
+    <result column="operator" jdbcType="VARCHAR" property="operator" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="table_id" jdbcType="VARCHAR" property="tableId" />
+    <result column="exception_type" jdbcType="TINYINT" property="exceptionType" />
+    <result column="exception_desc" jdbcType="VARCHAR" property="exceptionDesc" />
+    <result column="extra_value" jdbcType="VARCHAR" property="extraValue" />
+  </resultMap>
+
+  <!-- 状态统计 -->
+  <resultMap id="StatusReportInfoMap" type="com.izhuixin.rsps.domain.manual.StatusReportInfo">
+    <result column="operate_type" jdbcType="TINYINT" property="status" />
+    <result column="count" jdbcType="TINYINT" property="count" />
+  </resultMap>
+
+  <!-- 通过订单、包装箱rfid获取包装箱流转记录 -->
+  <select id="getInfoByRfidAndOrderId" resultMap="BaseResultMap" statementType="STATEMENT">
+    select * from rsps_${entCode}box_record where 1=1
+    <if test="rfid != null">
+      and rfid = '${rfid}'
+    </if>
+    <if test="orderId != null">
+      and order_id = '${orderId}'
+    </if>
+    order by create_time desc
+  </select>
+
+  <!-- 通过包装箱rfid获取包装箱流转记录 -->
+  <select id="getInfoByRfid" resultMap="BaseResultMap" statementType="STATEMENT">
+    select * from rsps_${entCode}box_record where 1=1
+    <if test="boxId != null">
+      and rfid = '${boxId}'
+    </if>
+    <if test="orderId != null">
+      and order_id = '${orderId}'
+    </if>
+    order by id desc limit 0, ${count}
+  </select>
+
+  <!-- 获取出货量报表数据 -->
+  <select id="getShipmentReport" resultType="com.izhuixin.rsps.domain.manual.ShipmentReportInfo" statementType="STATEMENT">
+    select t.*, bi.status as boxStatus, bi.operator as currentOperator, bi.operate_time as currentOperateTime from rsps_${entCode}box_info as bi right join
+    (SELECT br.rfid as boxId, br.order_id as orderId, jo.customer as customer, jo.customer_id as customerId, br.operator as operator,
+    br.create_time as createTime FROM rsps_${entCode}box_record as br left join
+    rsps_${entCode}order as jo on br.order_id = jo.order_id where br.create_time BETWEEN '${beginTime}' and '${endTime}' and br.operate_type = 1)
+    as t on bi.rfid = t.boxId and bi.order_id = t.orderId order by t.createTime desc
+  </select>
+
+  <!-- 获取包装箱操作记录信息 -->
+  <select id="getBoxRecords" resultType="com.izhuixin.rsps.domain.manual.ShipmentReportInfo" statementType="STATEMENT">
+    select t.*, bi.status as boxStatus, bi.operator as currentOperator, bi.operate_time as currentOperateTime from rsps_${entCode}box_info as bi right join
+    (SELECT br.rfid as boxId, br.order_id as orderId, jo.customer as customer, jo.customer_id as customerId, br.operator as operator,
+    br.create_time as createTime, br.operate_type as operateType FROM rsps_${entCode}box_record as br left join
+    rsps_${entCode}order as jo on br.order_id = jo.order_id where br.create_time BETWEEN '${beginTime}' and '${endTime}' and br.operate_type != 1)
+    as t on bi.rfid = t.boxId order by t.createTime
+  </select>
+
+  <!-- 保存包装箱流转记录 -->
+  <insert id="saveBoxRecord" parameterType="com.izhuixin.rsps.domain.manual.BoxRecordInfo" statementType="STATEMENT">
+    insert into rsps_${entCode}box_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="boxRecordInfo.rfid != null">
+        rfid,
+      </if>
+      <if test="boxRecordInfo.orderId != null">
+        order_id,
+      </if>
+      <if test="boxRecordInfo.operateType != null">
+        operate_type,
+      </if>
+      <if test="boxRecordInfo.operatorId != null">
+        operator_id,
+      </if>
+      <if test="boxRecordInfo.operator != null">
+        operator,
+      </if>
+      <if test="boxRecordInfo.createTimeStr != null">
+        create_time,
+      </if>
+      <if test="boxRecordInfo.tableId != null">
+        table_id,
+      </if>
+      <if test="boxRecordInfo.exceptionType != null">
+        exception_type,
+      </if>
+      <if test="boxRecordInfo.exceptionDesc != null">
+        exception_desc,
+      </if>
+      <if test="boxRecordInfo.extraValue != null">
+        extra_value,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="boxRecordInfo.rfid != null">
+        '${boxRecordInfo.rfid}',
+      </if>
+      <if test="boxRecordInfo.orderId != null">
+        '${boxRecordInfo.orderId}',
+      </if>
+      <if test="boxRecordInfo.operateType != null">
+        ${boxRecordInfo.operateType},
+      </if>
+      <if test="boxRecordInfo.operatorId != null">
+        '${boxRecordInfo.operatorId}',
+      </if>
+      <if test="boxRecordInfo.operator != null">
+        '${boxRecordInfo.operator}',
+      </if>
+      <if test="boxRecordInfo.createTimeStr != null">
+        '${boxRecordInfo.createTimeStr}',
+      </if>
+      <if test="boxRecordInfo.tableId != null">
+        '${boxRecordInfo.tableId}',
+      </if>
+      <if test="boxRecordInfo.exceptionType != null">
+        ${boxRecordInfo.exceptionType},
+      </if>
+      <if test="boxRecordInfo.exceptionDesc != null">
+        '${boxRecordInfo.exceptionDesc}',
+      </if>
+      <if test="boxRecordInfo.extraValue != null">
+        '${boxRecordInfo.extraValue}'
+      </if>
+    </trim>
+  </insert>
+
+  <!-- 获取指定条件包装箱记录数量 -->
+  <select id="countInfo" resultType="Integer" statementType="STATEMENT">
+    select count(*) from rsps_${entCode}box_record where 1 = 1
+    <if test="rfid != null">
+      and rfid = '${rfid}'
+    </if>
+    <if test="orderId != null">
+      and order_id = '${orderId}'
+    </if>
+    <if test="operateType != null">
+      and operate_type = ${operateType}
+    </if>
+  </select>
+
+  <!-- 获取某个时间段内不同状态的操作次数 -->
+  <select id="getSectionRecord" resultMap="StatusReportInfoMap" statementType="STATEMENT">
+    SELECT operate_type, count(*) as count FROM rsps_${entCode}box_record where create_time between '${beginTime}' and '${endTime}' group by operate_type;
+  </select>
+
+  <!-- 更新指定条件包装箱记录信息 -->
+  <update id="updateBoxRecord" parameterType="com.izhuixin.rsps.domain.manual.BoxRecordInfo" statementType="STATEMENT">
+    update rsps_${entCode}box_record
+    <set>
+      <if test="boxRecordInfo.operatorId != null">
+        operator_id = '${boxRecordInfo.operatorId}',
+      </if>
+      <if test="boxRecordInfo.operator != null">
+        operator = '${boxRecordInfo.operator}',
+      </if>
+      <if test="boxRecordInfo.tableId != null">
+        table_id = '${boxRecordInfo.tableId}',
+      </if>
+      <if test="boxRecordInfo.exceptionType != null">
+        exception_type = ${boxRecordInfo.exceptionType},
+      </if>
+    </set>
+    where rfid = '${rfid}' and order_id = '${orderId}' and operate_type = ${operateType}
+  </update>
+
+
+</mapper>

@@ -1,0 +1,56 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:9100/eureka/
+server:
+  port: 10200
+  session:
+    timeout: 7200
+spring:
+  application:
+    name: manage-service
+  zipkin:
+    base-url: http://localhost:9300
+  sleuth:
+    sampler:
+      percentage: 1.0
+#  datasource:
+#    url: jdbc:mysql://121.40.204.36/rspsdb?useUnicode=true&characterEncoding=utf-8
+#    username: rspsadmin
+#    password: rsps!@#zhuixin
+#    driver-class-name: com.mysql.jdbc.Driver
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    encoding: UTF-8
+    content-type: text/html
+    mode: LEGACYHTML5  # 不进未关闭标签检查，需配合nekohtml使用
+    cache: false  # 关闭缓存，开发过程中开启
+#  redis:
+#    host: 127.0.0.1
+#    port: 6379
+#    database: 0
+#    password:
+#    timeout: 0
+#    pool:
+#      max-active: 8
+#      # 连接池最大阻塞等待时间（使用负值表示没有限制）
+#      max-wait: -1
+#      # 连接池中的最大空闲连接
+#      max-idle: 8
+#      # 连接池中的最小空闲连接
+#      min-idle: 0
+#  session:
+#    store-type: none
+endpoints.shutdown.enabled: true    #开启优雅关闭方式
+management.security.enabled: false  #关闭安全认证
+ribbon:
+  ReadTimeout: 60000
+  ConnectTimeout: 60000
+mybatis:
+  mapper-locations: classpath:com.izhuixin.rsps.mapping/**/*.xml
+  type-aliases-package: com.izhuixin.rsps.domain.*
+
+
+
+

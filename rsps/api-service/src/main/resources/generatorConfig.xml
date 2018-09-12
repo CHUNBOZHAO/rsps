@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <classPathEntry
+            location="/Users/wangdong/.m2/repository/mysql/mysql-connector-java/5.1.35/mysql-connector-java-5.1.35.jar"/>
+
+    <context id="default" targetRuntime="MyBatis3">
+        <plugin type="org.mybatis.generator.plugins.CachePlugin"/>
+        <plugin type="org.mybatis.generator.plugins.RenameExampleClassPlugin">
+            <property name="searchString" value="Example$"/>
+            <property name="replaceString" value="Criteria"/>
+        </plugin>
+        <!--<plugin type="org.mybati.generator.plugins.CaseInsensitiveLikePlugin" />-->
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
+        <plugin type="org.mybatis.generator.plugins.ToStringPlugin"/>
+        <plugin type="org.mybatis.generator.plugins.RowBoundsPlugin"/>
+
+        <!-- 屏蔽不必要的注解 -->
+        <commentGenerator>
+            <property name="suppressAllComments" value="true"/>
+            <property name="suppressDate" value="true"/>
+        </commentGenerator>
+
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://127.0.0.1:3306/rspsdb?useUnicode=true&amp;characterEncoding=utf-8&amp;autoReconnect=true&amp;failOverReadOnly=false"
+                        userId="root" password="">
+        </jdbcConnection>
+
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+
+        <javaModelGenerator targetPackage="com.izhuixin.rsps.domain.automatic" targetProject="MAVEN">
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+
+        <sqlMapGenerator targetPackage="com.izhuixin.rsps.dao.repository" targetProject="MAVEN">
+        </sqlMapGenerator>
+
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.izhuixin.rsps.mapping.automatic" targetProject="MAVEN">
+            <property name="implementationPackage" value="false" />
+            <property name="rootInterface" value="com.izhuixin.rsps.common.dba.GenericRepository" />
+        </javaClientGenerator>
+
+        <table tableName="rsps_box_base" domainObjectName="BoxBaseDO">
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+            <columnOverride column="id" javaType="Long"/>
+        </table>
+
+        <table tableName="rsps_box_info" domainObjectName="BoxInfoDO">
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+            <columnOverride column="id" javaType="Long"/>
+        </table>
+
+        <table tableName="rsps_box_record" domainObjectName="BoxRecordDO">
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+            <columnOverride column="id" javaType="Long"/>
+        </table>
+
+        <table tableName="rsps_box_location_record" domainObjectName="BoxLocationRecordDO">
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+            <columnOverride column="id" javaType="Long"/>
+        </table>
+
+        <table tableName="rsps_custom_info" domainObjectName="CustomInfoDO">
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+            <columnOverride column="id" javaType="Long"/>
+        </table>
+
+        <table tableName="rsps_custom_linker" domainObjectName="CustomLinkerDO">
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+            <columnOverride column="id" javaType="Long"/>
+        </table>
+
+        <table tableName="rsps_operator_info" domainObjectName="OperatorInfoDO">
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+            <columnOverride column="id" javaType="Long"/>
+        </table>
+
+        <table tableName="rsps_order" domainObjectName="OrderDO">
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+            <columnOverride column="id" javaType="Long"/>
+        </table>
+
+        <table tableName="rsps_order_box" domainObjectName="OrderBoxDO">
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+            <columnOverride column="id" javaType="Long"/>
+            <columnOverride column="pkg_id" javaType="Long"/>
+        </table>
+
+        <table tableName="rsps_order_driver" domainObjectName="OrderDriverDO">
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+            <columnOverride column="id" javaType="Long"/>
+        </table>
+
+        <table tableName="rsps_sys_param" domainObjectName="SystemParam">
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+            <columnOverride column="id" javaType="Long"/>
+        </table>
+
+        <table tableName="rsps_enterprise" domainObjectName="Enterprise">
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+            <columnOverride column="id" javaType="Long"/>
+        </table>
+
+        <table tableName="rsps_pad_info" domainObjectName="PadInfo">
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+            <columnOverride column="id" javaType="Long"/>
+        </table>
+
+        <table tableName="rsps_address_book" domainObjectName="AddressBook">
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+            <columnOverride column="id" javaType="Long"/>
+        </table>
+
+        <table tableName="rsps_operator_location" domainObjectName="OperatorLocation">
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+            <columnOverride column="id" javaType="Long"/>
+        </table>
+
+        <table tableName="rsps_jsapi_ticket" domainObjectName="JsApiTicket">
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+            <columnOverride column="id" javaType="Long"/>
+        </table>
+
+        <table tableName="rsps_box_type" domainObjectName="BoxType">
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+            <columnOverride column="id" javaType="Long"/>
+        </table>
+
+        <table tableName="rsps_recycle_apply_info" domainObjectName="RecycleApplyInfo">
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+            <columnOverride column="id" javaType="Long"/>
+        </table>
+
+        <table tableName="sys_user" domainObjectName="SysUser">
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+            <columnOverride column="id" javaType="Long"/>
+        </table>
+
+        <table tableName="sys_role" domainObjectName="SysRole">
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+            <columnOverride column="id" javaType="Long"/>
+        </table>
+
+        <table tableName="sys_role_user" domainObjectName="SysRoleUser">
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+            <columnOverride column="id" javaType="Long"/>
+        </table>
+
+        <table tableName="sys_permission" domainObjectName="SysPermission">
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+            <columnOverride column="id" javaType="Long"/>
+        </table>
+
+        <table tableName="sys_permission_role" domainObjectName="SysPermissionRole">
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+            <columnOverride column="id" javaType="Long"/>
+        </table>
+
+        <table tableName="sys_permission_user" domainObjectName="SysPermissionUser">
+            <generatedKey column="id" sqlStatement="MySql" identity="true" />
+            <columnOverride column="id" javaType="Long"/>
+        </table>
+
+    </context>
+</generatorConfiguration>

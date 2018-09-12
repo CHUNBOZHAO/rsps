@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" style="height: 100%">
+
+<head>
+    <title>RSPS智能包装系统</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- CSS Libs -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap.min.css}" href="../../lib/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/font-awesome.min.css}" href="../../lib/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/swiper/css/swiper.min.css}" href="../../lib/css/font-awesome.min.css">
+
+</head>
+
+<body style="height: 100%">
+<div class="container" style="padding: 0px;height: 100%">
+
+    <div class="swiper-container" style="height: 40%">
+        <div class="swiper-wrapper">
+            <!--<div class="swiper-slide" style="background-image: url('/assets/images/guide/1.jpg');background-size: cover"></div>-->
+            <!--<div class="swiper-slide" style="background-image: url('/assets/images/guide/2.jpg');background-size: cover"></div>-->
+            <div class="swiper-slide" style="background-image: url('/assets/images/guide/3.jpg');background-size: cover"></div>
+        </div>
+        <!-- Add Pagination -->
+        <div class="swiper-pagination"></div>
+    </div>
+
+    <div class="col-xs-12" style="padding: 0px;color:white;height: 60%;text-align: center">
+        <div class="col-sm-6 col-xs-6" style="height: 50%;padding: 0px;background-color: #b755be;border-top: 4px solid white;border-right:2px solid white">
+            <div id="guide_order_card" style="margin-top: 28%">
+                <img th:src="@{/assets/images/guide/guide-order.png}" style="height: 50px;margin-bottom: 10px;" /><br/>
+                <span style="font-size: 18px;">我的订单</span>
+            </div>
+        </div>
+        <!--<div class="col-sm-6 col-xs-6" style="height: 50%;padding: 0px;background-color: #3e5ed1;border-top: 4px solid white;border-left:2px solid white">-->
+            <!--<div id="guide_zx_profile" style="margin-top: 28%">-->
+                <!--<img th:src="@{/assets/images/guide/guide-zx.png}" style="height: 50px;margin-bottom: 10px;" /><br/>-->
+                <!--<span style="font-size: 18px;">追新科技</span>-->
+            <!--</div>-->
+        <!--</div>-->
+        <div class="col-sm-6 col-xs-6" style="height: 50%;padding: 0px;background-color: #3e5ed1;border-top: 4px solid white;border-left:2px solid white">
+            <div id="guide_place_order" style="margin-top: 28%">
+                <img th:src="@{/assets/images/guide/guide-order-place.png}" style="height: 50px;margin-bottom: 10px;" /><br/>
+                <span style="font-size: 18px;">我要下单</span>
+            </div>
+        </div>
+        <!--<div class="col-sm-6 col-xs-6" style="height: 50%;padding: 0px;background-color: #3e5ed1;border-top: 4px solid white;border-left:2px solid white">-->
+            <!--<div id="guide_logistics_card" style="margin-top: 28%">-->
+                <!--<img th:src="@{/assets/images/guide/guide-intl.png}" style="height: 50px;margin-bottom: 10px;" /><br/>-->
+                <!--<span style="font-size: 18px;">英特物流</span>-->
+            <!--</div>-->
+        <!--</div>-->
+        <div class="col-sm-6 col-xs-6" style="height: 50%;padding: 0px;background-color: #203ca4;border-top: 4px solid white;border-right:2px solid white">
+            <div id="guide_bloc_card" style="margin-top: 28%">
+                <img th:src="@{/assets/images/guide/guide-intl.png}" style="height: 50px;margin-bottom: 10px;" /><br/>
+                <span style="font-size: 18px;">典型案例</span><br/>
+                <span style="font-size: 16px;">(英特集团)</span>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xs-6" style="height: 50%;padding: 0px;background-color: #2eba2b;border-top: 4px solid white;border-left:2px solid white">
+            <div id="guide_rsps_profile_card" style="margin-top: 28%">
+                <img th:src="@{/assets/images/guide/guide-rsps.png}" style="height: 50px;margin-bottom: 10px;" /><br/>
+                <span style="font-size: 18px;">RSPS简介</span>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<!-- Javascript Libs -->
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.min.js}" src="../../lib/js/jquery.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/bootstrap.min.js}" src="../../lib/js/bootstrap.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/swiper/js/swiper.min.js}" src="../../lib/js/bootstrap.min.js"></script>
+
+
+<!-- Javascript -->
+<script type="text/javascript" th:src="@{/assets/js/custom/guide.js}"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,46 @@
+package com.izhuixin.rsps.controller;
+
+import com.izhuixin.rsps.common.ManagerUserDetail;
+import com.izhuixin.rsps.common.dao.BoxInfo;
+import com.izhuixin.rsps.service.BoxInfoService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import javax.servlet.http.HttpServletRequest;
+
+@Controller
+@RequestMapping("location")
+public class ManagerLocationController {
+
+    @Autowired
+    private BoxInfoService boxInfoService;
+
+    /**
+     * 显示包装箱位置信息
+     * @param boxId
+     * @return
+     */
+    @RequestMapping("/box/show")
+    public String showBoxLocation(ModelMap modelMap, HttpServletRequest request, String boxId) {
+        ManagerUserDetail userDetail = (ManagerUserDetail) request.getSession().getAttribute("user");
+        BoxInfo boxInfo = boxInfoService.getBoxInfoByRfid(boxId, userDetail.getEntCode().concat("_"));
+
+        if (boxInfo.getDuLongitude() == null ||
+                boxInfo.getDuLatitude() == null ||
+                boxInfo.getDuLatitude() == 0.0 ||
+                boxInfo.getDuLongitude() == 0.0) {
+            modelMap.put("longitude", 119.529304);
+            modelMap.put("latitude", 29.140542);
+        } else {
+            modelMap.put("longitude", boxInfo.getDuLongitude());
+            modelMap.put("latitude", boxInfo.getDuLatitude());
+        }
+
+        modelMap.put("boxId", boxId);
+
+        return "manager/box/box_location";
+    }
+
+}

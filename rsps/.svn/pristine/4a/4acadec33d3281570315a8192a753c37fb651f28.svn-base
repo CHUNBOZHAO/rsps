@@ -1,0 +1,114 @@
+package com.izhuixin.rsps.domain;
+
+public class AppPushBoxInfo {
+
+    /** rfid */
+    private String rfid;
+
+    /** 条形码 */
+    private String barcode;
+
+    /** 订单ID */
+    private String orderId;
+
+    /** 包装箱状态 */
+    private Byte status;
+
+    /** 操作人ID */
+    private String operatorId;
+
+    /** 操作人 */
+    private String operator;
+
+    /** 操作时间 */
+    private Long operateTime;
+
+    /** 异常类型 */
+    private Byte exceptionType;
+
+    /** 异常描述 */
+    private String exceptionDesc;
+
+    /** 包裹签收状态 */
+    private Byte signStatus;
+
+    public String getRfid() {
+        return rfid;
+    }
+
+    public void setRfid(String rfid) {
+        this.rfid = rfid;
+    }
+
+    public String getBarcode() {
+        return barcode;
+    }
+
+    public void setBarcode(String barcode) {
+        this.barcode = barcode;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
+    public Byte getStatus() {
+        return status;
+    }
+
+    public void setStatus(Byte status) {
+        this.status = status;
+    }
+
+    public String getOperatorId() {
+        return operatorId;
+    }
+
+    public void setOperatorId(String operatorId) {
+        this.operatorId = operatorId;
+    }
+
+    public String getOperator() {
+        return operator;
+    }
+
+    public void setOperator(String operator) {
+        this.operator = operator;
+    }
+
+    public Long getOperateTime() {
+        return operateTime;
+    }
+
+    public void setOperateTime(Long operateTime) {
+        this.operateTime = operateTime;
+    }
+
+    public Byte getExceptionType() {
+        return exceptionType;
+    }
+
+    public void setExceptionType(Byte exceptionType) {
+        this.exceptionType = exceptionType;
+    }
+
+    public Byte getSignStatus() {
+        return signStatus;
+    }
+
+    public void setSignStatus(Byte signStatus) {
+        this.signStatus = signStatus;
+    }
+
+    public String getExceptionDesc() {
+        return exceptionDesc;
+    }
+
+    public void setExceptionDesc(String exceptionDesc) {
+        this.exceptionDesc = exceptionDesc;
+    }
+}

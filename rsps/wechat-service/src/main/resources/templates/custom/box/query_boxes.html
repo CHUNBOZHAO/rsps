@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<!-- 当前订单 -->
+<div th:unless="${isEmpty}" th:each="box:${currentBoxes}" class="row no-gap current-order" th:attr="boxId=${box.rfid},orderId=${box.orderId},orderType=1,orderStatus=${box.status}" style="width: 100%;border-bottom: 1px solid #dcdcdc;padding-left: 5px;cursor: pointer">
+    <div class="col-lg-12 col-xs-12" style="margin-top: 15px;margin-bottom: 0px;">
+        <div th:if="${box.direction} == 1" style="position: absolute;height: 25px;width: 25px;border-radius: 15px;top: 3px;right: 3px;text-align: center;line-height: 25px;background-color: #2caef5;color: white">
+            <span>寄</span>
+        </div>
+        <div th:if="${box.direction} == 2" style="position: absolute;height: 25px;width: 25px;border-radius: 15px;top: 3px;right: 3px;text-align: center;line-height: 25px;background-color: #ff2702;color: white">
+            <span>收</span>
+        </div>
+        <div style="color: #9e9e9e;">
+            <span>订单号:</span><span th:text="${box.orderId}">1000123132</span><br/>
+            <span>创建时间：</span><span th:text="${#dates.format(box.createTime, 'yyyy-MM-dd HH:mm')}"></span><br/>
+            <span>状态：</span><span th:text="${box.statusDescr}">出库</span><br/>
+        </div>
+        <div style="padding: 15px 0px;text-align: center;min-height: 50px;font-size: 1.2em;">
+            <div style="width: 40%;float: left;padding-bottom: 10px;">
+                <span th:if="${box.senderArea}" th:text="${box.senderArea}" style="font-size: 1.2em"></span><br th:if="${box.senderArea}" />
+                <span th:text="${box.sender}" style="color: #696969"></span>
+            </div>
+            <div style="width: 20%;float: left;">
+                <span class="fa fa-long-arrow-right"></span>
+            </div>
+            <div style="width: 40%;float: left;padding-bottom: 10px;">
+                <span th:if="${box.receiverArea}" th:text="${box.receiverArea}" style="font-size: 1.2em"></span><br th:if="${box.receiverArea}" />
+                <span th:text="${box.receiver}" style="color: #696969"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 历史订单 -->
+<div th:unless="${isEmpty}" th:each="box:${historyBoxes}" class="row no-gap history-order" th:attr="boxId=${box.rfid},orderId=${box.orderId},orderType=2,orderStatus=${box.status}" style="width: 100%;border-bottom: 1px solid #dcdcdc;padding-left: 5px;cursor: pointer">
+    <div class="col-lg-12 col-xs-12" style="margin-top: 15px;margin-bottom: 0px;">
+        <div th:if="${box.direction} == 1" style="position: absolute;height: 25px;width: 25px;border-radius: 15px;top: 3px;right: 3px;text-align: center;line-height: 25px;background-color: #2caef5;color: white">
+            <span>寄</span>
+        </div>
+        <div th:if="${box.direction} == 2" style="position: absolute;height: 25px;width: 25px;border-radius: 15px;top: 3px;right: 3px;text-align: center;line-height: 25px;background-color: #ff2702;color: white">
+            <span>收</span>
+        </div>
+        <div style="color: #9e9e9e;">
+            <span>订单号:</span>
+            <span th:text="${box.orderId}">1000123132</span><br/>
+            <span>状态：</span>
+            <span th:if="${box.signStatus == 1}" >已签收</span>
+            <span th:if="${box.signStatus == 2}" style="color: red">拒绝签收</span>
+            <br/>
+            <span>签收日期：</span><span th:text="${#dates.format(box.operateTime, 'yyyy-MM-dd HH:mm')}">2017年8月9日</span><br/>
+        </div>
+        <div style="padding: 15px 0px;text-align: center;min-height: 50px;font-size: 1.2em;">
+            <div style="width: 40%;float: left">
+                <span th:text="${box.sender}"></span>
+            </div>
+            <div style="width: 20%;float: left;">
+                <span class="fa fa-long-arrow-right"></span>
+            </div>
+            <div style="width: 40%;float: left">
+                <span th:text="${box.receiver}"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<span th:if="${isEmpty}">未找到订单信息</span>
+
+</html>

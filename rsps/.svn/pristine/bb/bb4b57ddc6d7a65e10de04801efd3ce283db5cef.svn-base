@@ -1,0 +1,328 @@
+package com.izhuixin.rsps.controller;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.izhuixin.rsps.common.dao.BoxStatusReportInfo;
+import com.izhuixin.rsps.common.vo.web.DataEfficiency;
+import com.izhuixin.rsps.common.vo.web.EntRankingVO;
+import com.izhuixin.rsps.common.vo.web.EnterpriseAndUserInfo;
+import com.izhuixin.rsps.service.DataService;
+import com.izhuixin.rsps.service.EnterpriseAndUserService;
+import org.HdrHistogram.DoubleLinearIterator;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+@Controller
+@RequestMapping("/operation")
+public class ManagerOperationController {
+
+    @Autowired
+    private DataService dataService;
+
+    @Autowired
+    private EnterpriseAndUserService enterpriseAndUserService;
+
+    @RequestMapping("/show")
+    public String showOperation(ModelMap map){
+
+        List<EnterpriseAndUserInfo> enterpriseAndUserInfo = enterpriseAndUserService.getAllEnterpriseAndUserInfo();
+
+        String defaultEndDate = new DateTime().toString("yyyy-MM-dd");
+        String defalutBeginDate = new DateTime().minusDays(7).toString("yyyy-MM-dd");
+
+        List<DataEfficiency> efficiency = dataService.getEfficiency("0", 3, new DateTime().minusDays(30).toString("yyyy-MM-dd"), new DateTime().toString("yyyy-MM-dd"));
+
+        List<Double>  idles = new ArrayList<>();
+        List<Double>  turns = new ArrayList<>();
+        List<Double>  loses = new ArrayList<>();
+        List<Double>  overdues = new ArrayList<>();
+
+        double idleTotal = 0;
+        double turnTotal = 0;
+        double loseTotal = 0;
+        double overDueTotal = 0;
+
+        for (DataEfficiency dataEfficiency: efficiency) {
+            double idleRate = dataEfficiency.getIdleRate();
+            double turnoverRate = dataEfficiency.getTurnoverRate();
+            double loseRate = dataEfficiency.getLoseRate();
+            double overdueRate = dataEfficiency.getOverdueRate();
+            idles.add(idleRate);
+            turns.add(turnoverRate);
+            loses.add(loseRate);
+            overdues.add(overdueRate);
+        }
+
+        for(int i = 0;i<idles.size();i++){
+            idleTotal = idleTotal + idles.get(i);
+        }
+        for(int i = 0;i<turns.size();i++){
+            turnTotal = turnTotal + turns.get(i);
+        }
+        for(int i = 0;i<loses.size();i++){
+            loseTotal = loseTotal + loses.get(i);
+        }
+        for(int i = 0;i<overdues.size();i++){
+            overDueTotal = overDueTotal + overdues.get(i);
+        }
+        //=========================同比，环比========================
+        List<DataEfficiency> efficiencyYear = dataService.getEfficiency("0", 4, new DateTime().minusYears(1).toString("yyyy-MM-dd"), new DateTime().toString("yyyy-MM-dd"));
+        List<DataEfficiency> efficiencyMonth = dataService.getEfficiency("0", 3, new DateTime().minusMonths(1).toString("yyyy-MM-dd"), new DateTime().toString("yyyy-MM-dd"));
+
+        //闲置率
+        double compareCurrentIdle = (efficiencyYear.get(efficiencyYear.size()).getIdleRate() - efficiencyYear.get(0).getIdleRate())/efficiencyYear.get(0).getIdleRate();
+        double compareLastIdle = (efficiencyMonth.get(efficiencyMonth.size()).getIdleRate() - efficiencyMonth.get(0).getIdleRate()) / efficiencyMonth.get(0).getIdleRate();
+        //周转率
+        double compareCurrentTurn = (efficiencyYear.get(efficiencyYear.size()).getTurnoverRate() - efficiencyYear.get(0).getTurnoverRate())/efficiencyYear.get(0).getTurnoverRate();
+        double compareLastTurn = (efficiencyMonth.get(efficiencyMonth.size()).getTurnoverRate() - efficiencyMonth.get(0).getTurnoverRate()) / efficiencyMonth.get(0).getTurnoverRate();
+
+        //遗失率
+        double compareCurrentLose = (efficiencyYear.get(efficiencyYear.size()).getLoseRate() - efficiencyYear.get(0).getLoseRate())/efficiencyYear.get(0).getLoseRate();
+        double compareLastLose = (efficiencyMonth.get(efficiencyMonth.size()).getLoseRate() - efficiencyMonth.get(0).getLoseRate()) / efficiencyMonth.get(0).getLoseRate();
+
+        //过期率
+        double compareCurrentOverdue = (efficiencyYear.get(efficiencyYear.size()).getOverdueRate() - efficiencyYear.get(0).getOverdueRate())/efficiencyYear.get(0).getOverdueRate();
+        double compareLastOverdue = (efficiencyMonth.get(efficiencyMonth.size()).getOverdueRate() - efficiencyMonth.get(0).getOverdueRate()) / efficiencyMonth.get(0).getOverdueRate();
+
+        //======================数量======================
+
+        for (EnterpriseAndUserInfo enterpriseAndUserInfo2:enterpriseAndUserInfo) {
+
+        }
+
+        // ==========================计算排名========================================
+
+
+        List<EntRankingVO> rankingVOS = new ArrayList<EntRankingVO>();
+
+        for (EnterpriseAndUserInfo enterpriseAndUserInfo1 : enterpriseAndUserInfo) {
+
+            List<Double> n = new ArrayList<>();
+            double ntotal = 0;
+            List<DataEfficiency> efficiencyEnt = dataService.getEfficiency(enterpriseAndUserInfo1.getEntId(), 1, new DateTime().minusDays(30).toString("yyyy-MM-dd"), new DateTime().toString("yyyy-MM-dd"));
+
+            for (DataEfficiency dataEfficiencyEnt: efficiencyEnt) {
+                double m = dataEfficiencyEnt.getIdleRate();
+                n.add(m);
+            }
+            for(int i = 0;i<n.size();i++){
+                ntotal = ntotal + n.get(i);
+            }
+            EntRankingVO entRankingVO = new EntRankingVO();
+            DecimalFormat format = new DecimalFormat("0.00%");
+            entRankingVO.setEntId(enterpriseAndUserInfo1.getEntId());
+            entRankingVO.setEntName(enterpriseAndUserInfo1.getEntName());
+            entRankingVO.setIdleRate(ntotal/n.size());
+            entRankingVO.setIdleRateVO(format.format(ntotal/n.size()));
+
+            rankingVOS.add(entRankingVO);
+
+        }
+        System.out.println(rankingVOS.get(0));
+        Collections.sort(rankingVOS, new Comparator<EntRankingVO>(){
+
+            /*
+             * int compare(Student o1, Student o2) 返回一个基本类型的整型，
+             * 返回负数表示：o1 小于o2，
+             * 返回0 表示：o1和o2相等，
+             * 返回正数表示：o1大于o2。
+             */
+            public int compare(EntRankingVO o1, EntRankingVO o2) {
+
+                //按照学生的年龄进行升序排列
+                if(o1.getIdleRate()>o2.getIdleRate()){
+                    return -1;
+                }
+                if(o1.getIdleRate() == o2.getIdleRate()){
+                    return 0;
+                }
+                return 1;
+            }
+        });
+        System.out.println("排序后："+rankingVOS.get(0));
+
+
+        map.put("defaultBeginDate",defalutBeginDate);
+        map.put("defaultEndDate",defaultEndDate);
+        map.put("idle_rate",(idleTotal/idles.size())*100+"%");
+        map.put("idle_rate_compareCurrent",compareCurrentIdle);
+        map.put("idle_rate_compareLast",compareLastIdle);
+        map.put("idle_count",11);
+
+        map.put("turnover_rate",(turnTotal/turns.size())*100+"%");
+        map.put("turnover_rate_compareCurrent",compareCurrentTurn);
+        map.put("turnover_rate_compareLast",compareLastTurn);
+        map.put("turnover_count",11);
+
+        map.put("lose_rate",(loseTotal/loses.size())*100+"%");
+        map.put("lose_rate_compareCurrent",compareCurrentLose);
+        map.put("lost_rate_compareLast",compareLastLose);
+        map.put("lost_count",11);
+
+        map.put("overdue_rate",(overDueTotal/overdues.size())*100+"%");
+        map.put("overdue_rate_compareCurrent",compareCurrentOverdue);
+        map.put("overdue_rate_compareLast",compareLastOverdue);
+        map.put("overdue_count",11);
+
+        //总体
+
+        map.put("rankingVOS",rankingVOS);
+
+
+        return "manager/operation";
+    }
+    /**
+     * 获取最近30天的月闲置率，周转率，遗失率，和过期率
+     * @return
+     */
+    @RequestMapping("/getMonthChartData")
+    @ResponseBody
+    public String getChartData(HttpServletRequest request){
+
+        JsonObject jo = new JsonObject();
+//        //获取
+//        if(request.getParameter("type") == null || request.getParameter("type").equals("month")){
+//
+            JsonArray xAxisDataJa = new JsonArray();
+            JsonArray seriesDataJa = new JsonArray();
+
+            JsonArray bindNumJa = new JsonArray();
+//
+//            List<String> times = new ArrayList<>();
+//            times.add(new DateTime().minusDays(1).toString("MM月dd日"));
+//            times.add(new DateTime().minusDays(2).toString("MM月dd日"));
+//            times.add(new DateTime().minusDays(3).toString("MM月dd日"));
+//            times.add(new DateTime().minusDays(4).toString("MM月dd日"));
+//            times.add(new DateTime().minusDays(5).toString("MM月dd日"));
+//            times.add(new DateTime().minusDays(6).toString("MM月dd日"));
+//            times.add(new DateTime().minusDays(7).toString("MM月dd日"));
+//            times.add(new DateTime().minusDays(8).toString("MM月dd日"));
+//            times.add(new DateTime().minusDays(9).toString("MM月dd日"));
+//            times.add(new DateTime().minusDays(10).toString("MM月dd日"));
+//
+//            List<Integer> idles = new ArrayList<Integer>();
+//            idles.add(10);
+//            idles.add(20);
+//            idles.add(30);
+//            idles.add(40);
+//            idles.add(40);
+//            idles.add(40);
+//            idles.add(50);
+//            idles.add(60);
+//            idles.add(70);
+//            idles.add(80);
+//
+//            for (String s : times) {
+//                xAxisDataJa.add(s);
+//            }
+//            for (Integer d :idles){
+//                bindNumJa.add(d);
+//            }
+//
+//            // 平均值对象
+//            JsonObject averageDataJo = new JsonObject();
+//            JsonArray averageJaItem = new JsonArray();
+//            JsonObject averageJoItem = new JsonObject();
+//            averageJoItem.addProperty("type", "average");
+//            averageJoItem.addProperty("name", "平均值");
+//            averageJaItem.add(averageJoItem);
+//            averageDataJo.add("data", averageJaItem);
+//
+//            // 配货
+//            JsonObject seriesBindingNumDataJo = new JsonObject();
+//            seriesBindingNumDataJo.addProperty("name", "闲置率");
+//            seriesBindingNumDataJo.addProperty("type", "bar");
+//            seriesBindingNumDataJo.add("data", bindNumJa);
+//            seriesBindingNumDataJo.add("markLine", averageDataJo);
+//
+//            seriesDataJa.add(seriesBindingNumDataJo);
+//
+//
+//            jo.add("xAxisData", xAxisDataJa);
+//            jo.add("seriesData", seriesDataJa);
+//        }
+
+        String type = request.getParameter("type");
+        String effi = request.getParameter("effi");
+
+        if(effi==null||effi.equals("idle")){
+            List<DataEfficiency> efficiency = dataService.getEfficiency(null, 1, new DateTime().minusDays(30).toString("yyyy-MM-dd"), new DateTime().toString("yyyy-MM-dd"));
+
+            for (DataEfficiency dataEfficiency:efficiency) {
+                double idleRate = dataEfficiency.getIdleRate();
+                xAxisDataJa.add(new DateTime(dataEfficiency.getGenerateDate()).toString("MM-dd"));
+                bindNumJa.add(idleRate*100);
+            }
+        }else if(effi.equals("turnover")){
+            List<DataEfficiency> efficiency = dataService.getEfficiency(null, 1, new DateTime().minusDays(30).toString("yyyy-MM-dd"), new DateTime().toString("yyyy-MM-dd"));
+
+            for (DataEfficiency dataEfficiency:efficiency) {
+                double idleRate = dataEfficiency.getTurnoverRate();
+                xAxisDataJa.add(new DateTime(dataEfficiency.getGenerateDate()).toString("MM-dd"));
+                bindNumJa.add(idleRate*100);
+            }
+
+        }else if(effi.equals("lose")){
+            List<DataEfficiency> efficiency = dataService.getEfficiency(null, 1, new DateTime().minusDays(30).toString("yyyy-MM-dd"), new DateTime().toString("yyyy-MM-dd"));
+
+            for (DataEfficiency dataEfficiency:efficiency) {
+                double idleRate = dataEfficiency.getLoseRate();
+                xAxisDataJa.add(new DateTime(dataEfficiency.getGenerateDate()).toString("MM-dd"));
+                bindNumJa.add(idleRate*100);
+            }
+        }else if(effi.equals("overdue")){
+            List<DataEfficiency> efficiency = dataService.getEfficiency(null, 1, new DateTime().minusDays(30).toString("yyyy-MM-dd"), new DateTime().toString("yyyy-MM-dd"));
+
+            for (DataEfficiency dataEfficiency:efficiency) {
+                double idleRate = dataEfficiency.getOverdueRate();
+                xAxisDataJa.add(new DateTime(dataEfficiency.getGenerateDate()).toString("MM-dd"));
+                bindNumJa.add(idleRate*100);
+            }
+        }
+
+        // 平均值对象
+        JsonObject averageDataJo = new JsonObject();
+        JsonArray averageJaItem = new JsonArray();
+        JsonObject averageJoItem = new JsonObject();
+        averageJoItem.addProperty("type", "average");
+        averageJoItem.addProperty("name", "平均值");
+        averageJaItem.add(averageJoItem);
+        averageDataJo.add("data", averageJaItem);
+
+        //%
+        JsonObject jsonObject1 = new JsonObject();
+        jsonObject1.addProperty("formatter","{c}%");
+        JsonObject jsonObject2 = new JsonObject();
+        jsonObject2.addProperty("","");
+
+        // 配货
+        JsonObject seriesBindingNumDataJo = new JsonObject();
+        seriesBindingNumDataJo.addProperty("name", "闲置率");
+        seriesBindingNumDataJo.addProperty("type", "bar");
+        seriesBindingNumDataJo.add("data", bindNumJa);
+        seriesBindingNumDataJo.add("markLine", averageDataJo);
+
+
+
+
+        seriesDataJa.add(seriesBindingNumDataJo);
+
+        jo.add("xAxisData", xAxisDataJa);
+        jo.add("seriesData", seriesDataJa);
+
+        return jo.toString();
+    }
+
+
+}

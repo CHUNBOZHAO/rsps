@@ -1,0 +1,335 @@
+package com.izhuixin.rsps.service.impl;
+
+import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
+import com.izhuixin.rsps.common.constant.OperateType;
+import com.izhuixin.rsps.common.dba.AbstractCrudService;
+import com.izhuixin.rsps.common.dba.FilterExample;
+import com.izhuixin.rsps.common.vo.web.BoxBaseInfoVO;
+import com.izhuixin.rsps.common.vo.web.BoxFlowRecordVO;
+import com.izhuixin.rsps.common.vo.web.DataTableReqDataVO;
+import com.izhuixin.rsps.common.vo.web.DataTableResDataVO;
+import com.izhuixin.rsps.dao.manual.*;
+import com.izhuixin.rsps.domain.automatic.BoxBaseDO;
+import com.izhuixin.rsps.domain.manual.BoxBaseInfo;
+import com.izhuixin.rsps.domain.manual.BoxRecordInfo;
+import com.izhuixin.rsps.service.BoxBaseService;
+import com.izhuixin.rsps.service.BoxInfoService;
+import com.izhuixin.rsps.service.BoxRecordService;
+import com.izhuixin.rsps.service.EnterpriseService;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+@Service
+public class BoxBaseServiceImpl extends AbstractCrudService<BoxBaseDO> implements BoxBaseService {
+
+    @Autowired
+    private EnterpriseService enterpriseService;
+    @Autowired
+    private BoxBaseDao boxBaseDao;
+    @Autowired
+    private EnterpriseDao enterpriseDao;
+    @Autowired
+    private BoxTypeDao boxTypeDao;
+    @Autowired
+    private BoxInfoService boxInfoService;
+    @Autowired
+    private BoxInfoDao boxInfoDao;
+    @Autowired
+    private BoxRecordService boxRecordService;
+    @Autowired
+    private BoxRecordDao boxRecordDao;
+    @Autowired
+    private BoxDetailDao boxDetailDao;
+
+    private static Date t1 = null;
+    /**
+     * 通过boxId获取rfid(epcId)
+     * @param rfid -- epcId或tid
+     * @return
+     */
+    @Override
+    public String getBoxId(String rfid) {
+        String boxId = "";
+
+        FilterExample fe = new FilterExample();
+        FilterExample.Criteria criteria = fe.createCriteria();
+        criteria.andFieldEqualTo("epc", rfid);
+        fe.or().andFieldEqualTo("tid", rfid);
+
+        try {
+            Optional<BoxBaseDO> optional = get(fe);
+            if (optional.isPresent()) {
+                boxId = optional.get().getRfid();
+            }
+        } catch (Exception e) {
+            logger.error(String.format("通过包装箱ID(%s)获取rfid出现异常", rfid), e);
+        }
+        return boxId;
+    }
+
+    /**
+     * 通过Ble获取boxId
+     * @param bleMac
+     * @return
+     */
+    @Override
+    public String getBoxIdByBle(String bleMac) {
+        String boxId = "";
+
+        FilterExample fe = new FilterExample();
+        fe.createCriteria().andFieldEqualTo("uuid", bleMac);
+        try {
+            Optional<BoxBaseDO> optional = get(fe);
+            if (optional.isPresent()) {
+                boxId = optional.get().getRfid();
+            }
+        } catch (Exception e) {
+            logger.error(String.format("通过包装箱bleMac(%s)获取boxId出现异常", bleMac), e);
+        }
+        return boxId;
+    }
+
+    /**
+     * 通过包装箱ID获取TID -- 以后boxId是系统自动生成的ID
+     * @param boxId
+     * @return
+     */
+    @Override
+    public String getTidFromBoxId(String boxId) {
+        String tid = "";
+        FilterExample fe = new FilterExample();
+        fe.createCriteria().andFieldEqualTo("rfid", boxId);
+        try {
+            Optional<BoxBaseDO> optional = get(fe);
+            if (optional.isPresent()) {
+                tid = optional.get().getTid();
+            }
+        } catch (Exception e) {
+            logger.error(String.format("通过包装箱ID(%s)获取tid出现异常", boxId), e);
+        }
+        return tid;
+    }
+
+    /**
+     * 获取rfid -- tid的Map集合
+     * @param entCode
+     * @return
+     */
+    @Override
+    public Map<String, String> getBoxIdMap(String entCode) {
+
+        String entId = enterpriseService.getEntIdByEntCode(entCode.replaceAll("_",""));
+        FilterExample fe = new FilterExample();
+        FilterExample.Criteria criteria = fe.createCriteria();
+        if (StringUtils.isNotBlank(entId)) {
+            criteria.andFieldEqualTo("ent_id", entId);
+        }
+        List<BoxBaseDO> baseDOList = getList(fe);
+        Map<String, String> idMap = Maps.newHashMap();
+        for (BoxBaseDO item : baseDOList) {
+            idMap.put(item.getRfid(), item.getTid());
+        }
+        return idMap;
+    }
+
+    @Override
+    public List<BoxBaseInfoVO> getAllBoxBase() {
+       List<BoxBaseInfoVO> boxBaseInfoVOS = new ArrayList<>();
+       SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+       try{
+           List<BoxBaseInfo> boxBaseInfos = boxBaseDao.getAllBoxBaseInfo();
+           for (BoxBaseInfo boxBaseInfo :boxBaseInfos) {
+               BoxBaseInfoVO boxBaseInfoVO = new BoxBaseInfoVO();
+               boxBaseInfoVO.setId(boxBaseInfo.getId());
+               boxBaseInfoVO.setRfid(boxBaseInfo.getRfid());
+               boxBaseInfoVO.setType(boxBaseInfo.getType());
+               boxBaseInfoVO.setEntName(enterpriseDao.getEnterpriseInfoByEntId(boxBaseInfo.getEntId()).getEntName());
+               boxBaseInfoVO.setUuid(boxBaseInfo.getUuid());
+               boxBaseInfoVO.setCreateTime(simpleDateFormat.format(boxBaseInfo.getCreateTime()));
+               boxBaseInfoVO.setSoftwareVersion(boxBaseInfo.getSoftwareVersion());
+               boxBaseInfoVO.setHardwareVersion(boxBaseInfo.getHardwareVersion());
+               boxBaseInfoVOS.add(boxBaseInfoVO);
+           }
+       }catch (Exception e){
+           logger.error(String.format("获取包装箱错误", ""), e);
+       }
+
+        return boxBaseInfoVOS;
+    }
+
+    @Override
+    public boolean saveBox(BoxBaseInfoVO boxBaseInfoVO){
+
+        boolean flag = false;
+        try{
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            BoxBaseInfo boxBaseInfo = new BoxBaseInfo();
+            boxBaseInfo.setId(boxBaseInfoVO.getId());
+            boxBaseInfo.setRfid(boxBaseInfoVO.getRfid());
+            boxBaseInfo.setType(boxBaseInfoVO.getType());
+            boxBaseInfo.setEntId(enterpriseDao.getEnterpriseInfoByEntName(boxBaseInfoVO.getEntName()).getEntId());
+            boxBaseInfo.setUuid(boxBaseInfoVO.getUuid());
+            boxBaseInfo.setCreateTime(simpleDateFormat.parse(boxBaseInfoVO.getCreateTime()));
+            boxBaseInfo.setSoftwareVersion(boxBaseInfoVO.getSoftwareVersion());
+            boxBaseInfo.setHardwareVersion(boxBaseInfoVO.getHardwareVersion());
+            Integer id = boxBaseInfo.getId();
+            if(id==null){
+                //保存
+                boxBaseDao.saveBox(boxBaseInfo);
+            }else {
+                //编辑
+                boxBaseDao.updateBox(boxBaseInfo);
+            }
+            flag = true;
+        }catch (Exception e){
+            logger.error(String.format("保存包装箱失败(%s)",boxBaseInfoVO.getId()),e);
+        }
+
+        return flag;
+    }
+
+    @Override
+    public boolean checkRfid(String rfid, Integer id) {
+        boolean flag = false;
+        try{
+            if(id==null){
+                //保存时校验重名
+                if(boxBaseDao.checkRfidForSave(rfid)>=1){
+                    flag = true;
+                }
+            }else{
+                //编辑时校验重名
+                if(boxBaseDao.checkRfidForUpdate(rfid,id)>=1){
+                    flag = true;
+                }
+            }
+
+        }catch (Exception e){
+            logger.error(String.format("校验失败(%s)",rfid+" "+id),e);
+        }
+
+
+        return flag;
+    }
+
+    @Override
+    public boolean deleteBox(String id) {
+        return boxBaseDao.deleteBox(id);
+    }
+
+    @Override
+    public BoxBaseInfoVO getBoxBaseById(Integer id) {
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        BoxBaseInfoVO boxBaseInfoVO = new BoxBaseInfoVO();
+        BoxBaseInfo boxBaseInfo = boxBaseDao.getBoxBaseInfoById(id);
+        boxBaseInfoVO.setId(boxBaseInfo.getId());
+        boxBaseInfoVO.setRfid(boxBaseInfo.getRfid());
+        boxBaseInfoVO.setType(boxTypeDao.getBoxType(boxBaseInfo.getRfid()).getName());
+        boxBaseInfoVO.setEntName(enterpriseDao.getEnterpriseInfoByEntId(boxBaseInfo.getEntId()).getEntName());
+        boxBaseInfoVO.setUuid(boxBaseInfo.getUuid());
+        boxBaseInfoVO.setCreateTime(simpleDateFormat.format(boxBaseInfo.getCreateTime()));
+        boxBaseInfoVO.setSoftwareVersion(boxBaseInfo.getSoftwareVersion());
+        boxBaseInfoVO.setHardwareVersion(boxBaseInfo.getHardwareVersion());
+        return boxBaseInfoVO;
+    }
+
+    @Override
+    public DataTableResDataVO getBoxBaseInfoByPage(DataTableReqDataVO dataTableReqDataVO) {
+
+        DataTableResDataVO dataTableResDataVO = new DataTableResDataVO();
+        List<BoxBaseInfoVO> boxBaseInfoVOS = new ArrayList<>();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try{
+            List<BoxBaseInfo> boxBaseInfos = boxBaseDao.getBoxBaseInfoByPage(dataTableReqDataVO.getStart(),dataTableReqDataVO.getLength(),dataTableReqDataVO.getSearch().get(DataTableReqDataVO.Search.value));
+            for (BoxBaseInfo boxBaseInfo :boxBaseInfos) {
+                BoxBaseInfoVO boxBaseInfoVO = new BoxBaseInfoVO();
+                boxBaseInfoVO.setId(boxBaseInfo.getId());
+                boxBaseInfoVO.setRfid(boxBaseInfo.getRfid());
+                boxBaseInfoVO.setType(boxTypeDao.getBoxType(boxBaseInfo.getRfid()).getName());
+                boxBaseInfoVO.setEntName(enterpriseDao.getEnterpriseInfoByEntId(boxBaseInfo.getEntId()).getEntName());
+                boxBaseInfoVO.setUuid(boxBaseInfo.getUuid());
+                boxBaseInfoVO.setCreateTime(simpleDateFormat.format(boxBaseInfo.getCreateTime()));
+                boxBaseInfoVO.setSoftwareVersion(boxBaseInfo.getSoftwareVersion());
+                boxBaseInfoVO.setHardwareVersion(boxBaseInfo.getHardwareVersion());
+                //循环次数
+                boxBaseInfoVO.setCycleIndex(boxInfoDao.getCycleIndexByRfid(boxBaseInfo.getRfid(),enterpriseDao.getEntCodeByEntId(boxBaseInfo.getEntId()).concat("_")));
+//                Date t2;
+//                long sub;
+//                long total1 = 0;
+//                long total2;
+
+                List<BoxRecordInfo>  boxRecordInfos = boxRecordDao.getBoxRecordInfo(enterpriseDao.getEntCodeByEntId(boxBaseInfo.getEntId()).concat("_"),boxBaseInfo.getRfid());
+                //当前状态
+//                boxBaseInfoVO.setStatus(OperateType.getDesc(boxRecordInfos.get(boxRecordInfos.size()-1).getOperateType()));
+                if(boxRecordInfos!=null&&boxRecordInfos.size()>0){
+                    //最近使用时间
+                    if(new Date().getTime() - boxRecordInfos.get(boxRecordInfos.size()-1).getCreateTime().getTime()>(1000*60*60*24)){
+                        long day = (new Date().getTime() - boxRecordInfos.get(boxRecordInfos.size()-1).getCreateTime().getTime())/(1000*60*60*24);
+                        boxBaseInfoVO.setRecentUseTime(String.valueOf(day)+"天前");
+                    }else{
+                        long minutes = (new Date().getTime() - boxRecordInfos.get(boxRecordInfos.size()-1).getCreateTime().getTime())/(1000*60);
+                        boxBaseInfoVO.setRecentUseTime(String.valueOf(minutes)+"分钟");
+                    }
+                    //上线时间
+                    if(boxRecordInfos.get(boxRecordInfos.size()-1).getCreateTime().getTime() - boxBaseInfos.get(0).getCreateTime().getTime()>(1000*60*60*24)){
+                       long day1 = (new Date().getTime() - boxBaseInfos.get(0).getCreateTime().getTime())/(1000*60*60*24);
+                        boxBaseInfoVO.setOnlineTime(String.valueOf(day1)+"天");
+                    }else{
+                        long minutes1 = (boxRecordInfos.get(boxRecordInfos.size()-1).getCreateTime().getTime() - boxBaseInfos.get(0).getCreateTime().getTime())/(1000*60);
+                        boxBaseInfoVO.setOnlineTime(String.valueOf(minutes1)+"分钟");
+                    }
+
+
+//                    for (BoxRecordInfo boxRecordInfo : boxRecordInfos) {
+//                        if(boxRecordInfo.getOperateType().equals(OperateType.BINDING.getIndex().byteValue())){
+//                            t1 = boxRecordInfo.getCreateTime();
+//                            continue;
+//                        }
+//
+//
+//                        if(boxRecordInfo.getOperateType().equals(OperateType.SIGN_IN.getIndex().byteValue())){
+//                            sub = boxRecordInfo.getCreateTime().getTime() - t1.getTime();
+//                            total1 = total1 + sub;
+//                        }
+//                    }
+//                    total2 = boxRecordInfos.get(boxRecordInfos.size()-1).getCreateTime().getTime() - boxRecordInfos.get(0).getCreateTime().getTime();
+//                    double percent = (double)total1 / total2;
+//                    double percent1 = (double)total1 / boxInfoDao.getCycleIndexByRfid(boxBaseInfo.getRfid(),enterpriseDao.getEntCodeByEntId(boxBaseInfo.getEntId()).concat("_"));
+//                    DecimalFormat format = new DecimalFormat("0.00%");
+//                    String result = format.format(percent);
+//                    String result2 = format.format(percent1);
+//                    //使用率
+//                    boxBaseInfoVO.setUsageRate(result);
+//                    //周转率
+//                    boxBaseInfoVO.setRevolveRate(result2);
+                    //通讯次数
+                    if(boxDetailDao.getBoxDetailInfoByBoxId(boxBaseInfo.getRfid())!=null){
+                        boxBaseInfoVO.setCommunicateCount(String.valueOf(boxDetailDao.getBoxDetailInfoByBoxId(boxBaseInfo.getUuid()).getCommunicateCount()));
+                    }
+
+                }
+                boxBaseInfoVOS.add(boxBaseInfoVO);
+            }
+
+        }catch (Exception e){
+            logger.error(String.format("获取包装箱错误", ""), e);
+        }
+        dataTableResDataVO.setData(boxBaseInfoVOS);
+        dataTableResDataVO.setRecordsTotal(boxBaseDao.getboxCount());
+        dataTableResDataVO.setRecordsFiltered(boxBaseDao.countBoxBaseInfoByPage(dataTableReqDataVO.getStart(),dataTableReqDataVO.getLength(),dataTableReqDataVO.getSearch().get(DataTableReqDataVO.Search.value)));
+        dataTableResDataVO.setDraw(dataTableReqDataVO.getDraw());
+
+        return dataTableResDataVO;
+    }
+}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>RSPS智能包装系统</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+
+<body>
+
+<section>
+    <h2 style="border-left-width: 5px;border-left-style: solid;border-left-color: rgb(55, 74, 174);font-size: 16px;font-weight: bold;line-height: 32px;color: rgb(102, 102, 102);padding: 0 10px;margin: 5px;">
+        RSPS简介
+    </h2>
+</section>
+<section style="color: #6e6e6e">
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;可循环使用的智能包装系统(Reusable Smart Packets System)简称 RSPS，就是利用最新技 术解决快递、物流等包装的资源浪费、环境污染、不安全等问题。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;目前，随着社会的进步，电商正在 经历前所未有的爆发式发展，随之而来的快递包装也正在以指数级的增长。然而目前市面上使用的包 装主要还都是纸制包装，以及配套的防损填充物和封口胶带，这些不但浪费了很多大自然资源，更重 要的是对我们的环境造成了极大的污染;同时，包装本身也没有给物品带来安全保障;另外，快递、 物流分拣系统，以及收发快递的用户体验等也都有很大的创新空间。</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;鉴于以上背景，追新科技提出的 RSPS 应运而生。</p>
+</section>
+<section>
+    <span style="font-size: 16px;font-weight: bold;line-height: 32px;color: rgb(102, 102, 102);">
+        智能包装箱操作指南
+    </span>
+</section>
+<section>
+    <span style="font-size: 14px;font-weight: bold;line-height: 32px;color: rgb(102, 102, 102);">
+        1. 开箱操作
+    </span>
+</section>
+<section style="color: #6e6e6e">
+    <img th:src="@{/assets/images/custom/guide_box_open.jpg}" style="width: 100%" />
+</section>
+<section>
+    <span style="font-size: 14px;font-weight: bold;line-height: 32px;color: rgb(102, 102, 102);">
+        2. 折叠操作
+    </span>
+</section>
+<section style="color: #6e6e6e">
+    <img th:src="@{/assets/images/custom/guide_box_close.jpg}" style="width: 100%" />
+</section>
+
+</body>
+
+</html>

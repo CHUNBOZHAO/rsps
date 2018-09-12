@@ -1,0 +1,170 @@
+package com.izhuixin.rsps.common.dao;
+
+
+import java.util.Date;
+
+/**
+ * 包装箱操作记录
+ */
+public class BoxOperateRecordReportInfo {
+
+    private String boxId;
+
+    private String orderId;
+
+    private String customName;
+
+    private Date bindTime;
+
+    private String bindTimeStr;
+
+    private String lineName;
+
+    private String operator;
+
+    private String fetchTimeStr;
+
+    private String signTimeStr;
+
+    private String recycleTimeStr;
+
+    private String gohomeTimeStr;
+
+    private String exceptionDescr;
+
+    private String boxStatusDescr;
+
+    /** 签收方式 SignStatus */
+    private Byte signType;
+
+    public String getBoxId() {
+        return boxId;
+    }
+
+    public void setBoxId(String boxId) {
+        this.boxId = boxId;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
+    public String getCustomName() {
+        return customName;
+    }
+
+    public void setCustomName(String customName) {
+        this.customName = customName;
+    }
+
+    public Date getBindTime() {
+        return bindTime;
+    }
+
+    public void setBindTime(Date bindTime) {
+        this.bindTime = bindTime;
+    }
+
+    public String getBindTimeStr() {
+        return bindTimeStr;
+    }
+
+    public void setBindTimeStr(String bindTimeStr) {
+        this.bindTimeStr = bindTimeStr;
+    }
+
+    public String getLineName() {
+        return lineName;
+    }
+
+    public void setLineName(String lineName) {
+        this.lineName = lineName;
+    }
+
+    public String getOperator() {
+        return operator;
+    }
+
+    public void setOperator(String operator) {
+        this.operator = operator;
+    }
+
+    public String getFetchTimeStr() {
+        return fetchTimeStr;
+    }
+
+    public void setFetchTimeStr(String fetchTimeStr) {
+        this.fetchTimeStr = fetchTimeStr;
+    }
+
+    public String getSignTimeStr() {
+        return signTimeStr;
+    }
+
+    public void setSignTimeStr(String signTimeStr) {
+        this.signTimeStr = signTimeStr;
+    }
+
+    public String getRecycleTimeStr() {
+        return recycleTimeStr;
+    }
+
+    public void setRecycleTimeStr(String recycleTimeStr) {
+        this.recycleTimeStr = recycleTimeStr;
+    }
+
+    public String getGohomeTimeStr() {
+        return gohomeTimeStr;
+    }
+
+    public void setGohomeTimeStr(String gohomeTimeStr) {
+        this.gohomeTimeStr = gohomeTimeStr;
+    }
+
+    public String getExceptionDescr() {
+        return exceptionDescr;
+    }
+
+    public void setExceptionDescr(String exceptionDescr) {
+        this.exceptionDescr = exceptionDescr;
+    }
+
+    public String getBoxStatusDescr() {
+        return boxStatusDescr;
+    }
+
+    public void setBoxStatusDescr(String boxStatusDescr) {
+        this.boxStatusDescr = boxStatusDescr;
+    }
+
+    public Byte getSignType() {
+        return signType;
+    }
+
+    public void setSignType(Byte signType) {
+        this.signType = signType;
+    }
+
+    @Override
+    public String toString() {
+        return "BoxOperateRecordReportInfo{" +
+                "boxId='" + boxId + '\'' +
+                ", orderId='" + orderId + '\'' +
+                ", bindTime=" + bindTime +
+                ", bindTimeStr='" + bindTimeStr + '\'' +
+                ", lineName='" + lineName + '\'' +
+                ", operator='" + operator + '\'' +
+                ", fetchTimeStr='" + fetchTimeStr + '\'' +
+                ", signTimeStr='" + signTimeStr + '\'' +
+                ", recycleTimeStr='" + recycleTimeStr + '\'' +
+                ", gohomeTimeStr='" + gohomeTimeStr + '\'' +
+                ", exceptionDescr='" + exceptionDescr + '\'' +
+                ", boxStatusDescr='" + boxStatusDescr + '\'' +
+                ", signType=" + signType +
+                '}';
+    }
+}

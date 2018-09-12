@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.izhuixin.rsps.dao.automatic.OrderDOMapper">
+  <resultMap id="BaseResultMap" type="com.izhuixin.rsps.domain.automatic.OrderDO">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="order_id" jdbcType="VARCHAR" property="orderId" />
+    <result column="customer_id" jdbcType="VARCHAR" property="customerId" />
+    <result column="customer" jdbcType="VARCHAR" property="customer" />
+    <result column="sender_id" jdbcType="VARCHAR" property="senderId" />
+    <result column="sender_name" jdbcType="VARCHAR" property="senderName" />
+    <result column="sender_tel" jdbcType="VARCHAR" property="senderTel" />
+    <result column="sender_area_code" jdbcType="VARCHAR" property="senderAreaCode" />
+    <result column="sender_address" jdbcType="VARCHAR" property="senderAddress" />
+    <result column="detail" jdbcType="VARCHAR" property="detail" />
+    <result column="state" jdbcType="TINYINT" property="state" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="evaluation" jdbcType="VARCHAR" property="evaluation" />
+    <result column="receiver_id" jdbcType="VARCHAR" property="receiverId" />
+    <result column="receiver_name" jdbcType="VARCHAR" property="receiverName" />
+    <result column="receiver_tel" jdbcType="VARCHAR" property="receiverTel" />
+    <result column="receiver_area_code" jdbcType="VARCHAR" property="receiverAreaCode" />
+    <result column="receiver_address" jdbcType="VARCHAR" property="receiverAddress" />
+    <result column="order_type" jdbcType="TINYINT" property="orderType" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, order_id, customer_id, customer, sender_id, sender_name, sender_tel, sender_area_code, 
+    sender_address, detail, state, status, create_time, modify_time, evaluation, receiver_id, 
+    receiver_name, receiver_tel, receiver_area_code, receiver_address, order_type
+  </sql>
+  <select id="selectByExample" parameterType="com.izhuixin.rsps.domain.automatic.OrderDOCriteria" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from rsps_order
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from rsps_order
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="Long">
+    delete from rsps_order
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.izhuixin.rsps.domain.automatic.OrderDOCriteria">
+    delete from rsps_order
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.izhuixin.rsps.domain.automatic.OrderDO">
+    <selectKey keyProperty="id" order="AFTER" resultType="Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into rsps_order (order_id, customer_id, customer, 
+      sender_id, sender_name, sender_tel, 
+      sender_area_code, sender_address, detail, 
+      state, status, create_time, 
+      modify_time, evaluation, receiver_id, 
+      receiver_name, receiver_tel, receiver_area_code, 
+      receiver_address, order_type)
+    values (#{orderId,jdbcType=VARCHAR}, #{customerId,jdbcType=VARCHAR}, #{customer,jdbcType=VARCHAR}, 
+      #{senderId,jdbcType=VARCHAR}, #{senderName,jdbcType=VARCHAR}, #{senderTel,jdbcType=VARCHAR}, 
+      #{senderAreaCode,jdbcType=VARCHAR}, #{senderAddress,jdbcType=VARCHAR}, #{detail,jdbcType=VARCHAR}, 
+      #{state,jdbcType=TINYINT}, #{status,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{modifyTime,jdbcType=TIMESTAMP}, #{evaluation,jdbcType=VARCHAR}, #{receiverId,jdbcType=VARCHAR}, 
+      #{receiverName,jdbcType=VARCHAR}, #{receiverTel,jdbcType=VARCHAR}, #{receiverAreaCode,jdbcType=VARCHAR}, 
+      #{receiverAddress,jdbcType=VARCHAR}, #{orderType,jdbcType=TINYINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.izhuixin.rsps.domain.automatic.OrderDO">
+    <selectKey keyProperty="id" order="AFTER" resultType="Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into rsps_order
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="customerId != null">
+        customer_id,
+      </if>
+      <if test="customer != null">
+        customer,
+      </if>
+      <if test="senderId != null">
+        sender_id,
+      </if>
+      <if test="senderName != null">
+        sender_name,
+      </if>
+      <if test="senderTel != null">
+        sender_tel,
+      </if>
+      <if test="senderAreaCode != null">
+        sender_area_code,
+      </if>
+      <if test="senderAddress != null">
+        sender_address,
+      </if>
+      <if test="detail != null">
+        detail,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="modifyTime != null">
+        modify_time,
+      </if>
+      <if test="evaluation != null">
+        evaluation,
+      </if>
+      <if test="receiverId != null">
+        receiver_id,
+      </if>
+      <if test="receiverName != null">
+        receiver_name,
+      </if>
+      <if test="receiverTel != null">
+        receiver_tel,
+      </if>
+      <if test="receiverAreaCode != null">
+        receiver_area_code,
+      </if>
+      <if test="receiverAddress != null">
+        receiver_address,
+      </if>
+      <if test="orderType != null">
+        order_type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="customerId != null">
+        #{customerId,jdbcType=VARCHAR},
+      </if>
+      <if test="customer != null">
+        #{customer,jdbcType=VARCHAR},
+      </if>
+      <if test="senderId != null">
+        #{senderId,jdbcType=VARCHAR},
+      </if>
+      <if test="senderName != null">
+        #{senderName,jdbcType=VARCHAR},
+      </if>
+      <if test="senderTel != null">
+        #{senderTel,jdbcType=VARCHAR},
+      </if>
+      <if test="senderAreaCode != null">
+        #{senderAreaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="senderAddress != null">
+        #{senderAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="detail != null">
+        #{detail,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=TINYINT},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyTime != null">
+        #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="evaluation != null">
+        #{evaluation,jdbcType=VARCHAR},
+      </if>
+      <if test="receiverId != null">
+        #{receiverId,jdbcType=VARCHAR},
+      </if>
+      <if test="receiverName != null">
+        #{receiverName,jdbcType=VARCHAR},
+      </if>
+      <if test="receiverTel != null">
+        #{receiverTel,jdbcType=VARCHAR},
+      </if>
+      <if test="receiverAreaCode != null">
+        #{receiverAreaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="receiverAddress != null">
+        #{receiverAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="orderType != null">
+        #{orderType,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.izhuixin.rsps.domain.automatic.OrderDOCriteria" resultType="java.lang.Long">
+    select count(*) from rsps_order
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update rsps_order
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.orderId != null">
+        order_id = #{record.orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.customerId != null">
+        customer_id = #{record.customerId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.customer != null">
+        customer = #{record.customer,jdbcType=VARCHAR},
+      </if>
+      <if test="record.senderId != null">
+        sender_id = #{record.senderId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.senderName != null">
+        sender_name = #{record.senderName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.senderTel != null">
+        sender_tel = #{record.senderTel,jdbcType=VARCHAR},
+      </if>
+      <if test="record.senderAreaCode != null">
+        sender_area_code = #{record.senderAreaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.senderAddress != null">
+        sender_address = #{record.senderAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="record.detail != null">
+        detail = #{record.detail,jdbcType=VARCHAR},
+      </if>
+      <if test="record.state != null">
+        state = #{record.state,jdbcType=TINYINT},
+      </if>
+      <if test="record.status != null">
+        status = #{record.status,jdbcType=TINYINT},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.modifyTime != null">
+        modify_time = #{record.modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.evaluation != null">
+        evaluation = #{record.evaluation,jdbcType=VARCHAR},
+      </if>
+      <if test="record.receiverId != null">
+        receiver_id = #{record.receiverId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.receiverName != null">
+        receiver_name = #{record.receiverName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.receiverTel != null">
+        receiver_tel = #{record.receiverTel,jdbcType=VARCHAR},
+      </if>
+      <if test="record.receiverAreaCode != null">
+        receiver_area_code = #{record.receiverAreaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.receiverAddress != null">
+        receiver_address = #{record.receiverAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="record.orderType != null">
+        order_type = #{record.orderType,jdbcType=TINYINT},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update rsps_order
+    set id = #{record.id,jdbcType=INTEGER},
+      order_id = #{record.orderId,jdbcType=VARCHAR},
+      customer_id = #{record.customerId,jdbcType=VARCHAR},
+      customer = #{record.customer,jdbcType=VARCHAR},
+      sender_id = #{record.senderId,jdbcType=VARCHAR},
+      sender_name = #{record.senderName,jdbcType=VARCHAR},
+      sender_tel = #{record.senderTel,jdbcType=VARCHAR},
+      sender_area_code = #{record.senderAreaCode,jdbcType=VARCHAR},
+      sender_address = #{record.senderAddress,jdbcType=VARCHAR},
+      detail = #{record.detail,jdbcType=VARCHAR},
+      state = #{record.state,jdbcType=TINYINT},
+      status = #{record.status,jdbcType=TINYINT},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      modify_time = #{record.modifyTime,jdbcType=TIMESTAMP},
+      evaluation = #{record.evaluation,jdbcType=VARCHAR},
+      receiver_id = #{record.receiverId,jdbcType=VARCHAR},
+      receiver_name = #{record.receiverName,jdbcType=VARCHAR},
+      receiver_tel = #{record.receiverTel,jdbcType=VARCHAR},
+      receiver_area_code = #{record.receiverAreaCode,jdbcType=VARCHAR},
+      receiver_address = #{record.receiverAddress,jdbcType=VARCHAR},
+      order_type = #{record.orderType,jdbcType=TINYINT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.izhuixin.rsps.domain.automatic.OrderDO">
+    update rsps_order
+    <set>
+      <if test="orderId != null">
+        order_id = #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="customerId != null">
+        customer_id = #{customerId,jdbcType=VARCHAR},
+      </if>
+      <if test="customer != null">
+        customer = #{customer,jdbcType=VARCHAR},
+      </if>
+      <if test="senderId != null">
+        sender_id = #{senderId,jdbcType=VARCHAR},
+      </if>
+      <if test="senderName != null">
+        sender_name = #{senderName,jdbcType=VARCHAR},
+      </if>
+      <if test="senderTel != null">
+        sender_tel = #{senderTel,jdbcType=VARCHAR},
+      </if>
+      <if test="senderAreaCode != null">
+        sender_area_code = #{senderAreaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="senderAddress != null">
+        sender_address = #{senderAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="detail != null">
+        detail = #{detail,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=TINYINT},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyTime != null">
+        modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="evaluation != null">
+        evaluation = #{evaluation,jdbcType=VARCHAR},
+      </if>
+      <if test="receiverId != null">
+        receiver_id = #{receiverId,jdbcType=VARCHAR},
+      </if>
+      <if test="receiverName != null">
+        receiver_name = #{receiverName,jdbcType=VARCHAR},
+      </if>
+      <if test="receiverTel != null">
+        receiver_tel = #{receiverTel,jdbcType=VARCHAR},
+      </if>
+      <if test="receiverAreaCode != null">
+        receiver_area_code = #{receiverAreaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="receiverAddress != null">
+        receiver_address = #{receiverAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="orderType != null">
+        order_type = #{orderType,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.izhuixin.rsps.domain.automatic.OrderDO">
+    update rsps_order
+    set order_id = #{orderId,jdbcType=VARCHAR},
+      customer_id = #{customerId,jdbcType=VARCHAR},
+      customer = #{customer,jdbcType=VARCHAR},
+      sender_id = #{senderId,jdbcType=VARCHAR},
+      sender_name = #{senderName,jdbcType=VARCHAR},
+      sender_tel = #{senderTel,jdbcType=VARCHAR},
+      sender_area_code = #{senderAreaCode,jdbcType=VARCHAR},
+      sender_address = #{senderAddress,jdbcType=VARCHAR},
+      detail = #{detail,jdbcType=VARCHAR},
+      state = #{state,jdbcType=TINYINT},
+      status = #{status,jdbcType=TINYINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+      evaluation = #{evaluation,jdbcType=VARCHAR},
+      receiver_id = #{receiverId,jdbcType=VARCHAR},
+      receiver_name = #{receiverName,jdbcType=VARCHAR},
+      receiver_tel = #{receiverTel,jdbcType=VARCHAR},
+      receiver_area_code = #{receiverAreaCode,jdbcType=VARCHAR},
+      receiver_address = #{receiverAddress,jdbcType=VARCHAR},
+      order_type = #{orderType,jdbcType=TINYINT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <cache />
+  <select id="selectByExampleWithRowbounds" parameterType="com.izhuixin.rsps.domain.automatic.OrderDOCriteria" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from rsps_order
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+</mapper>

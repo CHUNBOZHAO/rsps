@@ -1,0 +1,70 @@
+package com.izhuixin.rsps.receiver;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.izhuixin.rsps.EnterpriseService;
+import com.izhuixin.rsps.message.InputMsg;
+import com.izhuixin.rsps.domain.Params;
+import com.izhuixin.rsps.domain.SignInfo;
+import com.izhuixin.rsps.util.Md5Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cloud.stream.annotation.EnableBinding;
+import org.springframework.cloud.stream.annotation.StreamListener;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
+
+import java.net.URLEncoder;
+
+/**
+ * 绑定一个接收消息的通道
+ */
+@EnableBinding(InputMsg.class)
+public class OrderReceiver {
+
+    private RestTemplate restTemplate = new RestTemplate();
+
+
+    private static Logger logger = LoggerFactory.getLogger(EnterpriseService.class);
+
+    @StreamListener(InputMsg.INPUT_ORDER)
+    public void OrderMessage(Object message) throws Exception{
+
+        SignInfo signInfo = (SignInfo)message;
+
+        //对象转json
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonStr = objectMapper.writeValueAsString(signInfo);
+        System.out.println(jsonStr);
+
+
+        Params params = new Params();
+        params.setService("zxrj_sign_pj");
+        params.setContent(URLEncoder.encode(jsonStr,"UTF-8"));
+        params.setCustomerCode("zm");
+        params.setFormat("json");
+        params.setSign(Md5Utils.md5(jsonStr+"123456"));
+
+        String url = "http://192.168.0.4:8081/test";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+        map.add("service", params.getService());
+        map.add("content",params.getContent());
+        map.add("customerCode",params.getCustomerCode());
+        map.add("format",params.getFormat());
+        map.add("sign",params.getSign());
+
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+
+        ResponseEntity<String> response = restTemplate.postForEntity( url, request , String.class);
+
+        System.out.println(response);
+}
+
+}

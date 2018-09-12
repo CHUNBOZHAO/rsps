@@ -1,0 +1,120 @@
+package com.izhuixin.rsps.controller;
+
+import com.izhuixin.rsps.common.vo.web.OperatorInfoVO;
+import com.izhuixin.rsps.domain.manual.OperatorInfo;
+import com.izhuixin.rsps.service.OperatorInfoService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("v1/operatorData/")
+public class OperatorInfoController {
+
+    @Autowired
+    private OperatorInfoService operatorInfoService;
+
+    @RequestMapping("/userStatus/check/{userName}/{entCode}")
+    public boolean checkUserStatus(@PathVariable String userName, @PathVariable String entCode) {
+        return operatorInfoService.checkUserStatus(userName, entCode);
+    }
+
+    @RequestMapping("/login/handle")
+    public boolean handleLogin(String userName, String userPwd, String entCode) {
+        return operatorInfoService.handleLogin(userName, userPwd, entCode);
+    }
+
+    @RequestMapping("/password/update")
+    public boolean updatePwd(String userName, String newUserPwd, String entCode) {
+        return operatorInfoService.updatePwd(userName, newUserPwd, entCode);
+    }
+
+    @RequestMapping("/operatorInfo/name/operatorType/get")
+    public OperatorInfo getOperatorInfoByName(String name, Byte operatorType, String userCode) {
+        return operatorInfoService.getOperatorInfoByName(name, operatorType, userCode);
+    }
+
+    @RequestMapping("/operatorInfo/name/get")
+    public OperatorInfo getOperatorInfoByName(String name, String userCode) {
+        return operatorInfoService.getOperatorInfoByName(name, userCode);
+    }
+
+    @RequestMapping("/operatorInfo/userName/get")
+    public OperatorInfo getOperatorInfoByUserName(String userName, String entCode) {
+        return operatorInfoService.getOperatorInfoByUserName(userName, entCode);
+    }
+
+    @RequestMapping("/operatorInfos/get/{entCode}")
+    public List<OperatorInfo> getOperatorInfos(@PathVariable String entCode) {
+        return operatorInfoService.getOperatorInfos(entCode);
+    }
+
+    @RequestMapping("/operators/userId/{userId}/{entCode}")
+    public List<OperatorInfoVO> getOperatorsByUserId(@PathVariable String userId, @PathVariable String entCode) {
+        return operatorInfoService.getOperatorsByUserId(userId, entCode);
+    }
+
+    @RequestMapping("/operatorInfoVO/save")
+    public boolean saveInfo(@RequestBody OperatorInfoVO operatorInfoVO, String entCode) {
+        return operatorInfoService.saveInfo(operatorInfoVO, entCode);
+    }
+
+    @RequestMapping("/info/id/{id}/{entCode}")
+    public OperatorInfoVO getInfoById(@PathVariable Long id, @PathVariable String entCode) {
+        return operatorInfoService.getInfoById(id, entCode);
+    }
+
+    @RequestMapping("/password/check")
+    public boolean checkPwd(Integer id, String oldPwd, String entCode) {
+        return operatorInfoService.checkPwd(id, oldPwd, entCode);
+    }
+
+    @RequestMapping("/password/update/id")
+    public boolean updatePwd(Integer id, String newPwd, String entCode) {
+        return operatorInfoService.updatePwd(id, newPwd, entCode);
+    }
+
+    @RequestMapping("/user/delete/{id}/{entCode}")
+    public boolean deleteUser(@PathVariable Integer id, @PathVariable String entCode) {
+        return operatorInfoService.deleteUser(id, entCode);
+    }
+
+    @RequestMapping("/password/reset/{id}/{entCode}")
+    public boolean resetPwd(@PathVariable Integer id, @PathVariable String entCode) {
+        return operatorInfoService.resetPwd(id, entCode);
+    }
+
+    @RequestMapping("/userName/generate")
+    public String generateUserName(String name, String operatorId) {
+        return operatorInfoService.generateUserName(name, operatorId);
+    }
+
+    @RequestMapping("/appSession/valid/check")
+    public boolean checkValidAppSession(String userId, String appSessionId, String entCode) {
+        return operatorInfoService.checkValidAppSession(userId, appSessionId, entCode);
+    }
+
+    @RequestMapping("/operator/count/{operatorId}/{entCode}")
+    public Integer countOperator(@PathVariable String operatorId, @PathVariable String entCode) {
+        return operatorInfoService.countOperator(operatorId, entCode);
+    }
+
+    @RequestMapping("/operator/save")
+    public boolean saveOperator(@RequestBody OperatorInfo operatorInfo, String entCode) {
+        return operatorInfoService.saveOperator(operatorInfo, entCode);
+    }
+
+    @RequestMapping("/operator/update/operatorId")
+    public boolean updateOperatorByOperatorId(@RequestBody OperatorInfo operatorInfo, String entCode) {
+        return operatorInfoService.updateOperatorByOperatorId(operatorInfo, entCode);
+    }
+
+    @RequestMapping("/operatorInfo/get/customId/{customId}/{entCode}")
+    public OperatorInfo getOperatorInfoByCustomId(@PathVariable String customId, @PathVariable String entCode) {
+        return operatorInfoService.getOperatorInfoByCustomId(customId, entCode);
+    }
+}

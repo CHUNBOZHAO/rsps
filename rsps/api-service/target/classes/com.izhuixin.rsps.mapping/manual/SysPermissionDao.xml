@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.izhuixin.rsps.dao.manual.SysPermissionDao" >
+
+  <resultMap id="PermissionResultMap" type="com.izhuixin.rsps.domain.manual.PermissionInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="permission_id" jdbcType="VARCHAR" property="permissionId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="descr" jdbcType="VARCHAR" property="descr" />
+    <result column="url" jdbcType="VARCHAR" property="url" />
+    <result column="pid" jdbcType="VARCHAR" property="pid" />
+    <result column="module_id" jdbcType="INTEGER" property="moduleId" />
+    <result column="module_name" jdbcType="VARCHAR" property="moduleName" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+
+  <!-- 获取所有权限配置信息 -->
+  <select id="findAllPermissions" resultMap="PermissionResultMap">
+    select * from sys_permission
+  </select>
+
+  <select id="findPermissionByUserId" resultMap="PermissionResultMap">
+    select * from sys_permission as p left join sys_permission_user as pu on p.permission_id = pu.permission_id where pu.user_id = #{userId} order by p.create_time;
+  </select>
+
+  <!-- 删除用户权限 -->
+  <delete id="deleteUserPermission">
+    delete from sys_permission_user where user_id = #{userId}
+  </delete>
+
+  <!-- 保存用户权限 -->
+  <insert id="saveUserPermission">
+    insert into sys_permission_user(permission_id, user_id) values(#{permissionId, jdbcType=VARCHAR}, #{userId, jdbcType=VARCHAR})
+  </insert>
+
+  <!-- 获取权限ID -->
+  <select id="getPermissionId" resultType="String">
+    select permission_id from sys_permission where name = #{permissionName, jdbcType=VARCHAR}
+  </select>
+
+  <!-- 删除用户权限 -->
+  <delete id="deleteUserSpecifiedPermission">
+    delete from sys_permission_user where user_id = #{userId, jdbcType=VARCHAR} and permission_id = #{permissionId, jdbcType=VARCHAR}
+  </delete>
+
+</mapper>

@@ -1,0 +1,50 @@
+package com.izhuixin.rsps.service;
+
+import com.izhuixin.rsps.common.dba.CrudService;
+import com.izhuixin.rsps.common.vo.web.SysUserInfoVO;
+import com.izhuixin.rsps.common.vo.web.SysUserTopoVO;
+import com.izhuixin.rsps.domain.automatic.SysUser;
+import com.izhuixin.rsps.domain.manual.SysUserInfo;
+
+import java.util.List;
+
+public interface SysUserService extends CrudService<SysUser> {
+
+    SysUserInfo getUserInfoByUserId(String userId);
+
+    SysUserInfoVO getUserInfoVOByUserId(String userId);
+
+    SysUserInfo getSysUser(String userName);
+
+    SysUserInfo getPrimaryUser(String entId);
+
+    List<String> getDeepSysUserIds(String userId);
+
+    List<SysUserInfo> getDeepSysUserInfos(String userId);
+
+    List<SysUserInfoVO> getDeepSysUserInfoVOs(String userId);
+
+    SysUserTopoVO getDeppSysUserTopoInfos(String userId, String nickName, String userName);
+
+    boolean saveUserInfo(SysUserInfoVO sysUserInfoVO);
+
+    boolean updateUserInfo(SysUserInfoVO sysUserInfoVO);
+
+    boolean resetPwd(String userId);
+
+    boolean deleteUser(String userId);
+
+    boolean checkUserName(String userId, String userName);
+
+    boolean checkPwd(Integer id, String oldPwd);
+
+    boolean updatePwd(Integer id, String newPwd);
+
+    /**
+     * 根据userId和UserType递归获取用户的信息
+     * @param userId
+     * @param userType
+     * @return
+     */
+    List<SysUserInfoVO> getDeepSysUserInfoVOsByUserIdAndUserType(String userId,Integer userType);
+}

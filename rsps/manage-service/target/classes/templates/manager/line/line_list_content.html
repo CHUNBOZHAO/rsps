@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<table id="line_list_table" class="table table-striped" cellspacing="0" width="100%" style="border-bottom: 0px;">
+    <thead>
+    <tr>
+        <th style="padding-left: 10px;">#</th>
+        <th style="padding-left: 10px;">线路名称</th>
+        <th style="padding-left: 10px;">配送员数量</th>
+        <th style="padding-left: 10px;">中转站数量</th>
+        <th style="padding-left: 10px;">客户数量</th>
+        <th style="padding-left: 10px;">所属站点</th>
+        <th style="padding-left: 10px;">描述</th>
+        <th style="padding-left: 15px;width: 10%">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="line,lineStat:${lineInfos}">
+        <th scope="row" th:text="${lineStat.count}"></th>
+        <td>
+            <span th:text="${line.lineName}"></span>
+        </td>
+        <td>
+            <span class="btn-related-operator" style="color: #2caef5;cursor: pointer" th:attr="lineId=${line.lineId}, lineName=${line.lineName}" th:text="|${line.relatedOperatorCount} ${line.bitRelatedOperator}|"></span>
+        </td>
+        <td>
+            <span class="btn-related-transit" style="color: #2caef5;cursor: pointer" th:attr="lineId=${line.lineId}, lineName=${line.lineName}, curTransferId=${line.userId}" th:text="|${line.relatedTransferCount} ${line.bitRelatedTransfer}|"></span>
+        </td>
+        <td>
+            <span class="btn-related-custom" style="color: #2caef5;cursor: pointer" th:attr="lineId=${line.lineId},lineName=${line.lineName}" th:text="${line.relatedCustomCount}"></span>
+        </td>
+        <td>
+            <span th:text="${line.userNickName}"></span>
+        </td>
+        <td>
+            <span th:text="${line.descr}"></span>
+        </td>
+        <td>
+            <!--<span class="btn-related-transit" style="color: #2caef5;cursor: pointer" th:attr="lineId=${line.lineId}, lineName=${line.lineName}">关联中转</span>-->
+            <!--<span class="btn-related-custom" style="color: #2caef5;cursor: pointer" th:attr="lineId=${line.lineId},lineName=${line.lineName}">关联客户</span>-->
+            <span class="btn-line-edit" style="color: #2caef5;cursor: pointer" th:attr="lineId=${line.lineId}">编辑</span>
+            <span class="btn-line-del" style="color: #2caef5;cursor: pointer" th:attr="lineId=${line.lineId}">删除</span>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<script type="text/javascript" th:src="@{/assets/js/manager/line/line-list-content.js}"></script>
+
+</html>

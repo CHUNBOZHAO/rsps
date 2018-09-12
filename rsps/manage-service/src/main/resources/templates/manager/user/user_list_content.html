@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<table id="list_table" class="table table-striped" cellspacing="0" width="100%" style="border-bottom: 0px;">
+    <thead>
+    <tr>
+        <th style="padding-left: 10px;">#</th>
+        <th style="padding-left: 10px;">用户名</th>
+        <th style="padding-left: 10px;">姓名</th>
+        <th style="padding-left: 10px;">电话</th>
+        <th style="padding-left: 10px;">所属用户</th>
+        <th style="padding-left: 10px;">用户编号</th>
+        <th style="padding-left: 10px;">车牌号</th>
+        <th style="padding-left: 10px;">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="user,userStat:${users}">
+        <th scope="row" th:text="${userStat.count}"></th>
+        <td th:text="${user.userName}">Mark</td>
+        <td th:text="${user.realName}">Otto</td>
+        <td th:text="${user.tel}">0</td>
+        <td th:text="${user.parentName}"></td>
+        <td th:text="${user.operatorNo}"></td>
+        <td th:text="${user.plateNumber}"></td>
+        <td>
+            <span class="user-edit" th:attr="id=${user.id}" style="color: #2094EC;cursor: pointer">编辑</span>&nbsp;&nbsp;
+            <span class="user-reset-pwd" th:attr="id=${user.id}" style="color: #2094EC;cursor: pointer">重置密码</span>&nbsp;&nbsp;
+            <span class="user-delete" th:attr="id=${user.id}" style="color: #e0685e;cursor: pointer">删除</span>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<!--<script type="text/javascript" th:src="@{/assets/js/manager/common/common-table.js}"></script>-->
+<script type="text/javascript" th:src="@{/assets/js/manager/user/user-list-content.js}"></script>
+
+</html>

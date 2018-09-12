@@ -1,0 +1,136 @@
+package com.izhuixin.rsps.controller;
+
+import com.izhuixin.rsps.common.ManagerUserDetail;
+import com.izhuixin.rsps.common.dao.BoxInfo;
+import com.izhuixin.rsps.common.vo.web.BoxBaseInfoVO;
+import com.izhuixin.rsps.service.BoxBaseService;
+import com.izhuixin.rsps.service.BoxInfoService;
+import com.izhuixin.rsps.service.EnterpriseAndUserService;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import javax.servlet.http.HttpServletRequest;
+
+@Controller
+@RequestMapping("location")
+public class ManagerLocationController {
+
+    @Autowired
+    private BoxInfoService boxInfoService;
+    @Autowired
+    private BoxBaseService boxBaseService;
+
+    @Autowired
+    private EnterpriseAndUserService enterpriseAndUserService;
+
+    /**
+     * 显示包装箱位置信息
+     * @param boxId
+     * @return
+     */
+    @RequestMapping("/box/show")
+    public String showBoxLocation(ModelMap modelMap, HttpServletRequest request, String boxId) {
+        ManagerUserDetail userDetail = (ManagerUserDetail) request.getSession().getAttribute("user");
+        BoxInfo boxInfo = boxInfoService.getBoxInfoByRfid(boxId, userDetail.getEntCode().concat("_"));
+
+        if(boxInfo!=null){
+            if (boxInfo.getDuLongitude() == null ||
+                    boxInfo.getDuLatitude() == null ||
+                    boxInfo.getDuLatitude() == 0.0 ||
+                    boxInfo.getDuLongitude() == 0.0) {
+                if("zx".equals(userDetail.getEntCode())){
+                    modelMap.put("longitude", 120.210313);
+                    modelMap.put("latitude", 30.174988);
+                }else{
+                    modelMap.put("longitude", 119.529304);
+                    modelMap.put("latitude", 29.140542);
+                }
+
+            } else {
+                modelMap.put("longitude", boxInfo.getDuLongitude());
+                modelMap.put("latitude", boxInfo.getDuLatitude());
+            }
+        }else {
+            if("zx".equals(userDetail.getEntCode())){
+                modelMap.put("longitude", 120.210313);
+                modelMap.put("latitude", 30.174988);
+            }else{
+                modelMap.put("longitude", 119.529304);
+                modelMap.put("latitude", 29.140542);
+            }
+        }
+        modelMap.put("boxId", boxId);
+
+        String epcId = boxBaseService.getEpc(boxId);
+        if(epcId!=null){
+            if(epcId.substring(0,6).equals("030003")){
+                modelMap.put("isReport","isReport");
+            }else {
+                modelMap.put("isReport",null);
+            }
+        }
+        return "manager/box/box_location";
+    }
+
+    /**
+     * 显示包装箱位置信息
+     * @param
+     * @return
+     */
+    @RequestMapping("/box/showAdmin")
+    public String showBoxLocationAdmin(ModelMap modelMap, HttpServletRequest request) {
+
+        BoxBaseInfoVO boxBaseInfoVO = null;
+        if(request.getParameter("id")!=null){
+            boxBaseInfoVO = boxBaseService.getBoxBaseById(Integer.parseInt(request.getParameter("id")));
+        }
+
+        String rfid = boxBaseInfoVO.getRfid();
+        String entName = boxBaseInfoVO.getEntName();
+        String entCode = enterpriseAndUserService.getEnterpriseAndUserInfoByEntName(entName).getEntCode();
+        BoxInfo boxInfo = boxInfoService.getBoxInfoByRfid(rfid,entCode.concat("_"));
+
+        if(boxInfo!=null){
+            if (boxInfo.getDuLongitude() == null ||
+                    boxInfo.getDuLatitude() == null ||
+                    boxInfo.getDuLatitude() == 0.0 ||
+                    boxInfo.getDuLongitude() == 0.0) {
+                if("zx".equals(entCode)){
+                    modelMap.put("longitude", 120.210313);
+                    modelMap.put("latitude", 30.174988);
+                }else{
+                    modelMap.put("longitude", 119.529304);
+                    modelMap.put("latitude", 29.140542);
+                }
+
+            } else {
+                modelMap.put("longitude", boxInfo.getDuLongitude());
+                modelMap.put("latitude", boxInfo.getDuLatitude());
+            }
+        }else {
+            if("zx".equals(entCode)){
+                modelMap.put("longitude", 120.210313);
+                modelMap.put("latitude", 30.174988);
+            }else{
+                modelMap.put("longitude", 119.529304);
+                modelMap.put("latitude", 29.140542);
+            }
+        }
+
+        modelMap.put("boxId", rfid);
+
+        String epcId = boxBaseService.getEpc(rfid);
+        if(epcId!=null){
+            if(epcId.substring(0,6).equals("030003")){
+                modelMap.put("isReport","isReport");
+            }else {
+                modelMap.put("isReport",null);
+            }
+        }
+        return "manager/box/box_location";
+    }
+
+}

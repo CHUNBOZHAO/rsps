@@ -1,0 +1,544 @@
+package com.izhuixin.rsps.service.impl;
+
+import com.google.common.collect.Lists;
+import com.izhuixin.rsps.common.constant.Constants;
+import com.izhuixin.rsps.common.constant.OperatorType;
+import com.izhuixin.rsps.common.constant.ValidStatus;
+import com.izhuixin.rsps.common.dba.AbstractCrudService;
+import com.izhuixin.rsps.common.dba.FilterExample;
+import com.izhuixin.rsps.common.util.LoginSessionIdUtils;
+import com.izhuixin.rsps.common.util.PasswordUtils;
+import com.izhuixin.rsps.common.util.SnowflakeIdWorker;
+import com.izhuixin.rsps.common.vo.web.OperatorInfoVO;
+import com.izhuixin.rsps.dao.manual.AllotDao;
+import com.izhuixin.rsps.dao.manual.OperatorInfoDao;
+import com.izhuixin.rsps.domain.automatic.OperatorInfoDO;
+import com.izhuixin.rsps.domain.manual.OperatorInfo;
+import com.izhuixin.rsps.service.OperatorInfoService;
+import com.izhuixin.rsps.service.SysUserService;
+import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+@Service
+public class OperatorInfoServiceImpl extends AbstractCrudService<OperatorInfoDO> implements OperatorInfoService {
+
+    @Autowired
+    private OperatorInfoDao operatorInfoDao;
+
+    @Autowired
+    private AllotDao allotDao;
+
+    @Autowired
+    private SysUserService sysUserService;
+
+    /**
+     * 检查用户的有效性
+     * @param userName
+     * @return
+     */
+    @Override
+    public boolean checkUserStatus(String userName, String entCode) {
+        boolean res = false;
+        try {
+            Integer count = operatorInfoDao.getUserCountByUserName(userName, ValidStatus.VALID.getIndex(), entCode);
+            if (count > 0) {
+                res = true;
+            }
+        } catch (Exception e) {
+            logger.error(String.format("检查用户(%s)有效性出现异常", userName), e);
+        }
+        return res;
+    }
+
+
+    /***
+     * 用户登录验证
+     * @param userName
+     * @param userPwd
+     * @return
+     */
+    @Override
+    public boolean handleLogin(String userName, String userPwd, String entCode) {
+        boolean res = false;
+        try {
+            Integer count = operatorInfoDao.getUserCountByPwd(userName, PasswordUtils.md5(userPwd), entCode);
+            if (count == 1) {
+                operatorInfoDao.updateAppSessionId(LoginSessionIdUtils.geneate(), userName, userPwd, entCode);
+                res = true;
+            } else {
+                logger.error(String.format("验证用户(%s)登录出现错误", userName));
+            }
+        } catch (Exception e) {
+            logger.error(String.format("验证用户(%s)登录出现异常", userName), e);
+        }
+        return res;
+    }
+
+
+    /**
+     * 修改用户密码
+     * @param userName
+     * @param newUserPwd
+     * @return
+     */
+    @Override
+    public boolean updatePwd(String userName, String newUserPwd, String entCode) {
+        boolean res = false;
+        try {
+            operatorInfoDao.upatePwdByUserName(userName, PasswordUtils.md5(newUserPwd), entCode);
+            res = true;
+        } catch (Exception e) {
+            logger.error(String.format("修改用户(%s)密码出现异常", userName), e);
+        }
+        return res;
+    }
+
+    /***
+     * 通过名称获取用户信息
+     * @param userName
+     * @return
+     */
+    @Override
+    public OperatorInfo getOperatorInfoByName(String userName, Byte operatorType, String entCode) {
+        OperatorInfo operatorInfo = null;
+        try {
+            operatorInfo = operatorInfoDao.getOperatorInfoByUserName(userName, operatorType, entCode);
+        } catch (Exception e) {
+            logger.error(String.format("通过用户名(%s)获取用户信息出现异常", userName), e);
+        }
+        return operatorInfo;
+    }
+
+    /***
+     * 通过用户名获取用户信息
+     * @param userName
+     * @return
+     */
+    @Override
+    public OperatorInfo getOperatorInfoByUserName(String userName, String entCode) {
+        OperatorInfo operatorInfo = null;
+        try {
+            operatorInfo = operatorInfoDao.getOperatorInfoByUserName(userName.trim(), null, entCode);
+        } catch (Exception e) {
+            logger.error(String.format("通过用户名(%s)获取用户信息出现异常", userName), e);
+        }
+        return operatorInfo;
+    }
+
+    /***
+     * 通过用户姓名获取用户信息
+     * @param name
+     * @return
+     */
+    @Override
+    public OperatorInfo getOperatorInfoByName(String name, String entCode) {
+        OperatorInfo operatorInfo = null;
+        try {
+            operatorInfo = operatorInfoDao.getOperatorInfoByName(name.trim(), null, entCode);
+        } catch (Exception e) {
+            logger.error(String.format("通过用户姓名(%s)获取用户信息出现异常", name), e);
+        }
+        return operatorInfo;
+    }
+
+    /***
+     * 获取操作人员信息列表
+     * @return
+     */
+    @Override
+    public List<OperatorInfo> getOperatorInfos(String entCode) {
+        List<OperatorInfo> operatorInfos = operatorInfoDao.getOperatorInfos(entCode);
+        if (operatorInfos == null) {
+            operatorInfos = Lists.newArrayList();
+        }
+        return operatorInfos;
+    }
+
+    /***
+     * 获取操作人员信息列表
+     * @return
+     */
+    @Override
+    public List<OperatorInfoVO> getOperatorsByUserId(String entCode, String userId) {
+        List<OperatorInfoVO> operators = Lists.newArrayList();
+        try {
+            List<String> userIds = sysUserService.getDeepSysUserIds(userId);
+            if (userIds != null) {
+                userIds.add(0, userId);
+            } else {
+                userIds = Lists.newArrayList();
+            }
+            List<OperatorInfo> operatorInfos = operatorInfoDao.getOperatorInfosByUserId(entCode, userIds);
+
+            OperatorInfoVO operator = null;
+            for (OperatorInfo operatorInfo : operatorInfos) {
+                operator = new OperatorInfoVO();
+                operator.setId(operatorInfo.getId());
+                operator.setOperatorId(operatorInfo.getOperatorId());
+                operator.setUserName(operatorInfo.getUserName());
+                operator.setRealName(operatorInfo.getName());
+                operator.setTel(operatorInfo.getTel());
+                operator.setUserType(operatorInfo.getType());
+                operator.setUserTypeDesc(OperatorType.getDesc(operatorInfo.getType().byteValue()));
+                operator.setCreateTime(operatorInfo.getCreateTime());
+                operator.setModifyTime(operatorInfo.getModifyTime());
+                operator.setStatus(operatorInfo.getStatus());
+                operator.setAge(operatorInfo.getAge());
+                operator.setSex(operatorInfo.getSex());
+                operator.setCompanyId(operatorInfo.getCompanyId());
+                operator.setHeadUrl(operatorInfo.getHeadUrl());
+                operator.setUserId(operatorInfo.getUserId());
+                operator.setParentName(operatorInfo.getParentName());
+                operator.setOperatorNo(operatorInfo.getOperatorNo());
+                operators.add(operator);
+            }
+        } catch (Exception e) {
+            logger.error("获取操作人员信息列表出现异常", e);
+        }
+        return operators;
+    }
+
+    @Override
+    public boolean saveInfo(OperatorInfoVO operatorInfoVO, String entCode) {
+        boolean res = false;
+        try {
+            OperatorInfo info = new OperatorInfo();
+            info.setId(operatorInfoVO.getId());
+            info.setUserName(entCode.concat(operatorInfoVO.getRealName()));
+            info.setName(operatorInfoVO.getRealName());
+            info.setType(operatorInfoVO.getUserType());
+            info.setTel(operatorInfoVO.getTel());
+            info.setSex(operatorInfoVO.getSex());
+            info.setAge(operatorInfoVO.getAge());
+            info.setModifyTime(new Date());
+            info.setModifyTimeStr(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
+            info.setUserId(operatorInfoVO.getUserId());
+            info.setOperatorNo(operatorInfoVO.getOperatorNo());
+            if (info.getId() == null) {  // 新增
+                info.setOperatorId("op".concat(String.valueOf(SnowflakeIdWorker.getInstance().nextId())));
+                info.setCreateTime(new Date());
+                info.setCreateTimeStr(DateTime.now().toString("yyyy-MM-dd HH:mm:ss"));
+                info.setUserPwd(PasswordUtils.md5(Constants.OPERATOR_DEFAULT_PASSWORD));
+
+                operatorInfoDao.saveOperator(info, entCode);
+            } else {
+                operatorInfoDao.updateOperatorById(info, entCode);
+            }
+            res = true;
+
+        } catch (Exception e) {
+            logger.error("保存或更新用户信息出现异常",e);
+        }
+        return res;
+    }
+
+    /**
+     * 通过ID获取用户信息
+     * @param id
+     * @return
+     */
+    @Override
+    public OperatorInfoVO getInfoById(Long id, String entCode) {
+        OperatorInfoVO infoVO = null;
+        try {
+
+            OperatorInfo operatorInfo = operatorInfoDao.getInfoById(id, entCode);
+            if (operatorInfo != null) {
+                infoVO = new OperatorInfoVO();
+                infoVO.setId(operatorInfo.getId());
+                infoVO.setOperatorId(operatorInfo.getOperatorId());
+                infoVO.setUserName(operatorInfo.getUserName());
+                infoVO.setRealName(operatorInfo.getName());
+                infoVO.setTel(operatorInfo.getTel());
+                infoVO.setUserType(operatorInfo.getType());
+                infoVO.setUserTypeDesc(OperatorType.getDesc(operatorInfo.getType().byteValue()));
+                infoVO.setCreateTime(operatorInfo.getCreateTime());
+                infoVO.setModifyTime(operatorInfo.getModifyTime());
+                infoVO.setStatus(operatorInfo.getStatus());
+                infoVO.setAge(operatorInfo.getAge());
+                infoVO.setSex(operatorInfo.getSex());
+                infoVO.setCompanyId(operatorInfo.getCompanyId());
+                infoVO.setHeadUrl(operatorInfo.getHeadUrl());
+                infoVO.setUserId(operatorInfo.getUserId());
+                infoVO.setOperatorNo(operatorInfo.getOperatorNo());
+            }
+//            Optional<OperatorInfoDO> infoDOOptional = get(id);
+//            if (infoDOOptional.isPresent()) {
+//                OperatorInfoDO infoDO = infoDOOptional.get();
+//                infoVO = new OperatorInfoVO();
+//                infoVO.setId(infoDO.getId());
+//                infoVO.setOperatorId(infoDO.getOperatorId());
+//                infoVO.setUserName(infoDO.getUserName());
+//                infoVO.setRealName(infoDO.getName());
+//                infoVO.setTel(infoDO.getTel());
+//                infoVO.setUserType(infoDO.getType());
+//                infoVO.setUserTypeDesc(OperatorType.getDesc(infoDO.getType().byteValue()));
+//                infoVO.setCreateTime(infoDO.getCreateTime());
+//                infoVO.setModifyTime(infoDO.getModifyTime());
+//                infoVO.setStatus(infoDO.getStatus());
+//                infoVO.setAge(infoDO.getAge());
+//                infoVO.setSex(infoDO.getSex());
+//                infoVO.setCompanyId(infoDO.getCompanyId());
+//                infoVO.setHeadUrl(infoDO.getHeadUrl());
+//            }
+        } catch (Exception e) {
+            logger.error(String.format("通过用户ID（%s）获取用户信息出现异常", id), e);
+        }
+        return infoVO;
+    }
+
+    /***
+     * 检测用户密码
+     * @param id
+     * @param oldPwd
+     * @return
+     */
+    @Override
+    public boolean checkPwd(Integer id, String oldPwd, String entCode) {
+        boolean res = false;
+        try {
+//            FilterExample fe = new FilterExample();
+//            fe.createCriteria().andFieldEqualTo("id", id).andFieldEqualTo("user_pwd", PasswordUtils.md5(oldPwd));
+//            long count = count(fe);
+            Integer count = operatorInfoDao.checkPwd(id, PasswordUtils.md5(oldPwd), entCode);
+            if (count > 0) {
+                res = true;
+            }
+        } catch (Exception e) {
+            logger.error(String.format("检测用户(%d)密码出现异常", id), e);
+        }
+        return res;
+    }
+
+    /**
+     * 通过用户ID修改用户密码
+     * @param id
+     * @param newPwd
+     * @return
+     */
+    @Override
+    public boolean updatePwd(Integer id, String newPwd, String entCode) {
+        boolean res = false;
+        try {
+//            OperatorInfoDO infoDO = new OperatorInfoDO();
+//            infoDO.setId(id);
+//            infoDO.setUserPwd(PasswordUtils.md5(newPwd));
+//            update(infoDO);
+            operatorInfoDao.updatePwd(id, newPwd, entCode);
+            res = true;
+        } catch (Exception e) {
+            logger.error(String.format("通过用户ID(%d)修改密码出现异常", id), e);
+        }
+        return res;
+    }
+
+    /**
+     * 删除用户
+     * @param id
+     * @return
+     */
+    @Override
+    public boolean deleteUser(Integer id, String entCode) {
+        boolean res = false;
+        try {
+//            OperatorInfoDO infoDO = new OperatorInfoDO();
+//            infoDO.setId(id);
+//            infoDO.setStatus(ValidStatus.INVALID.getIndex().byteValue());
+//            update(infoDO);
+
+            operatorInfoDao.deleteByid(id, entCode);
+            res = true;
+        } catch (Exception e) {
+            logger.error(String.format("删除用户(%d)出现异常", id), e);
+        }
+        return res;
+    }
+
+    /***
+     * 重置密码
+     * @param id
+     * @return
+     */
+    @Override
+    public boolean resetPwd(Integer id, String entCode) {
+        boolean res = false;
+        try {
+//            OperatorInfoDO infoDO = new OperatorInfoDO();
+//            infoDO.setId(id);
+//            infoDO.setUserPwd(PasswordUtils.md5(Constants.OPERATOR_DEFAULT_PASSWORD));
+//            update(infoDO);
+
+            operatorInfoDao.updatePwd(id, PasswordUtils.md5(Constants.OPERATOR_DEFAULT_PASSWORD), entCode);
+            res = true;
+        } catch (Exception e) {
+            logger.error(String.format("重置用户(%d)密码出现出现异常", id), e);
+        }
+        return res;
+    }
+
+    /**
+     * 生成操作人员用户名称
+     * @param name
+     * @param operatorId
+     * @return
+     */
+    @Override
+    public String generateUserName(String name, String operatorId) {
+        String userName = "";
+        FilterExample fe = new FilterExample();
+        fe.createCriteria().andFieldEqualTo("name", name);
+        List<OperatorInfoDO> infoDOS = null;
+        try {
+            infoDOS = getList(fe);
+        } catch (Exception e) {
+            logger.error(String.format("通过真实名字(%s)获取用户信息出现异常", name), e);
+        }
+        if (infoDOS == null || infoDOS.isEmpty()) {
+            userName = name;
+        } else {
+            try {
+                List<Integer> indexList = Lists.newArrayList();
+                for (OperatorInfoDO infoDO : infoDOS) {
+                    String userNameCount = infoDO.getUserName().replace(name, "");
+                    if (StringUtils.isNotBlank(userNameCount)) {
+                        indexList.add(Integer.valueOf(userNameCount));
+                    } else {
+                        indexList.add(0);
+                    }
+                }
+                if (!indexList.isEmpty()) {
+                    Collections.sort(indexList);
+                    Integer maxCount = indexList.get(indexList.size() - 1);
+                    userName = name + (maxCount + 1);
+                } else {
+                    userName = name + operatorId;
+                }
+            } catch (Exception e) {
+                userName = name + operatorId;
+                logger.error(String.format("获取相同名字(%s)的用户数出现异常", name), e);
+            }
+        }
+        return userName;
+    }
+
+    /**
+     * 检测用户AppSessionID是否过期
+     * @param userId
+     * @param appSessionId
+     * @param entCode
+     * @return
+     */
+    @Override
+    public boolean checkValidAppSession(String userId, String appSessionId, String entCode) {
+        boolean res = false;
+        Integer count = 0;
+        try {
+            count = operatorInfoDao.checkValidAppSessionId(userId, appSessionId, entCode);
+            if (count > 0) {
+                res = true;
+            }
+        } catch (Exception e) {
+            logger.error(String.format("检测用户(%s)登录AppSession(%s)是否过期出现异常", userId, appSessionId), e);
+        }
+        return res;
+    }
+
+
+    /**
+     * 获取操作人数量
+     * @param operatorId
+     * @param entCode
+     * @return
+     */
+    @Override
+    public Integer countOperator(String operatorId, String entCode) {
+        Integer count = 0;
+        try {
+            count = operatorInfoDao.countOperator(operatorId, entCode);
+        } catch (Exception e) {
+            logger.error(String.format("获取操作人(%s)数量出现异常", operatorId));
+        }
+        return count;
+    }
+
+    /**
+     * 保存操作人信息
+     * @param operatorInfo
+     * @param entCode
+     * @return
+     */
+    @Override
+    public boolean saveOperator(OperatorInfo operatorInfo, String entCode) {
+        boolean res = false;
+        try {
+            Integer saveRes = operatorInfoDao.saveOperator(operatorInfo, entCode);
+            res = true;
+        } catch (Exception e) {
+            logger.error(String.format("保存企业(%s)操作人信息出现异常", entCode), e);
+        }
+        return res;
+    }
+
+    /**
+     * 更新操作人信息
+     * @param operatorInfo
+     * @param entCode
+     * @return
+     */
+    @Override
+    public boolean updateOperatorByOperatorId(OperatorInfo operatorInfo, String entCode) {
+        boolean res = false;
+        try {
+            Integer updateRes = operatorInfoDao.updateOperatorByOperatorId(operatorInfo, entCode);
+            res = true;
+        } catch (Exception e) {
+            logger.error(String.format("更新企业(%s)操作人信息出现异常", entCode), e);
+        }
+        return res;
+    }
+
+    /**
+     * 通过客户ID获取配送员信息
+     * @param customId
+     * @param entCode
+     * @return
+     */
+    @Override
+    public OperatorInfo getOperatorInfoByCustomId(String customId, String entCode) {
+        OperatorInfo operatorInfo = null;
+        try {
+            operatorInfo = allotDao.getOperatorInfoByCustomId(customId, entCode);
+        } catch (Exception e) {
+            logger.error(String.format("通过客户ID(%s)获取配送人员信息出现异常", customId),e);
+        }
+        return operatorInfo;
+    }
+
+    /**
+     * 检测用户编号是否重名
+     * @param operatorNo
+     * @param entCode
+     * @return
+     */
+    @Override
+    public boolean checkOperatorNo(String operatorNo, String entCode,Integer id) {
+        boolean flag = false;
+        try{
+            Integer count = operatorInfoDao.checkOperatorNo(operatorNo, entCode,id);
+            if(count==1) {
+                flag = true;
+            }
+        }catch (Exception e){
+
+           logger.error(String.format("检测企业用户名出错(%s)",operatorNo),e);
+        }
+
+        return flag;
+    }
+}

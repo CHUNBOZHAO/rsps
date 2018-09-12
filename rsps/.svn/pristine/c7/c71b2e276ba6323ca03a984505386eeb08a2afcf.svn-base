@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.izhuixin.rsps.dao.manual.BoxLocationRecordDao" >
+
+  <resultMap id="BaseResultMap" type="com.izhuixin.rsps.domain.manual.BoxLocationRecordInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="rfid" jdbcType="VARCHAR" property="rfid" />
+    <result column="order_id" jdbcType="VARCHAR" property="orderId" />
+    <result column="du_address" jdbcType="VARCHAR" property="duAddress" />
+    <result column="du_latitude" jdbcType="DOUBLE" property="duLatitude" />
+    <result column="du_longitude" jdbcType="DOUBLE" property="duLongitude" />
+    <result column="du_coord_type" jdbcType="TINYINT" property="duCoordType" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+
+  <!-- 通过包装rfid、订单ID获取包装箱位置信息 -->
+  <select id="getBoxLocationRecords" resultMap="BaseResultMap" statementType="STATEMENT">
+    select * from rsps_${entCode}box_location_record where 1 = 1
+    <if test="rfid != null">
+      and rfid = '${rfid}'
+    </if>
+    <if test="orderId != null">
+      and order_id = '${orderId}'
+    </if>
+  </select>
+
+  <insert id="saveBoxLocationRecord" parameterType="com.izhuixin.rsps.domain.manual.BoxLocationRecordInfo" statementType="STATEMENT">
+    insert into rsps_${entCode}box_location_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="boxLocationRecord.rfid != null">
+        rfid,
+      </if>
+      <if test="boxLocationRecord.orderId != null">
+        order_id,
+      </if>
+      <if test="boxLocationRecord.duAddress != null">
+        du_address,
+      </if>
+      <if test="boxLocationRecord.duLatitude != null">
+        du_latitude,
+      </if>
+      <if test="boxLocationRecord.duLongitude != null">
+        du_longitude,
+      </if>
+      <if test="boxLocationRecord.duCoordType != null">
+        du_coord_type,
+      </if>
+      <if test="boxLocationRecord.createTimeStr != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="boxLocationRecord.rfid != null">
+        '${boxLocationRecord.rfid}',
+      </if>
+      <if test="boxLocationRecord.orderId != null">
+        '${boxLocationRecord.orderId}',
+      </if>
+      <if test="boxLocationRecord.duAddress != null">
+        '${boxLocationRecord.duAddress}',
+      </if>
+      <if test="boxLocationRecord.duLatitude != null">
+        ${boxLocationRecord.duLatitude},
+      </if>
+      <if test="boxLocationRecord.duLongitude != null">
+        ${boxLocationRecord.duLongitude},
+      </if>
+      <if test="boxLocationRecord.duCoordType != null">
+        ${boxLocationRecord.duCoordType},
+      </if>
+      <if test="boxLocationRecord.createTimeStr != null">
+        '${boxLocationRecord.createTimeStr}',
+      </if>
+    </trim>
+  </insert>
+
+</mapper>

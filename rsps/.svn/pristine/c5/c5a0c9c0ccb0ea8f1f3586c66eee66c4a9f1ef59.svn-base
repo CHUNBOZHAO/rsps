@@ -1,0 +1,22 @@
+# app只登录一次开关
+login.once.flag=0
+
+# 域名
+domain=http://192.168.0.111:9200
+
+# 资源本地路径
+local.path=/home/zx/cdn
+
+# 资源网络路径
+network.path=http://192.168.0.3:8089
+
+# 智慧盒订阅号信息
+appId = wx4608d7fe1ab555b2
+appSecret = 19849e1bdc5ce76be98e60a8038f1c07
+
+# 百度位置服务请求地址
+baiduGeocodingUrl = https://api.map.baidu.com/geocoder/v2/?address=%s&city=%s&output=json&ak=yuVfoZPpqfa0gdQuPw9s5ZeYKhiGROsg
+
+# 智慧盒订阅号信息
+#appId = wxb7876218de37c718
+#appSecret = f6656c8c75c6199f83de6bea5c0ecafe

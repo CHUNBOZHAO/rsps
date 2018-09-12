@@ -1,0 +1,45 @@
+.tab-name {
+    padding: 0px;
+    height: 45px;
+    line-height: 45px;
+    width: 120px;
+    text-align: center;
+    float: left;
+    font-size: 1.2em;
+    cursor: pointer;
+}
+
+.tab-date-name {
+    padding: 0px;
+    height: 45px;
+    line-height: 45px;
+    width: 45px;
+    text-align: center;
+    float: left;
+    font-size: 1.2em;
+    cursor: pointer;
+}
+
+.tab-name-active {
+    border-bottom: 2px solid #22a7f0;
+    color: #22a7f0;
+}
+
+.tab-date-name-active {
+    border-bottom: 2px solid #22a7f0;
+    color: #22a7f0;
+}
+
+.tab-chart-area {
+    width: 75%;
+    height: 700px;
+    overflow:visible;
+}
+.rankStyle{
+    width:25%
+    float:right;
+}
+.tab-rank-name-active{
+    border-bottom: 2px solid #22a7f0;
+    color: #22a7f0;
+}

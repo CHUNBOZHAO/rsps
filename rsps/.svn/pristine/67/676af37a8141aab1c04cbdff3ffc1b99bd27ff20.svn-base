@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.izhuixin.rsps.dao.BoxDao" >
+
+    <!-- 获取包装箱状态数量信息 -->
+    <select id="getBoxStatusCountInfo" resultType="com.izhuixin.rsps.domain.BoxStatusInfo">
+      SELECT count(*) as total, sum(case when status = 0 then 1 else 0 end) as leisureCount,
+      sum(case when status = 1 then 1 else 0 end) as bindingCount,
+      sum(case when status = 2 or status = 5 then 1 else 0 end) as transportingCount,
+      sum(case when status = 3 then 1 else 0 end) as retentionCount,
+      sum(case when status = 4 then 1 else 0 end) as recycleCount from rsps_${entCode}box_info;
+    </select>
+
+    <!-- 遗失包装箱数量 -->
+    <select id="countMissingBox" resultType="Integer">
+        <![CDATA[
+        SELECT count(*) FROM rsps_${entCode}box_info where operate_time < '${confineTime}';
+        ]]>
+    </select>
+
+    <!-- 过期包装箱数量 -->
+    <select id="countOverdueBox" resultType="Integer">
+        <![CDATA[
+        select count(*) from rsps_${entCode}box_info as bi inner join rsps_box_base as bb on bi.rfid = bb.rfid where bb.create_time < '${confineTime}';
+        ]]>
+    </select>
+
+</mapper>

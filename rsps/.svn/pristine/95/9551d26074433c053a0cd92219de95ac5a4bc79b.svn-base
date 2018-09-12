@@ -1,0 +1,69 @@
+package com.izhuixin.rsps.service;
+
+import com.izhuixin.rsps.common.object.Pair;
+import com.izhuixin.rsps.common.vo.web.*;
+import com.izhuixin.rsps.domain.manual.LineInfo;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 线路服务类接口
+ */
+public interface LineService {
+
+    List<String> queryLineIds(String userId, String entCode);
+
+    List<LineInfoVO> queryChildLines(String userId, String entCode);
+
+    LineInfoVO queryLine(String lineId, String entCode);
+
+    boolean checkLineName(String lineId, String lineName, String userId, String entCode);
+
+    boolean saveLine(LineInfoVO lineInfo, String entCode);
+
+    boolean removeLine(String lineId, String entCode);
+
+    boolean updateLine(LineInfoVO lineInfo, String entCode);
+
+    boolean saveLineAndCustom(String lineId, String[] customIds, String entCode);
+
+    boolean saveLineAndTransfer(String lineId, String[] userIds, String entCode);
+
+    boolean saveLineAndOperator(String lineId, String[] operatorIds, String entCode);
+
+    boolean removeLineAndCustom(String lineId, String[] customIds, String entCode);
+
+    boolean removeLineAndTransfer(String lineId, String[] userIds, String entCode);
+
+    List<LineInfo> getLinesWithOperatorId(String operatorId, String entCode);
+
+    boolean settingLines(String operatorId, List<String> lineIds, String entCode);
+
+    DataTableResDataVO queryDtDataCustoms(DataTableReqDataVO dtReqData,
+                                          String entId,
+                                          String entCode);
+
+    DataTableResDataVO queryDtDataAssociatedCustom(String lineId,
+                                                   DataTableReqDataVO dtReqData,
+                                                   String entId,
+                                                   String entCode);
+
+    List<CustomerInfoVO> queryAssociatedCustom(String lineId, String entId, String entCode);
+
+    List<RelatedSysUserVO> queryAssociatedTransfer(String lineId, String userId, String entCode);
+
+    List<RelatedOperatorVO> queryAssociatedOperator(String lineId, String userId, String entCode);
+
+    boolean removeLineAndOperator(String lineId, String[] operatorIds, String entCode);
+
+    String getLineNamesByCustomId(String customId, String entCode);
+
+    Pair<Map,Map> getCustomAllLines(List<String> customIds, String entCode);
+
+    List<Object[]> queryAssociatedLine(String customId, String userId, String entCode);
+
+    boolean saveCustomAndLine(String customId, String[] lineIds, String entCode);
+
+    boolean removeCustomAndLine(String customId, String[] lineIds, String entCode);
+}

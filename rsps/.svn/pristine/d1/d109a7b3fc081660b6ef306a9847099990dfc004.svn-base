@@ -1,0 +1,85 @@
+package com.izhuixin.rsps.model;
+
+/**
+ * 推送操作人员位置信息
+ */
+public class AppReqPushOpLocation extends AppReqBase {
+
+    /** 操作人ID */
+    private String operatorId;
+
+    /** 操作人员用户名 */
+    private String operatorName;
+
+    /** 地图位置 */
+    private String address;
+
+    /** 纬度 */
+    private Double latitude;
+
+    /** 经度 */
+    private Double longitude;
+
+    /** 坐标类型 */
+    private Byte coordType;
+
+    public String getOperatorId() {
+        return operatorId;
+    }
+
+    public void setOperatorId(String operatorId) {
+        this.operatorId = operatorId;
+    }
+
+    public String getOperatorName() {
+        return operatorName;
+    }
+
+    public void setOperatorName(String operatorName) {
+        this.operatorName = operatorName;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public Byte getCoordType() {
+        return coordType;
+    }
+
+    public void setCoordType(Byte coordType) {
+        this.coordType = coordType;}
+
+
+    @Override
+    public String toString() {
+        return "AppReqPushOpLocation{" +
+                "operatorId='" + operatorId + '\'' +
+                ", operatorName='" + operatorName + '\'' +
+                ", address='" + address + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                ", coordType=" + coordType +
+                '}';
+    }
+}

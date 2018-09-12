@@ -1,0 +1,158 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>RSPS智能包装系统</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- CSS Libs -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap.min.css}" href="../../lib/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/font-awesome.min.css}" href="../../lib/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/animate.min.css}" href="../../lib/css/animate.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap-switch.min.css}" href="../../lib/css/bootstrap-switch.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/checkbox3.min.css}" href="../../lib/css/checkbox3.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/jquery.dataTables.min.css}" href="../../lib/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/dataTables.bootstrap.css}" href="../../lib/css/dataTables.bootstrap.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/select2.min.css}" href="../../lib/css/select2.min.css">
+
+    <!-- CSS App -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/style.css}" href="../../css/style.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/themes/flat-blue.css}" href="../../css/themes/flat-green.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/toastr/toastr.min.css}" >
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/jquery-confirm/jquery-confirm.min.css}" >
+
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/css/custom/order/my-boxes.css}" href="../../css/themes/flat-green.css">
+</head>
+
+<body class="flat-blue">
+<div class="app-container">
+    <div class="row content-container">
+        <nav th:replace="custom/common/header::custom_navbar_top('订单查询')">
+        </nav>
+        <div th:replace="custom/common/menu::custom_side_menu(100)"></div>
+
+        <!-- Main Content -->
+        <div class="container-fluid">
+            <div class="row" style="padding-top: 70px;padding-left: 15px;padding-right: 15px;">
+                <input id="index_input_order_query" type="text" class="form-control" placeholder="请输入需要查询的订单号" style="text-align: center;height: 45px;" />
+                <!--<div id="index_input_order_query" style="text-align: center;height:45px;line-height: 45px;border: 1px solid lightgrey;">-->
+                    <!--<span style="color: lightgrey">请输入需要查询的订单号</span>-->
+                <!--</div>-->
+            </div>
+
+            <div role="tabpanel" style="padding-top: 10px;">
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs" role="tablist" style="font-size: 16px;">
+                    <li role="presentation" class="active" style="text-align: center;width: 33%">
+                        <a id="index_order_current" href="#current" aria-controls="current" role="tab" data-toggle="tab" style="margin-right: 0px;">当前订单</a>
+                    </li>
+                    <li role="presentation" style="text-align: center;width:34%;">
+                        <a id="index_order_history" href="#history" aria-controls="history" role="tab" data-toggle="tab" style="margin-right: 0px;">历史订单</a>
+                    </li>
+                    <li role="presentation" style="text-align: center;width:33%;">
+                        <a id="index_order_my_box" href="#myBox" aria-controls="myBox" role="tab" data-toggle="tab" style="margin-right: 0px;">
+                            我的包装&nbsp;<span id="index_my_box_count" th:classappend="${myBoxesCount} == 0 ? 'hide':''" style="color: red;" th:text="${myBoxesCount}">88</span>
+                        </a>
+                    </li>
+                </ul>
+                <!-- Tab panes -->
+                <div id="tab_content" class="tab-content" th:attr="pageIndex=${pageIndex}">
+                    <div role="tabpanel" class="tab-pane active" id="current" th:classappend="${pageIndex} == 1 ? 'active':''" style="padding: 0px;">
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="history" th:classappend="${pageIndex} == 2 ? 'active':''" style="padding: 0px;">
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="myBox" th:classappend="${pageIndex} == 3 ? 'active':''" style="padding: 0px;">
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" id="longitude" name="longitude" />
+            <input type="hidden" id="latitude" name="latitude" />
+        </div>
+    </div>
+    <!--<footer th:replace="custom/common/footer::manager_footer">-->
+    <!--</footer>-->
+</div>
+
+<!-- Javascript Libs -->
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.min.js}" src="../../lib/js/jquery.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/bootstrap.min.js}" src="../../lib/js/bootstrap.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/Chart.min.js}" src="../../lib/js/Chart.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/bootstrap-switch.min.js}" src="../../lib/js/bootstrap-switch.min.js"></script>
+
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.matchHeight-min.js}" src="../../lib/js/jquery.matchHeight-min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.dataTables.min.js}" src="../../lib/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/dataTables.bootstrap.min.js}" src="../../lib/js/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/select2.full.min.js}" src="../../lib/js/select2.full.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/ace.js}" src="../../lib/js/ace/ace.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/mode-html.js}" src="../../lib/js/ace/mode-html.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/theme-github.js}" src="../../lib/js/ace/theme-github.js"></script>
+
+<script type="text/javascript" th:src="@{/assets/btzero/js/app.js}" src="../../js/app.js"></script>
+<script type="text/javascript" th:src="@{/assets/toastr/toastr.min.js}"></script>
+<script type="text/javascript" th:src="@{/assets/jquery-confirm/jquery-confirm.min.js}" ></script>
+
+<!--<script type="text/javascript" th:src="@{/assets/btzero/js/index.js}" src="../../js/index.js"></script>-->
+
+<!-- 自定义js -->
+<script type="text/javascript" th:src="@{/assets/js/custom/index.js}"></script>
+<script type="text/javascript" th:src="@{/assets/js/custom/header.js}"></script>
+<script type="text/javascript" th:src="@{/assets/js/custom/order/my-boxes.js}"></script>
+
+<!-- 微信 -->
+<script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+
+</body>
+
+</html>
+
+<script th:inline="javascript">
+
+    var appId = [[${wxConfigModel.appId}]];
+    var noncestr = [[${wxConfigModel.noncestr}]];
+    var timestamp = [[${wxConfigModel.timestamp}]];
+    var signature = [[${wxConfigModel.signature}]];
+
+    wx.config({
+        debug: false,
+        appId: appId,
+        timestamp: timestamp,
+        nonceStr: noncestr,
+        signature: signature,
+        jsApiList: [
+            // 所有要调用的 API 都要加到这个列表中
+            'checkJsApi',
+            'getLocation'
+        ]
+    });
+
+    wx.ready(function () {
+
+        wx.checkJsApi({
+            jsApiList: [
+                'getLocation'
+            ],
+            success: function (res) {
+                if (res.checkResult.getLocation == false) {
+                    console.log('你的微信版本太低，不支持微信JS接口，请升级到最新的微信版本！');
+                    return;
+                }
+            }
+        });
+
+        wx.getLocation({
+            success: function (res) {
+                var latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
+                var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
+                var speed = res.speed; // 速度，以米/每秒计
+                var accuracy = res.accuracy; // 位置精度
+
+                // 设置经纬度
+                $("#longitude").val(longitude);
+                $("#latitude").val(latitude);
+            },
+            cancel: function (res) {
+                console.log('用户拒绝授权获取地理位置');
+            }
+        });
+    });
+</script>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.izhuixin.rsps.dao.OrderSourceDao" >
+
+    <resultMap id="orderSource" type="com.izhuixin.rsps.domain.OrderSource">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="order_id" jdbcType="VARCHAR" property="orderId" />
+        <result column="soruce" jdbcType="BLOB" property="source" />
+        <result column="source_type" jdbcType="VARCHAR" property="sourceType" />
+        <result column="ent_code" jdbcType="VARCHAR" property="entCode" />
+        <result column="operator_id" jdbcType="VARCHAR" property="operatorId" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    </resultMap>
+
+
+    <!--boolean saveOrderSource(OrderSource orderSource);保存图片信息-->
+    <insert id="saveOrderSource">
+        insert into common_order_souce(order_id,soruce,source_type,ent_code,operator_id,create_time) values (#{orderId},#{source},#{sourceType},#{entCode},#{operatorId},#{createTime});
+    </insert>
+
+    <!--OrderSource getOrderSourceByOrderId(String orderId);根据订单id获取图片-->
+    <select id="getOrderSourceByOrderId" resultMap="orderSource">
+        select * from common_order_souce where order_id=#{orderId}
+    </select>
+</mapper>

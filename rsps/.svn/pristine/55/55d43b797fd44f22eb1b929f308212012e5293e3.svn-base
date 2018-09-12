@@ -1,0 +1,7 @@
+package com.izhuixin.rsps.service;
+
+
+public interface BoxBaseService {
+
+   void updateCommunicateNum(String rfid);
+}

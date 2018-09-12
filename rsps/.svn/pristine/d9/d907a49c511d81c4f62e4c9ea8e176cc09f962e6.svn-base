@@ -1,0 +1,512 @@
+package com.izhuixin.rsps.service.impl;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.izhuixin.rsps.common.constant.Constants;
+import com.izhuixin.rsps.common.dba.AbstractCrudService;
+import com.izhuixin.rsps.common.util.IdBuilder;
+import com.izhuixin.rsps.common.util.PasswordUtils;
+import com.izhuixin.rsps.common.vo.web.SysUserInfoVO;
+import com.izhuixin.rsps.common.vo.web.SysUserTopoVO;
+import com.izhuixin.rsps.dao.manual.*;
+import com.izhuixin.rsps.domain.automatic.SysUser;
+import com.izhuixin.rsps.domain.manual.LineEntityInfo;
+import com.izhuixin.rsps.domain.manual.PermissionInfo;
+import com.izhuixin.rsps.domain.manual.SysUserInfo;
+import com.izhuixin.rsps.service.SysUserService;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import javax.annotation.PostConstruct;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+@Service
+public class SysUserServiceImpl extends AbstractCrudService<SysUser> implements SysUserService {
+
+    @Autowired
+    private SysUserDao sysUserDao;
+
+    @Autowired
+    private OperatorInfoDao operatorInfoDao;
+
+    @Autowired
+    private SysPermissionDao sysPermissionDao;
+
+    @Autowired
+    private EnterpriseDao enterpriseDao;
+
+    @Autowired
+    private LineDao lineDao;
+
+    @Autowired
+    private TransactionTemplate transactionTemplate;
+
+    @Value("${domain}")
+    private String domain;
+
+    /** 默认节点图标 */
+    private String defaultSymbol;
+
+    /** 默认节点图标大小 */
+    private List<Integer> defaultSymbolSize;
+
+    @PostConstruct
+    public void initMethod(){
+        StringBuilder sb = new StringBuilder("image://");
+        sb.append(domain);
+        sb.append("/assets/images/manager/admin.png");
+        defaultSymbol = sb.toString();
+
+        defaultSymbolSize = Lists.newArrayList();
+        defaultSymbolSize.add(18);
+        defaultSymbolSize.add(18);
+    }
+
+    /**
+     * 获取管理端用户信息
+     * @param userId
+     * @return
+     */
+    @Override
+    public SysUserInfo getUserInfoByUserId(String userId) {
+        SysUserInfo userInfo = null;
+        try {
+            userInfo = sysUserDao.getUserInfoByUserId(userId);
+        } catch (Exception e) {
+            logger.error(String.format("通过用户Id(%s)获取用户信息出现异常",userId), e);
+        }
+        return userInfo;
+    }
+
+    @Override
+    public SysUserInfoVO getUserInfoVOByUserId(String userId) {
+        SysUserInfoVO vo = null;
+        try {
+            SysUserInfo userInfo = sysUserDao.getUserInfoByUserId(userId);
+            vo = toSysUserInfoVO(userInfo);
+        } catch (Exception e) {
+            logger.error(String.format("通过用户Id(%s)获取用户信息出现异常",userId), e);
+        }
+        return vo;
+    }
+
+    /**
+     * 获取管理端用户信息
+     * @param userName
+     * @return
+     */
+    @Override
+    public SysUserInfo getSysUser(String userName) {
+        SysUserInfo userInfo = null;
+        try {
+            userInfo = sysUserDao.getUserInfo(userName);
+        } catch (Exception e) {
+            logger.error(String.format("通过用户名称(%s)获取用户信息出现异常",userName), e);
+        }
+        return userInfo;
+    }
+
+    /**
+     * 获取企业主账号
+     * @param entId
+     * @return
+     */
+    @Override
+    public SysUserInfo getPrimaryUser(String entId) {
+        SysUserInfo userInfo = null;
+        try {
+            userInfo = sysUserDao.getPrimaryUser(entId);
+        } catch (Exception e) {
+            logger.error(String.format("通过企业ID(%s)获取主账号信息出现异常",entId), e);
+        }
+        return userInfo;
+    }
+
+    /**
+     * 获取该用户的所有子用户ID（不包括自己）
+     * @param userId
+     * @return
+     */
+    @Override
+    public List<String> getDeepSysUserIds(String userId) {
+        List<String> userIds = Lists.newArrayList();
+        getChildUserIds(userId, userIds);
+        return userIds;
+    }
+
+    /**
+     * 获取该用户的所有子用户信息（不包括自己）
+     * @param userId
+     * @return
+     */
+    @Override
+    public List<SysUserInfo> getDeepSysUserInfos(String userId) {
+        List<SysUserInfo> userInfos = Lists.newArrayList();
+        getChildUserInfos(userId, userInfos);
+        return userInfos;
+    }
+
+    /**
+     * 获取该用户的所有子用户信息（不包括自己）
+     * @param userId
+     * @return
+     */
+    @Override
+    public List<SysUserInfoVO> getDeepSysUserInfoVOs(String userId) {
+        List<SysUserInfo> userInfos = Lists.newArrayList();
+        getChildUserInfos(userId, userInfos);
+
+        List<SysUserInfoVO> userInfoVOS = Lists.newArrayList();
+        for (SysUserInfo userInfo : userInfos) {
+            userInfoVOS.add(toSysUserInfoVO(userInfo));
+        }
+        return userInfoVOS;
+    }
+
+    /**
+     * 获取管理用户层级结构
+     * @param userId
+     * @param nickName
+     * @return
+     */
+    @Override
+    public SysUserTopoVO getDeppSysUserTopoInfos(String userId,
+                                                 String nickName,
+                                                 String userName) {
+        SysUserTopoVO sysUserTopoVO = new SysUserTopoVO();
+        sysUserTopoVO.setName(nickName.concat("(" + userName + ")"));
+        sysUserTopoVO.setSymbol(defaultSymbol);
+        sysUserTopoVO.setSymbolSize(defaultSymbolSize);
+        sysUserTopoVO.setChildren(getChildUserTopoInfos(userId));
+        return sysUserTopoVO;
+    }
+
+
+    /**
+     * 保存管理用户
+     * @param sysUserInfoVO
+     */
+    @Override
+    public boolean saveUserInfo(SysUserInfoVO sysUserInfoVO) {
+        boolean res = false;
+        try {
+            sysUserInfoVO.setCreateTime(new Date());
+            sysUserInfoVO.setUserId(IdBuilder.geneate());
+            sysUserInfoVO.setUserPwd(PasswordUtils.md5(Constants.OPERATOR_DEFAULT_PASSWORD));
+            Integer count = sysUserDao.saveSysUser(toSysUserInfo(sysUserInfoVO));
+
+//            // todo 暂时增加这几个权限
+//            sysPermissionDao.saveUserPermission(sysPermissionDao.getPermissionId(ManagerUserPermission.ROLE_SYS_USER_SHOW.getName()), sysUserInfoVO.getUserId());
+//            sysPermissionDao.saveUserPermission(sysPermissionDao.getPermissionId(ManagerUserPermission.ROLE_USER_SHOW.getName()), sysUserInfoVO.getUserId());
+//            sysPermissionDao.saveUserPermission(sysPermissionDao.getPermissionId(ManagerUserPermission.ROLE_LINE_SHOW.getName()), sysUserInfoVO.getUserId());
+
+            if (count > 0) {
+                res = true;
+            } else {
+                logger.warn("保存管理用户失败");
+            }
+        } catch (Exception e) {
+            logger.error("保存管理用户出现异常", e);
+        }
+        return res;
+    }
+
+    /**
+     * 保存管理用户
+     * @param sysUserInfoVO
+     * @return
+     */
+    @Override
+    public boolean updateUserInfo(SysUserInfoVO sysUserInfoVO) {
+        boolean res = false;
+        try {
+            sysUserInfoVO.setModifyTime(new Date());
+
+            Integer count = sysUserDao.updateSysUser(toSysUserInfo(sysUserInfoVO));
+            if (count > 0) {
+                if (sysUserInfoVO.getLevel().intValue() != 1) {
+                    clearSparePermission(sysUserInfoVO.getUserId(), sysUserInfoVO.getPid());
+                }
+                res = true;
+            } else {
+                logger.warn("修改管理用户失败");
+            }
+        } catch (Exception e) {
+            logger.error("修改管理用户出现异常", e);
+        }
+        return res;
+    }
+
+    /**
+     * 重置密码
+     * @param userId
+     * @return
+     */
+    @Override
+    public boolean resetPwd(String userId) {
+        boolean res = false;
+        try {
+            Integer count = sysUserDao.resetPwd(userId, PasswordUtils.md5(Constants.OPERATOR_DEFAULT_PASSWORD));
+            if (count > 0) {
+                res = true;
+            } else {
+                logger.warn(String.format("用户(%s)重置密码失败", userId));
+            }
+        } catch (Exception e) {
+            logger.error(String.format("用户(%s)重置密码出现异常", userId), e);
+        }
+        return res;
+    }
+
+    /**
+     * 删除管理用户
+     * @param userId
+     * @return
+     */
+    @Override
+    public boolean deleteUser(final String userId) {
+        return transactionTemplate.execute(new TransactionCallback<Boolean>() {
+
+            @Override
+            public Boolean doInTransaction(TransactionStatus transactionStatus) {
+                Boolean res = false;
+                try {
+                    List<SysUserInfo> childUsers = Lists.newArrayList();
+                    getChildUserInfos(userId, childUsers);
+                    SysUserInfo curUser = getUserInfoByUserId(userId); // 获取当前用户信息
+                    if (curUser != null) {
+                        childUsers.add(curUser);
+                    }
+
+                    Map<String, String> entInfoMap = Maps.newHashMap();
+                    String entCode = "";
+                    List<String> userIds = Lists.newArrayList();
+                    for (SysUserInfo userInfo : childUsers) {
+                        userIds.add(userInfo.getUserId());
+                        if (entInfoMap.containsKey(userInfo.getEntId())) {
+                            entCode = entInfoMap.get(userInfo.getEntId());
+                        } else {
+                            entCode = enterpriseDao.getEntCodeByEntId(userInfo.getEntId());
+                            if (StringUtils.isNotBlank(entCode)) {
+                                entInfoMap.put(userInfo.getEntId(), entCode);
+                            }
+                        }
+                        if (StringUtils.isNotBlank(entCode)) {
+                            operatorInfoDao.deleteByUserId(userInfo.getUserId(), entCode.concat("_")); // 删除该管理用户的配送员
+                            sysPermissionDao.deleteUserPermission(userInfo.getUserId()); // 删除该管理用户的权限
+                            sysUserDao.deleteSysUser(userInfo.getUserId()); // 删除用户
+                        }
+                    }
+
+                    if (StringUtils.isNotBlank(entCode)) {
+                        List<LineEntityInfo> lineEntityInfos = lineDao.queryUserLines(userIds, entCode.concat("_"));
+                        for (LineEntityInfo info : lineEntityInfos) {
+                            lineDao.removeLine(info.getLineId(), entCode.concat("_"));
+                            lineDao.removeLineRelated(info.getLineId(), entCode.concat("_"));
+                            lineDao.removeLineRelatedOperator(info.getLineId(), entCode.concat("_"));
+                        }
+                    }
+
+                    res = true;
+                } catch (Exception e) {
+                    transactionStatus.setRollbackOnly();
+                    logger.error("删除管理用户相关信息出现异常", e);
+                }
+                return res;
+            }
+        });
+    }
+
+
+    /**
+     * 检测重名
+     * @param userId
+     * @param userName
+     * @return
+     */
+    @Override
+    public boolean checkUserName(String userId, String userName) {
+        boolean res = false;
+        if (StringUtils.isBlank(userId)) {
+            Integer resCount = sysUserDao.checkUserNameForAdd(userName);
+            if (resCount > 0) {
+                res = true;
+            }
+        } else {
+            Integer resCount = sysUserDao.checkUserNameForEdit(userId, userName);
+            if (resCount > 0) {
+                res = true;
+            }
+        }
+        return res;
+    }
+
+    /***
+     * 检测用户密码
+     * @param id
+     * @param oldPwd
+     * @return
+     */
+    @Override
+    public boolean checkPwd(Integer id, String oldPwd) {
+        boolean res = false;
+        try {
+            Integer count = sysUserDao.checkPwd(id, PasswordUtils.md5(oldPwd));
+            if (count > 0) {
+                res = true;
+            }
+        } catch (Exception e) {
+            logger.error(String.format("检测用户(%d)密码出现异常", id), e);
+        }
+        return res;
+    }
+
+    /**
+     * 修改用户密码
+     * @param id
+     * @param newPwd
+     * @return
+     */
+    @Override
+    public boolean updatePwd(Integer id, String newPwd) {
+        boolean res = false;
+        try {
+            Integer count = sysUserDao.updatePwd(id, PasswordUtils.md5(newPwd));
+            if (count > 0) {
+                res = true;
+            }
+        } catch (Exception e) {
+            logger.error(String.format("修改用户(%d)密码出现异常", id), e);
+        }
+        return res;
+    }
+
+    /**
+     * 清理当前用户多余权限（变更当前用户父节点时会产生这个问题）
+     * @param curId
+     * @param pId
+     */
+    private void clearSparePermission(String curId, String pId) {
+        List<PermissionInfo> curPermissions = sysPermissionDao.findPermissionByUserId(curId);
+        List<PermissionInfo> parentPermissions = sysPermissionDao.findPermissionByUserId(pId);
+        for (PermissionInfo curItem : curPermissions) {
+            boolean isContain = false;
+            for (PermissionInfo parentItem : parentPermissions) {
+                if (curItem.getPermissionId().equals(parentItem.getPermissionId())) {
+                    isContain = true;
+                    break;
+                }
+            }
+            if (!isContain) {
+                sysPermissionDao.deleteUserSpecifiedPermission(curId, curItem.getPermissionId());
+            }
+        }
+    }
+
+    /**
+     * 递归获取该用户下所有子用户ID
+     * @param userId
+     * @param ids
+     */
+    private void getChildUserIds(String userId, List<String> ids) {
+        List<String> userIds = sysUserDao.getChildUserIds(userId);
+        ids.addAll(userIds);
+        for (String itemId : userIds) {
+            getChildUserIds(itemId, ids);
+        }
+    }
+
+    /**
+     * 递归获取该用户下所有子用户ID
+     * @param userId
+     * @param userInfos
+     */
+    private void getChildUserInfos(String userId, List<SysUserInfo> userInfos) {
+        List<SysUserInfo> tempUserInfos = sysUserDao.getChildUserInfos(userId);
+        userInfos.addAll(tempUserInfos);
+        for (SysUserInfo item : tempUserInfos) {
+            getChildUserInfos(item.getUserId(), userInfos);
+        }
+    }
+
+
+    /**
+     * 递归获取该用户下所有子用户ID
+     * @param userId
+     */
+    private List<SysUserTopoVO> getChildUserTopoInfos(String userId) {
+        List<SysUserInfo> tempUserInfos = sysUserDao.getChildUserInfos(userId);
+        List<SysUserTopoVO> tempTopoVOs = Lists.newArrayList();
+        SysUserTopoVO sysUserTopoVO = null;
+        for (SysUserInfo item : tempUserInfos) {
+            sysUserTopoVO = new SysUserTopoVO();
+            sysUserTopoVO.setName(item.getNickname().concat("(" + item.getUserName() + ")"));
+            sysUserTopoVO.setSymbol(defaultSymbol);
+            sysUserTopoVO.setSymbolSize(defaultSymbolSize);
+            sysUserTopoVO.setChildren(getChildUserTopoInfos(item.getUserId()));
+            tempTopoVOs.add(sysUserTopoVO);
+        }
+        return tempTopoVOs;
+    }
+
+    /**
+     * SysUserInfoVO --> SysUserInfo
+     * @param vo
+     */
+    private SysUserInfo toSysUserInfo(SysUserInfoVO vo) {
+        SysUserInfo sysUserInfo = new SysUserInfo();
+        sysUserInfo.setId(vo.getId());
+        sysUserInfo.setUserId(vo.getUserId());
+        sysUserInfo.setUserName(vo.getUserName());
+        sysUserInfo.setUserPwd(vo.getUserPwd());
+        sysUserInfo.setNickname(vo.getNickname());
+        sysUserInfo.setTel(vo.getTel());
+        sysUserInfo.setEmail(vo.getEmail());
+        sysUserInfo.setAge(vo.getAge());
+        sysUserInfo.setSex(vo.getSex());
+        sysUserInfo.setLevel(vo.getLevel());
+        sysUserInfo.setPid(vo.getPid());
+        sysUserInfo.setParentNickname(vo.getParentNickname());
+        sysUserInfo.setSex(vo.getStatus());
+        sysUserInfo.setEntId(vo.getEntId());
+        sysUserInfo.setCreateTime(vo.getCreateTime());
+        sysUserInfo.setModifyTime(vo.getModifyTime());
+        sysUserInfo.setEntCode(vo.getEntCode());
+        return sysUserInfo;
+    }
+
+    /**
+     * SysUserInfo --> SysUserInfoVO
+     * @param info
+     */
+    private SysUserInfoVO toSysUserInfoVO(SysUserInfo info) {
+        SysUserInfoVO vo = new SysUserInfoVO();
+        vo.setId(info.getId());
+        vo.setUserId(info.getUserId());
+        vo.setUserName(info.getUserName());
+        vo.setNickname(info.getNickname());
+        vo.setTel(info.getTel());
+        vo.setEmail(info.getEmail());
+        vo.setAge(info.getAge());
+        vo.setSex(info.getSex());
+        vo.setLevel(info.getLevel());
+        vo.setPid(info.getPid());
+        vo.setParentNickname(info.getParentNickname());
+        vo.setSex(info.getStatus());
+        vo.setEntId(info.getEntId());
+        vo.setCreateTime(info.getCreateTime());
+        vo.setModifyTime(info.getModifyTime());
+        vo.setEntCode(info.getEntCode());
+        return vo;
+    }
+
+
+
+}

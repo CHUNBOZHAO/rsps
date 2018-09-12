@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.izhuixin.rsps.dao.manual.BoxOperateDao" >
+
+    <!--通过客户联系人获取包装箱信息-->
+    <!--<select id="getBoxsByLinker" resultType="com.izhuixin.rsps.domain.manual.BoxInfo">-->
+        <!--select * from rsps_box_info bi left join-->
+        <!--(select o.order_id from rsps_order as o-->
+        <!--left join rsps_custom_linker as cl-->
+        <!--on o.customer_id = cl.custom_id-->
+        <!--where cl.linker_id = #{linkerId})-->
+        <!--as o on bi.order_id = o.order_id-->
+    <!--</select>-->
+
+    <!-- 通过客户ID获取客户当前包装箱信息 -->
+    <select id="getCustomCurrentBoxes" resultType="com.izhuixin.rsps.domain.manual.BoxInfo" statementType="STATEMENT">
+        select * from (
+        <foreach collection="entCodes" item="entCode" open="" close="" separator="union">
+            select bi.*, bi.box_name as boxName, bi.order_id as orderId, o.customer as customName, o.create_time as createTime from rsps_${entCode}box_info as bi left join
+            rsps_${entCode}order as o on bi.order_id = o.order_id where
+            o.customer_id = '${customId}' and bi.status in (1,2,5) and bi.sign_status = 0
+        </foreach>
+        ) as temp_table
+    </select>
+
+    <select id="countCustomCurrentBoxes" resultType="INTEGER" statementType="STATEMENT">
+        select sum(count) from (
+        <foreach collection="entCodes" item="entCode" open="" close="" separator="union">
+            select count(*) as count from rsps_${entCode}box_info as bi left join
+            rsps_${entCode}order as o on bi.order_id = o.order_id where
+            o.customer_id = '${customId}' and bi.status in (1,2,5) and bi.sign_status = 0
+        </foreach>
+        ) as count_table
+
+    </select>
+
+    <!-- 通过客户ID获取客户历史订单包装箱信息 -->
+    <select id="getCustomHistoryBoxes" resultType="com.izhuixin.rsps.domain.manual.BoxInfo" statementType="STATEMENT">
+        select * from (
+        <foreach collection="entCodes" item="entCode" open="" close="" separator="union">
+            (select ob.*, ob.box_name as boxName, ob.order_id as orderId, ob.create_time as operateTime, ob.sign_status
+            as signStatus
+            from rsps_${entCode}order_box as ob left join
+            rsps_${entCode}order as o on ob.order_id = o.order_id where
+            o.customer_id = '${customId}' and ob.status = 1)
+        </foreach>
+        ) as temp_table order by create_time desc
+    </select>
+    <select id="countCustomHistoryBoxes" resultType="INTEGER" statementType="STATEMENT">
+        select sum(count) from (
+        <foreach collection="entCodes" item="entCode" open="" close="" separator="union">
+            (select count(*) as count from rsps_${entCode}order_box as ob left join
+            rsps_${entCode}order as o on ob.order_id = o.order_id where
+            o.customer_id = '${customId}' and ob.status = 1)
+        </foreach>
+        ) as count_table
+    </select>
+
+    <!-- 通过客户ID、订单ID获取客户当前包装箱信息 -->
+    <select id="getCustomCurrentBoxesWithOrderId" resultType="com.izhuixin.rsps.domain.manual.BoxInfo" statementType="STATEMENT">
+        select * from (
+        <foreach collection="entCodes" item="entCode" open="" close="" separator="union">
+            select bi.*, bi.box_name as boxName, bi.order_id as orderId, o.customer as customName, o.create_time as createTime from rsps_${entCode}box_info as bi left join
+            rsps_${entCode}order as o on bi.order_id = o.order_id where
+            o.customer_id = '${customId}' and bi.status in (1,2,5)  and bi.sign_status = 0
+            <if test="orderId != null">
+                and bi.order_id like '%${orderId}%'
+            </if>
+        </foreach>
+        ) as temp_table
+    </select>
+
+    <!-- 通过客户ID、订单ID获取客户历史订单包装箱信息 -->
+    <select id="getCustomHistoryBoxesWithOrderId" resultType="com.izhuixin.rsps.domain.manual.BoxInfo" statementType="STATEMENT">
+        select * from (
+        <foreach collection="entCodes" item="entCode" open="" close="" separator="union">
+            select ob.*, ob.box_name as boxName, ob.order_id as orderId, ob.create_time as operateTime, ob.sign_status
+            as signStatus
+            from rsps_${entCode}order_box as ob left join
+            rsps_${entCode}order as o on ob.order_id = o.order_id where
+            o.customer_id = '${customId}' and ob.status = 1
+            <if test="orderId != null">
+                and ob.order_id like '%${orderId}%'
+            </if>
+        </foreach>
+        ) as temp_table
+    </select>
+
+    <!-- 通过客户ID、订单ID获取C端客户历史订单包装箱信息 -->
+    <select id="getCustomerHistoryBoxes" resultType="com.izhuixin.rsps.domain.manual.BoxInfo" statementType="STATEMENT">
+        select * from (
+        <foreach collection="entCodes" item="entCode" open="" close="" separator="union">
+            select ob.*, ob.box_name as boxName, ob.order_id as orderId, ob.create_time as operateTime, ob.sign_status
+            as signStatus
+            from rsps_${entCode}order_box as ob left join
+            rsps_order as o on ob.order_id = o.order_id where ob.status = 1
+            and ( o.customer_id = '${customId}' or o.receiver_tel = '${tel}')
+            <if test="orderId != null">
+                and ob.order_id like '%${orderId}%'
+            </if>
+        </foreach>
+        ) as temp_table order by operateTime desc
+    </select>
+
+
+    <!-- 获取B端我的包装箱 -->
+    <select id="getMyBoxesForB" resultType="com.izhuixin.rsps.domain.manual.BoxInfo" statementType="STATEMENT">
+        select * from (
+        <foreach collection="entCodes" item="entCode" open="" close="" separator="union">
+            select bi.*, bi.box_name as boxName, bi.order_id as orderId, o.customer as customName, o.create_time as createTime, bi.operate_time as operateTime from rsps_${entCode}box_info as bi left join
+            rsps_${entCode}order as o on bi.order_id = o.order_id where
+            o.customer_id = '${customId}' and bi.status = 3  and bi.sign_status = 1
+        </foreach>
+        ) as temp_table
+    </select>
+
+    <!-- 获取C端我的包装箱 -->
+    <select id="getMyBoxesForC" resultType="com.izhuixin.rsps.domain.manual.BoxInfo" statementType="STATEMENT">
+        select * from (
+        <foreach collection="entCodes" item="entCode" open="" close="" separator="union">
+            select bi.*, bi.box_name as boxName, bi.order_id as orderId, o.customer as customName, o.create_time as createTime, bi.operate_time as operateTime from rsps_${entCode}box_info as bi left join
+            rsps_order as o on bi.order_id = o.order_id where
+            o.receiver_tel = '${tel}' and bi.status = 3  and bi.sign_status = 1
+        </foreach>
+        ) as temp_table
+    </select>
+
+    <!-- 获取B端我的包装箱数量 -->
+    <select id="getMyBoxesCountForB" resultType="java.lang.Integer" statementType="STATEMENT">
+        select count(*) from (
+        <foreach collection="entCodes" item="entCode" open="" close="" separator="union">
+            select bi.*, bi.box_name as boxName, bi.order_id as orderId, o.customer as customName, o.create_time as createTime from rsps_${entCode}box_info as bi left join
+            rsps_${entCode}order as o on bi.order_id = o.order_id where
+            o.customer_id = '${customId}' and bi.status = 3  and bi.sign_status = 1
+        </foreach>
+        ) as temp_table
+    </select>
+
+    <!-- 获取C端我的包装箱数量 -->
+    <select id="getMyBoxesCountForC" resultType="java.lang.Integer" statementType="STATEMENT">
+        select count(*) from (
+        <foreach collection="entCodes" item="entCode" open="" close="" separator="union">
+            select bi.*, bi.box_name as boxName, bi.order_id as orderId, o.customer as customName, o.create_time as createTime from rsps_${entCode}box_info as bi left join
+            rsps_order as o on bi.order_id = o.order_id where
+            o.receiver_tel = '${tel}' and bi.status = 3  and bi.sign_status = 1
+        </foreach>
+        ) as temp_table
+    </select>
+
+    <!-- 通过包装ID获取包装箱型号信息 -->
+    <select id="getBoxTypeByBoxId" resultType="com.izhuixin.rsps.domain.manual.BoxTypeInfo" statementType="STATEMENT">
+        select * from rsps_box_type as bt left join rsps_box_base bb on bt.type_id = bb.type where bb.rfid = '${boxId}'
+    </select>
+
+</mapper>

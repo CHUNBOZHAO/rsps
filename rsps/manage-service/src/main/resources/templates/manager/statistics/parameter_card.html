@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<!-- 统计参数显示面板卡片 -->
+<div class="col-md-3">
+    <div class="card">
+        <div class="p-card-body">
+            <div class="col-md-12 p-row">
+                <div class="col-md-6">
+                    <span style="color: #404040">闲置率</span>
+                </div>
+                <div class="col-md-6">
+                    <span></span>
+                </div>
+            </div>
+            <div class="col-md-12 p-row">
+                <div class="col-md-12">
+                    <span style="font-size: 36px;" th:text="${efficiencyVO.idleRate}">38.6</span>
+                </div>
+            </div>
+            <div class="col-md-12 p-row">
+                <div class="col-md-3">
+                    <span>同比</span>
+                </div>
+                <div class="col-md-3 p-padding">
+                    <i class="fa fa-sort-asc" style="color:green"></i>
+                    <span th:text="${efficiencyVO.idleCompareYear}">5.6%</span>
+                </div>
+                <div class="col-md-3">
+                    <span>环比</span>
+                </div>
+                <div class="col-md-3 p-padding">
+                    <i class="fa fa-sort-desc" style="color:red"></i>
+                    <span th:text="${efficiencyVO.idleCompareMonth}">9.6%</span>
+                </div>
+            </div>
+            <div class="col-md-12 p-split-row">
+            </div>
+            <div class="col-md-12 p-row">
+                <div class="col-md-12">
+                    <span>闲置数量：</span>
+                    <span th:text="${efficiencyVO.idleCount}">12306</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="col-md-3">
+    <div class="card">
+        <div class="p-card-body">
+            <div class="col-md-12 p-row">
+                <div class="col-md-6">
+                    <span style="color: #404040">周转率</span>
+                </div>
+                <div class="col-md-6">
+                    <span></span>
+                </div>
+            </div>
+            <div class="col-md-12 p-row">
+                <div class="col-md-12">
+                    <span style="font-size: 36px;" th:text="${efficiencyVO.turnRate}">38.6</span>
+                </div>
+            </div>
+            <div class="col-md-12 p-row">
+                <div class="col-md-3">
+                    <span>同比</span>
+                </div>
+                <div class="col-md-3 p-padding">
+                    <i class="fa fa-sort-asc" style="color:green"></i>
+                    <span th:text="${efficiencyVO.turnCompareYear}">5.6%</span>
+                </div>
+                <div class="col-md-3">
+                    <span>环比</span>
+                </div>
+                <div class="col-md-3 p-padding">
+                    <i class="fa fa-sort-desc" style="color:red"></i>
+                    <span th:text="${efficiencyVO.loseCompareMonth}">9.6%</span>
+                </div>
+            </div>
+            <div class="col-md-12 p-split-row">
+            </div>
+            <div class="col-md-12 p-row">
+                <div class="col-md-12">
+                    <span>闲置数量：</span>
+                    <span th:text="${efficiencyVO.turnCount}">12306</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="col-md-3">
+    <div class="card">
+        <div class="p-card-body">
+            <div class="col-md-12 p-row">
+                <div class="col-md-6">
+                    <span style="color: #404040">遗失率</span>
+                </div>
+                <div class="col-md-6">
+                    <span></span>
+                </div>
+            </div>
+            <div class="col-md-12 p-row">
+                <div class="col-md-12">
+                    <span style="font-size: 36px;" th:text="${efficiencyVO.loseRate}">38.6</span>
+                </div>
+            </div>
+            <div class="col-md-12 p-row">
+                <div class="col-md-3">
+                    <span>同比</span>
+                </div>
+                <div class="col-md-3 p-padding">
+                    <i class="fa fa-sort-asc" style="color:green"></i>
+                    <span th:text="${efficiencyVO.loseCompareYear}">5.6%</span>
+                </div>
+                <div class="col-md-3">
+                    <span>环比</span>
+                </div>
+                <div class="col-md-3 p-padding">
+                    <i class="fa fa-sort-desc" style="color:red"></i>
+                    <span th:text="${efficiencyVO.loseCompareMonth}">9.6%</span>
+                </div>
+            </div>
+            <div class="col-md-12 p-split-row">
+            </div>
+            <div class="col-md-12 p-row">
+                <div class="col-md-12">
+                    <span>闲置数量：</span>
+                    <span th:text="${efficiencyVO.loseCount}">12306</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="col-md-3">
+    <div class="card">
+        <div class="p-card-body">
+            <div class="col-md-12 p-row">
+                <div class="col-md-6">
+                    <span style="color: #404040">过期率</span>
+                </div>
+                <div class="col-md-6">
+                    <span></span>
+                </div>
+            </div>
+            <div class="col-md-12 p-row">
+                <div class="col-md-12">
+                    <span style="font-size: 36px;" th:text="${efficiencyVO.overdueRate}">38.6</span>
+                </div>
+            </div>
+            <div class="col-md-12 p-row">
+                <div class="col-md-3">
+                    <span>同比</span>
+                </div>
+                <div class="col-md-3 p-padding">
+                    <i class="fa fa-sort-asc" style="color:green"></i>
+                    <span th:text="${efficiencyVO.overdueCompareYear}">5.6%</span>
+                </div>
+                <div class="col-md-3">
+                    <span>环比</span>
+                </div>
+                <div class="col-md-3 p-padding">
+                    <i class="fa fa-sort-desc" style="color:red"></i>
+                    <span th:text="${efficiencyVO.overdueCompareMonth}">9.6%</span>
+                </div>
+            </div>
+            <div class="col-md-12 p-split-row">
+            </div>
+            <div class="col-md-12 p-row">
+                <div class="col-md-12">
+                    <span>闲置数量：</span>
+                    <span th:text="${efficiencyVO.overdueCount}">12306</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</html>

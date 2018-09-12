@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.izhuixin.rsps.dao.manual.CustomDao" >
+
+
+  <!-- 通过barcode获取用户ID,从BoxInfo表管理查询 -->
+  <select id="getCustomIdsByBarcode1" resultType="String" statementType="STATEMENT">
+    select jo.customer_id from rsps_${entCode}box_info as bi inner join rsps_${entCode}order as jo on bi.order_id = jo.order_id where bi.barcode = '${barCode}';
+  </select>
+
+  <!-- 通过barcode获取用户ID,从OrderBox表管理查询 -->
+  <select id="getCustomIdsByBarcode2" resultType="String" statementType="STATEMENT">
+    select jo.customer_id from rsps_${entCode}order_box as ob inner join rsps_jhyt_order as jo on ob.order_id = jo.order_id where ob.barcode = '${barCode}';
+  </select>
+
+
+</mapper>

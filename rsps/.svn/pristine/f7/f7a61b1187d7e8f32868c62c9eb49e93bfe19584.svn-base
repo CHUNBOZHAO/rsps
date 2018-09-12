@@ -1,0 +1,121 @@
+package com.izhuixin.rsps.dao.manual;
+
+import com.izhuixin.rsps.domain.manual.SysUserInfo;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface SysUserDao {
+
+
+    /**
+     * 通过用户ID获取用户信息
+     * @param userId
+     * @return
+     */
+    SysUserInfo getUserInfoByUserId(@Param("userId") String userId);
+
+    /**
+     * 通过用户名获取用户信息
+     * @param userName
+     * @return
+     */
+    SysUserInfo getUserInfo(@Param("userName") String userName);
+
+    /**
+     * 获取子用户ID
+     * @param userId
+     * @return
+     */
+    List<String> getChildUserIds(@Param("userId") String userId);
+
+    /**
+     * 获取子用户信息
+     * @param userId
+     * @return
+     */
+    List<SysUserInfo> getChildUserInfos(@Param("userId") String userId);
+
+    /**
+     * 获取企业子用户信息
+     * @param userId
+     * @return
+     */
+    List<SysUserInfo> getEnterpriseChildUserInfos(@Param("userId") String userId);
+
+
+    /**
+     * 获取user_type=1(普通用户的子用户信息)
+     */
+     List<SysUserInfo> getChildUserInfosByUserType(String userId,Integer userType);
+
+    /**
+     * 获取企业主账号
+     * @param entId
+     * @return
+     */
+    SysUserInfo getPrimaryUser(@Param("entId") String entId);
+
+
+    /**
+     * 更新系统用户
+     * @param sysUserInfo
+     * @return
+     */
+    Integer updateSysUser(@Param("sysUserInfo") SysUserInfo sysUserInfo);
+
+    /**
+     * 保存系统用户
+     * @param sysUserInfo
+     * @return
+     */
+    Integer saveSysUser(@Param("sysUserInfo") SysUserInfo sysUserInfo);
+
+    /**
+     * 删除系统用户
+     * @param userId
+     * @return
+     */
+    Integer deleteSysUser(@Param("userId") String userId);
+
+    /**
+     * 重置密码
+     * @param userId
+     * @return
+     */
+    Integer resetPwd(@Param("userId") String userId,
+                     @Param("newPwd") String newPwd);
+
+    /**
+     * 新增用户名检测
+     * @return
+     */
+    Integer checkUserNameForAdd(@Param("userName") String userName);
+
+
+    /**
+     * 编辑用户名检测
+     * @return
+     */
+    Integer checkUserNameForEdit(@Param("userId") String userId, @Param("userName") String userName);
+
+
+    /**
+     * 检测密码
+     * @param id
+     * @param oldPwd
+     * @return
+     */
+    Integer checkPwd(@Param("id") Integer id, @Param("oldPwd") String oldPwd);
+
+
+    /**
+     * 修改密码
+     * @param id
+     * @param newPwd
+     * @return
+     */
+    Integer updatePwd(@Param("id") Integer id, @Param("newPwd") String newPwd);
+}

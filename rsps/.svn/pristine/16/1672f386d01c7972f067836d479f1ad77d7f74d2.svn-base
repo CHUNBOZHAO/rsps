@@ -1,0 +1,11 @@
+package com.izhuixin.rsps.service;
+
+import org.springframework.http.ResponseEntity;
+
+public interface BoxOperateRecordReportService {
+    ResponseEntity<byte[]> exportCSV(String entCode,
+                                     String beginDate,
+                                     String endDate,
+                                     String line,
+                                     String operator);
+}

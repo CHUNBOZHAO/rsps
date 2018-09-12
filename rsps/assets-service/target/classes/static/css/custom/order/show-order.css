@@ -1,0 +1,36 @@
+.btn-order-create {
+    height: 45px;
+    text-align: center;
+    background-color: #2caef5;
+    color: white;
+    font-size: 1.2em;
+    line-height: 45px;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    z-index: 999;
+    cursor: pointer;
+}
+
+.address-book {
+    float: left;
+    text-align: right;
+    width: 50%;
+    padding: 1.2em 20px;
+    cursor: pointer;
+    color: #2caef5;
+    font-size: 1.0em
+}
+
+.address-book-span {
+    cursor: pointer;
+}
+
+.box-selected-div {
+    height: 35px;
+    padding: 10px;
+    background-color: #eeeeee;
+    margin-bottom: 5px;
+}
+

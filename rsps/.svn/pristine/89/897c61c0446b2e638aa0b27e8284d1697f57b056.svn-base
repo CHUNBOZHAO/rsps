@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <title>RSPS管理平台</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="icon" type="image/x-icon" th:href="@{/assets/images/manager/favicon.png}">
+
+    <!-- CSS Libs -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap.min.css}" href="../../../../../../../assets-service/src/main/resources/static/btzero/lib/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/font-awesome.min.css}" href="../../../../../../../assets-service/src/main/resources/static/btzero/lib/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/animate.min.css}" href="../../../../../../../assets-service/src/main/resources/static/btzero/lib/css/animate.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap-switch.min.css}" href="../../../../../../../assets-service/src/main/resources/static/btzero/lib/css/bootstrap-switch.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/checkbox3.min.css}" href="../../../../../../../assets-service/src/main/resources/static/btzero/lib/css/checkbox3.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/jquery.dataTables.min.css}" href="../../../../../../../assets-service/src/main/resources/static/btzero/lib/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/dataTables.bootstrap.css}" href="../../../../../../../assets-service/src/main/resources/static/btzero/lib/css/dataTables.bootstrap.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/select2.min.css}" href="../../../../../../../assets-service/src/main/resources/static/btzero/lib/css/select2.min.css">
+
+    <!-- CSS App -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/style.css}" href="../../../../../../../assets-service/src/main/resources/static/btzero/css/style.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/themes/flat-blue.css}" href="../../../../../../../assets-service/src/main/resources/static/btzero/css/themes/flat-green.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/bootstrap-datepicker/css/bootstrap-datepicker3.css}"  href="../../../../../../../assets-service/src/main/resources/static/bootstrap-datepicker/css/bootstrap-datepicker3.css">
+
+</head>
+
+<body class="flat-blue">
+<div class="app-container">
+    <div class="row content-container">
+        <nav th:replace="manager/common/header::manager_navbar_top('运营总览','')">
+        </nav>
+        <div th:replace="manager/common/menu::manager_side_menu(900)"></div>
+
+        <!-- Main Content -->
+        <div class="container-fluid">
+            <div class="side-body padding-top">
+                <!-- 统计数字显示区域 -->
+                <div class="row" id="s_parameter_card">
+
+                </div>
+
+                <!-- 统计图表及排名显示区域 -->
+                <div class="row" id="s_tab_card">
+
+                </div>
+
+                <!--<div class="row" style="height: 30px;width: 100%;">-->
+                    <!--<div class="col-md-6">-->
+                        <!--<ul class="breadcrumb" style="background-color:transparent;">-->
+                            <!--<li>-->
+                                <!--<a href="#" id="clickA" th:attr="effi='idle'"><span style="font-size:20px">闲置率</span></a>-->
+                            <!--</li>-->
+                            <!--<li>-->
+                                <!--<a href="#" id="clickB"  th:attr="effi='turnover'"><span style="font-size:20px">周转率</span></a>-->
+                            <!--</li>-->
+                            <!--<li>-->
+                                <!--<a href="#" id="clickC"  th:attr="effi='lose'"><span style="font-size:20px">遗失率</span></a>-->
+                            <!--</li>-->
+                            <!--<li>-->
+                                <!--<a href="#" id="clickD"  th:attr="effi='overdue'"><span style="font-size:20px">过期率</span></a>-->
+                            <!--</li>-->
+                        <!--</ul>-->
+                    <!--</div>-->
+
+                    <!--<div class="col-md-6" style="text-align:right;vertical-align:middle;">-->
+                        <!--<div class="row">-->
+                            <!--<div class="col-md-6" style="">-->
+                                <!--<span style="width:200px;font-size:20px"><a href="" id="day" th:attr="type='day'">日</a></span>&nbsp;&nbsp;&nbsp;&nbsp;-->
+                                <!--<span style="width:200px;font-size:20px"><a href="" id="week">周</a></span>&nbsp;&nbsp;&nbsp;&nbsp;-->
+                                <!--<span style="width:200px;font-size:20px"><a href="" id="month">月</a></span>&nbsp;&nbsp;&nbsp;&nbsp;-->
+                                <!--<span style="width:200px;font-size:20px"><a href="" id="year">年</a></span>&nbsp;&nbsp;&nbsp;&nbsp;-->
+                            <!--</div>-->
+
+                            <!--<div class="input-daterange input-group col-md-6" id="datepicker" style="height: 30px;width: 300px;float:right;">-->
+
+                                <!--<input class="input-sm form-control" name="start" id="beginDate" th:value="${defaultBeginDate}"/>-->
+                                <!--<span class="input-group-addon">to</span>-->
+                                <!--<input class="input-sm form-control" name="end" id="endDate" th:value="${defaultEndDate}"/>-->
+                                <!--&lt;!&ndash; <span style="font-size:18px">日 周 月 年</span>&ndash;&gt;-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+
+                <!--</div>-->
+                <!--<div style="height:500px;width:15%;float:right;margin-left:0px;margin-top:0px;">-->
+                    <!--<div id="top10" class="col-xs-12">-->
+
+                        <!--<div style="margin-bottom:5px" class="row">-->
+                            <!--<div class="col-md-6" style="margin-right:0px;padding-right:0px"><span style="font-size:19px;font-weight:bold;">企业闲置率排名</span></div>-->
+                           <!--&lt;!&ndash; <select class="form-control" name="entName" id="myInput" class="btn btn-default">-->
+                                <!--<option value="0" selected="selected">搜索框</option>-->
+                            <!--</select>&ndash;&gt;-->
+                            <!--<div class="input-group col-md-6" style="width:168px;height:30px;">-->
+                                <!--<input type="text" class="form-control" placeholder="企业名">-->
+                                <!--<span class="input-group-btn">-->
+                                <!--<button class="btn btn-default" type="button" style="margin-top:0px;margin-bottom:0px;">Go!</button>-->
+                                <!--</span>-->
+                            <!--</div>-->
+
+                        <!--</div>-->
+                        <!--<div class="row">-->
+                            <!--<div class="col-md-6"><i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;<span style="font-size:19px" id="all">总体</span></div>-->
+                            <!--<div class="col-md-6" style="text-align:right;"><span style="font-size:19px" th:text="${idle_rate}">50.23%</span></div>-->
+                        <!--</div>-->
+                        <!--<div th:each="rank,stat:${rankingVOS}">-->
+                            <!--<div class="row">-->
+                                <!--<div class="col-md-6"><i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;<span style="font-size:19px" th:text="${rank.entName}" th:attr="entId=${rank.entId}" class="changEnt"></span></div>-->
+                                <!--<div class="col-md-6" style="text-align:right;"><span style="font-size:19px" th:text="${rank.idleRateVO}"></span></span></div>-->
+                            <!--</div>-->
+                        <!--</div>-->
+
+
+
+                       <!--&lt;!&ndash; <div class="row">-->
+                            <!--<div class="col-md-6"><i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;<span style="font-size:19px">华东医药</span></div>-->
+                            <!--<div class="col-md-6" style="text-align:right;"><span style="font-size:19px">50.23%</span></div>-->
+                        <!--</div>-->
+                        <!--<div class="row">-->
+                            <!--<div class="col-md-6"><i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;<span style="font-size:19px">国药湖北</span></div>-->
+                            <!--<div class="col-md-6" style="text-align:right;"><span style="font-size:19px">50.23%</span></div>-->
+                        <!--</div>-->
+                        <!--<div class="row">-->
+                            <!--<div class="col-md-6"><i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;<span style="font-size:19px">温州英特</span></div>-->
+                            <!--<div class="col-md-6" style="text-align:right;"><span style="font-size:19px">50.23%</span></div>-->
+                        <!--</div>-->
+                        <!--<div class="row">-->
+                            <!--<div class="col-md-6"><i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;<span style="font-size:19px">XXX</span></div>-->
+                            <!--<div class="col-md-6" style="text-align:right;"><span style="font-size:19px">50.23%</span></div>-->
+                        <!--</div>-->
+                        <!--<div class="row">-->
+                            <!--<div class="col-md-6"><i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;<span style="font-size:19px">XXX</span></div>-->
+                            <!--<div class="col-md-6" style="text-align:right;"><span style="font-size:19px">50.23%</span></div>-->
+                        <!--</div>-->
+                        <!--<div class="row">-->
+                            <!--<div class="col-md-6"><i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;<span style="font-size:19px">XXX</span></div>-->
+                            <!--<div class="col-md-6" style="text-align:right;"><span style="font-size:19px">50.23%</span></div>-->
+                        <!--</div>-->
+                        <!--<div class="row">-->
+                            <!--<div class="col-md-6"><i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;<span style="font-size:19px">XXX</span></div>-->
+                            <!--<div class="col-md-6" style="text-align:right;"><span style="font-size:19px">50.23%</span></div>-->
+                        <!--</div>-->
+                        <!--<div class="row">-->
+                            <!--<div class="col-md-6"><i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;<span style="font-size:19px">XXX</span></div>-->
+                            <!--<div class="col-md-6" style="text-align:right;"><span style="font-size:19px">50.23%</span></div>-->
+                        <!--</div>-->
+                        <!--<div class="row">-->
+                            <!--<div class="col-md-6"><i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;<span style="font-size:19px">XXX</span></div>-->
+                            <!--<div class="col-md-6" style="text-align:right;"><span style="font-size:19px">50.23%</span></div>-->
+                        <!--</div>-->
+                        <!--<div class="row">-->
+                            <!--<div class="col-md-6"><i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;<span style="font-size:19px">XXX</span></div>-->
+                            <!--<div class="col-md-6" style="text-align:right;"><span style="font-size:19px">50.23%</span></div>-->
+                        <!--</div>-->
+                        <!--<div class="row">-->
+                            <!--<div class="col-md-6"><i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;<span style="font-size:19px">XXX</span></div>-->
+                            <!--<div class="col-md-6" style="text-align:right;"><span style="font-size:19px">50.23%</span></div>-->
+                        <!--</div>&ndash;&gt;-->
+
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="row" style="height: 800px;width:85%;overflow:visible;margin-left:0px">-->
+                        <!--<div class="col-xs-12">-->
+                        <!--<div class="card primary" id="box_statistics_column" style="height: 700px;width: 100%;">-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
+
+            </div>
+        </div>
+    </div>
+    <footer th:replace="manager/common/footer::manager_footer">
+    </footer>
+</div>
+
+<!-- Javascript Libs -->
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.min.js}" src="../../../../../../../assets-service/src/main/resources/static/btzero/lib/js/jquery.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/bootstrap.min.js}" src="../../../../../../../assets-service/src/main/resources/static/btzero/lib/js/bootstrap.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/Chart.min.js}" src="../../../../../../../assets-service/src/main/resources/static/btzero/lib/js/Chart.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/bootstrap-switch.min.js}" src="../../../../../../../assets-service/src/main/resources/static/btzero/lib/js/bootstrap-switch.min.js"></script>
+
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.matchHeight-min.js}" src="../../../../../../../assets-service/src/main/resources/static/btzero/lib/js/jquery.matchHeight-min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.dataTables.min.js}" src="../../../../../../../assets-service/src/main/resources/static/btzero/lib/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/dataTables.bootstrap.min.js}" src="../../../../../../../assets-service/src/main/resources/static/btzero/lib/js/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/select2.full.min.js}" src="../../../../../../../assets-service/src/main/resources/static/btzero/lib/js/select2.full.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/ace.js}" src="../../../../../../../assets-service/src/main/resources/static/btzero/lib/js/ace/ace.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/mode-html.js}" src="../../../../../../../assets-service/src/main/resources/static/btzero/lib/js/ace/mode-html.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/theme-github.js}" src="../../../../../../../assets-service/src/main/resources/static/btzero/lib/js/ace/theme-github.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/js/app.js}" src="../../../../../../../assets-service/src/main/resources/static/btzero/js/app.js"></script>
+
+<script type="text/javascript" th:src="@{/assets/echarts/echarts.common.min.js}"></script>
+
+<!-- jQuery Plugin  -->
+<script type="text/javascript" th:src="@{/assets/jquery-confirm/jquery-confirm.min.js}" ></script>
+<script type="text/javascript" th:src="@{/assets/toastr/toastr.min.js}"></script>
+<script type="text/javascript" th:src="@{/assets/bootstrap-datepicker/js/bootstrap-datepicker.js}"></script>
+<script type="text/javascript" th:src="@{/assets/bootstrap-datepicker/locales/bootstrap-datepicker.zh-CN.min.js}"></script>
+
+<!-- 自定义js -->
+<script type="text/javascript" th:src="@{/assets/js/manager/header.js}"></script>
+
+<!--<script type="text/javascript" th:src="@{/assets/js/manager/statistices/statistices-index.js}"></script>-->
+
+<script type="text/javascript">
+    
+    $(document).ready(function () {
+
+
+        loadParamerterPage();
+
+
+        loadTabPage();
+
+        // 加载参数卡片数据
+        function loadParamerterPage() {
+            $.ajax({
+                url: "/manager/statistics/parameter/card/show",
+                dataType:"html",
+                success:function (content) {
+                    $("#s_parameter_card").html(content);
+                }
+            });
+        }
+
+        // 加载tab页面
+        function loadTabPage() {
+            $.ajax({
+                url: "/manager/statistics/tab/card/show",
+                dataType:"html",
+                success:function (content) {
+                    $("#s_tab_card").html(content);
+                }
+            });
+        }
+
+
+    });
+    
+</script>
+
+</body>
+
+</html>

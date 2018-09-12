@@ -1,0 +1,19 @@
+package com.izhuixin.rsps.service.feign;
+
+import com.izhuixin.rsps.pojo.Order;
+import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@FeignClient(value = "order-service")
+public interface FeignService {
+
+    /**
+     **保存订单信息
+     * @param order
+     * @return
+     */
+    @RequestMapping("v1/orderData/commonOrder/save")
+    boolean saveOrder(@RequestBody Order order);
+
+}

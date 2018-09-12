@@ -1,0 +1,193 @@
+package com.izhuixin.rsps.service.impl;
+
+import com.google.common.collect.Lists;
+import com.izhuixin.rsps.common.dba.BaseAbstractService;
+import com.izhuixin.rsps.common.vo.web.PermissionInfoVO;
+import com.izhuixin.rsps.dao.manual.SysPermissionDao;
+import com.izhuixin.rsps.domain.manual.PermissionInfo;
+import com.izhuixin.rsps.service.PermissionService;
+import com.izhuixin.rsps.service.SysUserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import java.util.Arrays;
+import java.util.List;
+
+@Service
+public class PermissionServiceImpl extends BaseAbstractService implements PermissionService {
+
+    @Autowired
+    private SysPermissionDao sysPermissionDao;
+
+    @Autowired
+    private TransactionTemplate transactionTemplate;
+
+    @Autowired
+    private SysUserService sysUserService;
+
+    /**
+     * 获取所有权限
+     * @return
+     */
+    @Override
+    public List<PermissionInfo> findAllPermissions() {
+        List<PermissionInfo> permissions = null;
+        try {
+            permissions = sysPermissionDao.findAllPermissions();
+        } catch (Exception e) {
+            logger.error(String.format("获取所有权限出现异常"), e);
+        }
+        if (permissions == null) {
+            permissions = Lists.newArrayList();
+        }
+        return permissions;
+    }
+
+    /**
+     * 通过用户的所有权限
+     * @param userId
+     * @return
+     */
+    @Override
+    public List<PermissionInfo> findPermissionByUserId(String userId) {
+        List<PermissionInfo> permissions = null;
+        try {
+            permissions = sysPermissionDao.findPermissionByUserId(userId);
+        } catch (Exception e) {
+            logger.error(String.format("获取所有权限出现异常"), e);
+        }
+        if (permissions == null) {
+            permissions = Lists.newArrayList();
+        }
+        return permissions;
+    }
+
+//    @Override
+//    public List<PermissionInfoVO> findPermissionVOByUserId(String userId) {
+//        List<PermissionInfoVO> vos = null;
+//        try {
+//            List<PermissionInfo> permissions = sysPermissionDao.findPermissionByUserId(userId);
+//            for (PermissionInfo permissionInfo : permissions) {
+//                PermissionInfoVO vo = toPermissionInfoVO(permissionInfo);
+//                vos.add(vo);
+//            }
+//        } catch (Exception e) {
+//            logger.error(String.format("获取所有权限出现异常"), e);
+//        }
+//        if (vos == null) {
+//            vos = Lists.newArrayList();
+//        }
+//        return vos;
+//    }
+
+    /**
+     * 获取用户权限信息
+     * @param curUserId
+     * @param targetUserId
+     * @return
+     */
+    @Override
+    public List<PermissionInfoVO> getPermissionInfoByUser(String curUserId, String targetUserId) {
+        List<PermissionInfoVO> vos = Lists.newArrayList();
+        List<PermissionInfo> permissions = sysPermissionDao.findPermissionByUserId(curUserId);
+        List<PermissionInfo> targetPermissions = sysPermissionDao.findPermissionByUserId(targetUserId);
+        for (PermissionInfo permissionInfo : permissions) {
+            PermissionInfoVO vo = toPermissionInfoVO(permissionInfo);
+            for (PermissionInfo targetPermissionInfo : targetPermissions) {
+                if (permissionInfo.getPermissionId().equals(targetPermissionInfo.getPermissionId())) {
+                    vo.setHasChecked(true);
+                    break;
+                }
+            }
+            vos.add(vo);
+        }
+        return vos;
+    }
+
+    @Override
+    public List<PermissionInfoVO> getPermissionInfoByUserId(String targetUserId) {
+
+        List<PermissionInfoVO> vos = Lists.newArrayList();
+        List<PermissionInfo> permissions = sysPermissionDao.findAllPermissions();
+        List<PermissionInfo> targetPermissions = sysPermissionDao.findPermissionByUserId(targetUserId);
+        for (PermissionInfo permissionInfo : permissions) {
+            PermissionInfoVO vo = toPermissionInfoVO(permissionInfo);
+            for (PermissionInfo targetPermissionInfo : targetPermissions) {
+                if (permissionInfo.getPermissionId().equals(targetPermissionInfo.getPermissionId())) {
+                    vo.setHasChecked(true);
+                    break;
+                }
+            }
+            vos.add(vo);
+        }
+
+        return vos;
+
+    }
+
+    /**
+     * 设置权限
+     * @param targetUserId
+     * @param permissionIds
+     * @return
+     */
+    @Override
+    public boolean settingPermission(final String targetUserId, final String[] permissionIds) {
+        return transactionTemplate.execute(new TransactionCallback<Boolean>() {
+            @Override
+            public Boolean doInTransaction(TransactionStatus transactionStatus) {
+                boolean res = false;
+                try {
+                    List<String> childUserIds = sysUserService.getDeepSysUserIds(targetUserId);
+
+                    // 该用户移除的权限，在该用户子用户中同步移除
+                    List<String> permissionIdList = Arrays.asList(permissionIds);
+                    List<String> removedPermissionIds = Lists.newArrayList();
+                    List<PermissionInfo> curTargetUserPermissionInfos = sysPermissionDao.findPermissionByUserId(targetUserId); // 当前用户的权限
+                    for (PermissionInfo curItem : curTargetUserPermissionInfos) {
+                        if (!permissionIdList.contains(curItem.getPermissionId())) {
+                            removedPermissionIds.add(curItem.getPermissionId());
+                        }
+                    }
+                    for (String itemUserId : childUserIds) {
+                        for (String itemDelPermissionId : removedPermissionIds) {
+                            sysPermissionDao.deleteUserSpecifiedPermission(itemUserId, itemDelPermissionId);
+                        }
+                    }
+
+                    // 删除该用户权限
+                    sysPermissionDao.deleteUserPermission(targetUserId);
+                    for (String permissionId : permissionIds) {
+                        sysPermissionDao.saveUserPermission(permissionId, targetUserId);
+                    }
+                    res = true;
+                } catch (Exception e) {
+                    transactionStatus.setRollbackOnly();
+                    logger.error(String.format("设置用户(%s)权限出现异常", targetUserId), e);
+                }
+                return res;
+            }
+        });
+    }
+
+    /**
+     * PermissionInfo --> PermissionInfoVO
+     * @param permissionInfo
+     * @return
+     */
+    private PermissionInfoVO toPermissionInfoVO(PermissionInfo permissionInfo) {
+        PermissionInfoVO permissionInfoVO = new PermissionInfoVO();
+        permissionInfoVO.setId(permissionInfo.getId());
+        permissionInfoVO.setName(permissionInfo.getName());
+        permissionInfoVO.setDescr(permissionInfo.getDescr());
+        permissionInfoVO.setModuleId(permissionInfo.getModuleId());
+        permissionInfoVO.setModuleName(permissionInfo.getModuleName());
+        permissionInfoVO.setPid(permissionInfo.getPid());
+        permissionInfoVO.setPermissionId(permissionInfo.getPermissionId());
+        permissionInfoVO.setHasChecked(false);
+        return permissionInfoVO;
+    }
+}

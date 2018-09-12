@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <title>RSPS管理平台</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="icon" type="image/x-icon" th:href="@{/assets/images/manager/favicon.png}">
+
+    <!-- CSS Libs -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap.min.css}" href="../../../../../../../assets-service/src/main/resources/static/btzero/lib/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/font-awesome.min.css}" href="../../../../../../../assets-service/src/main/resources/static/btzero/lib/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/animate.min.css}" href="../../../../../../../assets-service/src/main/resources/static/btzero/lib/css/animate.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap-switch.min.css}" href="../../../../../../../assets-service/src/main/resources/static/btzero/lib/css/bootstrap-switch.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/checkbox3.min.css}" href="../../../../../../../assets-service/src/main/resources/static/btzero/lib/css/checkbox3.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/jquery.dataTables.min.css}" href="../../../../../../../assets-service/src/main/resources/static/btzero/lib/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/dataTables.bootstrap.css}" href="../../../../../../../assets-service/src/main/resources/static/btzero/lib/css/dataTables.bootstrap.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/select2.min.css}" href="../../../../../../../assets-service/src/main/resources/static/btzero/lib/css/select2.min.css">
+
+    <!-- CSS App -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/style.css}" href="../../../../../../../assets-service/src/main/resources/static/btzero/css/style.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/themes/flat-blue.css}" href="../../../../../../../assets-service/src/main/resources/static/btzero/css/themes/flat-green.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/bootstrap-datepicker/css/bootstrap-datepicker3.css}"  href="../../../../../../../assets-service/src/main/resources/static/bootstrap-datepicker/css/bootstrap-datepicker3.css">
+
+    <!--my CSS-->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/css/parameter-card.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/css/tab-card.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/css/ranking-area.css}">
+</head>
+
+<body class="flat-blue">
+<div class="app-container">
+    <div class="row content-container">
+        <nav th:replace="manager/common/header::manager_navbar_top('运营总览','')">
+        </nav>
+        <div th:replace="manager/common/menu::manager_side_menu(900)"></div>
+
+        <!-- Main Content -->
+        <div class="container-fluid">
+            <div class="side-body padding-top">
+                <!-- 统计数字显示区域 -->
+                <div class="row" id="s_parameter_card">
+
+                </div>
+
+                <!-- 统计图表及排名显示区域 -->
+                <div class="row" id="s_tab_card">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer th:replace="manager/common/footer::manager_footer">
+    </footer>
+</div>
+
+<!-- Javascript Libs -->
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.min.js}" src="../../../../../../../assets-service/src/main/resources/static/btzero/lib/js/jquery.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/bootstrap.min.js}" src="../../../../../../../assets-service/src/main/resources/static/btzero/lib/js/bootstrap.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/Chart.min.js}" src="../../../../../../../assets-service/src/main/resources/static/btzero/lib/js/Chart.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/bootstrap-switch.min.js}" src="../../../../../../../assets-service/src/main/resources/static/btzero/lib/js/bootstrap-switch.min.js"></script>
+
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.matchHeight-min.js}" src="../../../../../../../assets-service/src/main/resources/static/btzero/lib/js/jquery.matchHeight-min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.dataTables.min.js}" src="../../../../../../../assets-service/src/main/resources/static/btzero/lib/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/dataTables.bootstrap.min.js}" src="../../../../../../../assets-service/src/main/resources/static/btzero/lib/js/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/select2.full.min.js}" src="../../../../../../../assets-service/src/main/resources/static/btzero/lib/js/select2.full.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/ace.js}" src="../../../../../../../assets-service/src/main/resources/static/btzero/lib/js/ace/ace.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/mode-html.js}" src="../../../../../../../assets-service/src/main/resources/static/btzero/lib/js/ace/mode-html.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/theme-github.js}" src="../../../../../../../assets-service/src/main/resources/static/btzero/lib/js/ace/theme-github.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/js/app.js}" src="../../../../../../../assets-service/src/main/resources/static/btzero/js/app.js"></script>
+
+<script type="text/javascript" th:src="@{/assets/echarts/echarts.common.min.js}"></script>
+
+<!-- jQuery Plugin  -->
+<script type="text/javascript" th:src="@{/assets/jquery-confirm/jquery-confirm.min.js}" ></script>
+<script type="text/javascript" th:src="@{/assets/toastr/toastr.min.js}"></script>
+<script type="text/javascript" th:src="@{/assets/bootstrap-datepicker/js/bootstrap-datepicker.js}"></script>
+<script type="text/javascript" th:src="@{/assets/bootstrap-datepicker/locales/bootstrap-datepicker.zh-CN.min.js}"></script>
+
+<!-- 自定义js -->
+<script type="text/javascript" th:src="@{/assets/js/manager/header.js}"></script>
+
+<script type="text/javascript" th:src="@{/assets/js/manager/statistics/statistices-index.js}"></script>
+<!--<script type="text/javascript" th:src="@{/assets/js/manager/statistics/tab-card.js}"></script>-->
+</body>
+
+</html>

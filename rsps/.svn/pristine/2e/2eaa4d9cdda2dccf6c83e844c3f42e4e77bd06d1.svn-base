@@ -1,0 +1,162 @@
+package com.izhuixin.rsps.controller;
+
+import com.google.gson.Gson;
+import com.izhuixin.rsps.common.vo.web.DataTableReqDataVO;
+import com.izhuixin.rsps.common.vo.web.EntNameVO;
+import com.izhuixin.rsps.common.vo.web.EnterpriseAndUserInfo;
+import com.izhuixin.rsps.service.BoxBaseService;
+import com.izhuixin.rsps.service.EnterpriseAndUserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
+
+@RequestMapping("boxBase")
+@Controller
+public class ManagerBoxBaseController {
+
+    @Autowired
+    private BoxBaseService boxBaseService;
+    @Autowired
+    private EnterpriseAndUserService enterpriseAndUserService;
+
+    /**
+     * 包装箱管理主页
+     * @return
+     */
+    @RequestMapping("/list/show")
+    public String listShow(ModelMap map) {
+
+        List<EnterpriseAndUserInfo> euInfos = enterpriseAndUserService.getAllEnterpriseAndUserInfo();
+        List<EntNameVO> entNames = new ArrayList<>();
+        for (EnterpriseAndUserInfo enterprise : euInfos) {
+            EntNameVO entName = new EntNameVO();
+            entName.setEntName(enterprise.getEntName());
+            entName.setEntId(enterprise.getEntId());
+            entNames.add(entName);
+
+        }
+        map.put("entNames",entNames);
+        return "manager/boxBase/box_base";
+    }
+
+    /**
+     * ajax加载数据
+     */
+    @RequestMapping("/list/content")
+    public String listContent(ModelMap map){
+
+//        List<BoxBaseInfoVO> boxBaseInfoVOS = boxBaseService.getAllBoxBaseInfoVO();
+//        map.put("boxBaseInfoVOS",boxBaseInfoVOS);
+        return "manager/boxBase/box_base_list_content";
+    }
+
+    /**
+     * 加载数据
+     */
+    @RequestMapping("/list/data")
+    @ResponseBody
+    public String listData(HttpServletRequest request,DataTableReqDataVO dataTableReqDataVO){
+
+        Gson gson = new Gson();
+        return gson.toJson(boxBaseService.getboxBaseInfoVOPage(dataTableReqDataVO));
+    }
+    /**
+     * 包装箱详情页面
+     */
+    @RequestMapping("/list/box/detail")
+    public String listDetail(HttpServletRequest request,ModelMap map){
+
+        map.put("boxDetail",boxBaseService.getBoxBaseById(Integer.parseInt(request.getParameter("id"))));
+
+        return "manager/boxBase/box_detail";
+    }
+
+//    /**
+//     * 显示包装箱添加和编辑界面
+//     * @return
+//     *//*
+//    @RequestMapping("/addOrEdit/show")
+//    public String showAddorEdit(HttpServletRequest request,ModelMap map){
+//
+//        BoxBaseInfoVO boxBaseInfoVO = new BoxBaseInfoVO();
+//        String id  =request.getParameter("id");
+//
+//        List<EnterpriseAndUserInfo> euInfos = enterpriseAndUserService.getAllEnterpriseAndUserInfo();
+//        List<EntNameVO> entNames = new ArrayList<>();
+//        for (EnterpriseAndUserInfo enterprise : euInfos) {
+//            EntNameVO entName = new EntNameVO();
+//            entName.setEntName(enterprise.getEntName());
+//            entNames.add(entName);
+//        }
+//
+//        if(id==null){
+//            //显示添加界面
+//            map.put("mode","add");
+//            map.put("boxBaseInfo",boxBaseInfoVO);
+//            map.put("entNames",entNames);
+//        }else {
+//            //显示编辑页面
+//            map.put("mode","edit");
+//            //通过id获取包装箱信息
+//            boxBaseInfoVO = boxBaseService.getBoxBaseById(Integer.parseInt(id));
+//            map.put("boxBaseInfo",boxBaseInfoVO);
+//            map.put("entNames",entNames);
+//
+//        }
+//        return "manager/boxBase/box_base_add";
+//    }
+//
+//    *//**
+//     * 保存和编辑操作
+//     *//*
+//    @RequestMapping("/saveOrUpdate/handle")
+//    @ResponseBody
+//    public String saveOrUpdateHandle(BoxBaseInfoVO boxBaseInfoVO){
+//        JsonObject jsonObject = new JsonObject();
+//        jsonObject.addProperty("result", "failed");
+//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        boxBaseInfoVO.setCreateTime(simpleDateFormat.format(new Date()));
+//
+//        if(boxBaseInfoVO.getId()==null){
+//            //保存
+//            if(boxBaseService.checkRfid(boxBaseInfoVO.getRfid(),null)){
+//                //重名
+//                jsonObject.addProperty("msgCode","101");
+//            }
+//            if(boxBaseService.saveBoxBase(boxBaseInfoVO)){
+//                jsonObject.addProperty("result","success");
+//            }
+//
+//        }else {
+//            //更新
+//            if(boxBaseService.checkRfid(boxBaseInfoVO.getRfid(),boxBaseInfoVO.getId())){
+//                //重名
+//                jsonObject.addProperty("msgCode","101");
+//            }
+//           if(boxBaseService.saveBoxBase(boxBaseInfoVO)){
+//               jsonObject.addProperty("result","success");
+//           }
+//        }
+//        return jsonObject.toString();
+//    }
+//
+//
+//    *//**
+//     * 删除包装箱
+//     *//*
+//
+//    @RequestMapping("/delete/handle")
+//    @ResponseBody
+//    public String handleDelete(HttpServletRequest request){
+//
+//        boolean res = boxBaseService.deleteBox(request.getParameter("id"));
+//
+//        return res ? "success" : "failed";
+//    }*/
+}

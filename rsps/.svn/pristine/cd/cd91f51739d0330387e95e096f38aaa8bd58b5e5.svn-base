@@ -1,0 +1,25 @@
+package com.izhuixin.rsps.service.impl;
+
+import com.izhuixin.rsps.dao.OrderSourceDao;
+import com.izhuixin.rsps.pojo.OrderSource;
+import com.izhuixin.rsps.service.OrderSourceService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class OrderSourceServiceImpl implements OrderSourceService {
+
+    @Autowired
+    private OrderSourceDao orderSourceDao;
+
+    @Override
+    public boolean saveOrderSource(OrderSource orderSource) {
+
+        return orderSourceDao.saveOrderSource(orderSource);
+    }
+
+    @Override
+    public OrderSource getOrderSourceByOrderId(String orderId) {
+        return orderSourceDao.getOrderSourceByOrderId(orderId);
+    }
+}

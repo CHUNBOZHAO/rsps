@@ -1,0 +1,14 @@
+package com.izhuixin.rsps.service;
+
+import com.izhuixin.rsps.domain.AppReqLoginUser;
+import com.izhuixin.rsps.domain.AppResOperator;
+
+public interface AuthService {
+
+     /**
+      * 用户登录
+      * @param loginUser
+      * @return
+      */
+     AppResOperator handleLogin(AppReqLoginUser loginUser);
+}

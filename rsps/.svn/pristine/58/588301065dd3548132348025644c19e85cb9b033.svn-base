@@ -1,0 +1,88 @@
+package com.izhuixin.rsps.receiver;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.izhuixin.rsps.EnterpriseService;
+import com.izhuixin.rsps.message.InputMsg;
+import com.izhuixin.rsps.domain.Params;
+import com.izhuixin.rsps.domain.SignInfo;
+import com.izhuixin.rsps.util.Md5Utils;
+import okhttp3.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cloud.stream.annotation.EnableBinding;
+import org.springframework.cloud.stream.annotation.StreamListener;
+import org.springframework.web.client.RestTemplate;
+
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * 绑定一个接收消息的通道
+ */
+@EnableBinding(InputMsg.class)
+public class OrderReceiver {
+
+    private RestTemplate restTemplate = new RestTemplate();
+
+    private static Logger logger = LoggerFactory.getLogger(EnterpriseService.class);
+
+    @StreamListener(InputMsg.INPUT_ORDER)
+    public void OrderMessage(Object message) throws Exception{
+
+        SignInfo signInfo = (SignInfo)message;
+
+        //对象转json
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonStr = objectMapper.writeValueAsString(signInfo);
+        System.out.println(jsonStr);
+
+
+        Params params = new Params();
+        params.setService("zxrj_sign_pj");
+        params.setContent(URLEncoder.encode(jsonStr,"UTF-8"));
+        params.setCustomerCode("zm");
+        params.setFormat("json");
+        params.setSign(Md5Utils.md5(jsonStr+"123456"));
+
+        String url = "http://192.168.0.4:8081/test";
+        //发送
+        OkHttpClient okHttpClient  = new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .writeTimeout(10,TimeUnit.SECONDS)
+                .readTimeout(20, TimeUnit.SECONDS)
+                .build();
+
+        //使用Gson 添加 依赖 compile 'com.google.code.gson:gson:2.8.1'
+        Gson gson = new Gson();
+        //使用Gson将对象转换为json字符串
+        String json = gson.toJson(params);
+
+        //MediaType  设置Content-Type 标头中包含的媒体类型值
+        RequestBody requestBody = FormBody.create(MediaType.parse("application/json; charset=utf-8")
+                , json);
+
+        Request request = new Request.Builder()
+                .url("http://192.168.0.4:8081/test1")//请求的url
+                .post(requestBody)
+                .build();
+
+        //创建/Call
+        Call call = okHttpClient.newCall(request);
+        //加入队列 异步操作
+        call.enqueue(new Callback() {
+            //请求错误回调方法
+            @Override
+            public void onFailure(Call call, IOException e) {
+                System.out.println("连接失败");
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                System.out.println(response.body().string());
+            }
+        });
+
+}
+
+}

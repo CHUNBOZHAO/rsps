@@ -1,0 +1,14 @@
+.btn-address-add {
+    height: 45px;
+    text-align: center;
+    background-color: #2caef5;
+    color: white;
+    font-size: 1.2em;
+    line-height: 45px;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    z-index: 999;
+    cursor: pointer;
+}

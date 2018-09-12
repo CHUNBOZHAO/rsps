@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<!-- 我的包装箱 -->
+<div th:if="${not #lists.isEmpty(boxInfos)}">
+    <div class="alert alert-danger" role="alert" style="margin-bottom: 5px;margin-top: 5px;">
+        请尽快归还包装箱，如果24小时不处理，系统将自动寻找快递员上门回收，非常感谢！
+    </div>
+
+    <div th:each="box:${boxInfos}" class="row no-gap my-box" th:attr="boxId=${box.rfid},recycleType=${box.recycleType}">
+        <div class="my-box-select-flag">
+            <span class="fa fa-check-circle"></span>
+        </div>
+        <div class="col-lg-12 col-xs-12" style="margin-top: 15px;margin-bottom: 10px;">
+            <div>
+                <span>包装箱ID：</span>
+                <span th:text="${box.rfid}"></span>
+            </div>
+            <div>
+                <span>包装箱名称：</span>
+                <span th:text="${box.boxTypeVO.name}"></span>
+            </div>
+            <div>
+                <span>包装箱大小：</span>
+                <span th:text="${box.boxTypeVO.size}"></span>
+            </div>
+            <div>
+                <span>订单ID：</span>
+                <span th:text="${box.orderId}"></span>
+            </div>
+            <div>
+                <span>滞留时长：</span>
+                <span th:text="${box.duration}"></span>
+            </div>
+            <div th:if="${box.recycleType == 0}">
+                <span>回收状态：</span>
+                <span style="color: orange">等待回收中</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-select-return-box">
+        <span>还包装</span>
+    </div>
+</div>
+
+<div th:if="${#lists.isEmpty(boxInfos)}">
+    <div style="padding: 25px;text-align: center">
+        暂无智能包装箱
+    </div>
+</div>
+
+
+</html>

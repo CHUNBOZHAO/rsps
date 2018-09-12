@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.izhuixin.rsps.dao.manual.BoxTypeDao" >
+
+  <!-- 查询订单需求包装箱信息 -->
+  <select id="getBoxTypes" resultType="com.izhuixin.rsps.domain.manual.BoxTypeInfo">
+    select ob.id, ob.order_id as orderId, ob.box_type_id as typeId, ob.count, bt.name as name, ob.color, bt.size from rsps_order_boxinfo as ob left join rsps_box_type as bt on ob.box_type_id = bt.type_id where ob.order_id = #{orderId, jdbcType=VARCHAR}
+  </select>
+
+  <!-- 获取包装箱型号信息 -->
+  <select id="getBoxType" resultType="com.izhuixin.rsps.domain.manual.BoxTypeInfo">
+    select bt.*, bt.type_id as typeId from rsps_box_type as bt left join rsps_box_base as bb on bt.type_id = bb.type where rfid = #{boxId,jdbcType=VARCHAR};
+  </select>
+
+  <!-- 删除订单需求包装箱信息 -->
+  <delete id="deleteByOrderId">
+    delete from rsps_order_boxinfo
+    where order_id = #{orderId,jdbcType=VARCHAR}
+  </delete>
+
+  <!-- 保存 -->
+  <insert id="saveBoxType">
+    <selectKey keyProperty="id" order="AFTER" resultType="Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into rsps_order_boxinfo
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="boxTypeId != null">
+        box_type_id,
+      </if>
+      <if test="count != null">
+        count,
+      </if>
+      <if test="color != null">
+        color,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="boxTypeId != null">
+        #{boxTypeId,jdbcType=VARCHAR},
+      </if>
+      <if test="count != null">
+        #{count,jdbcType=INTEGER},
+      </if>
+      <if test="color != null">
+        #{color,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+</mapper>

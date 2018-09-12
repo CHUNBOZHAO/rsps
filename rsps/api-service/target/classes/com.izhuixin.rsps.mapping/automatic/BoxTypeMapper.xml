@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.izhuixin.rsps.dao.automatic.BoxTypeMapper">
+  <resultMap id="BaseResultMap" type="com.izhuixin.rsps.domain.automatic.BoxType">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="type_id" jdbcType="VARCHAR" property="typeId" />
+    <result column="size" jdbcType="VARCHAR" property="size" />
+    <result column="color" jdbcType="VARCHAR" property="color" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="deacr" jdbcType="VARCHAR" property="deacr" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, type_id, size, color, name, deacr
+  </sql>
+  <select id="selectByExample" parameterType="com.izhuixin.rsps.domain.automatic.BoxTypeCriteria" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from rsps_box_type
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from rsps_box_type
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="Long">
+    delete from rsps_box_type
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.izhuixin.rsps.domain.automatic.BoxTypeCriteria">
+    delete from rsps_box_type
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.izhuixin.rsps.domain.automatic.BoxType">
+    <selectKey keyProperty="id" order="AFTER" resultType="Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into rsps_box_type (type_id, size, color, 
+      name, deacr)
+    values (#{typeId,jdbcType=VARCHAR}, #{size,jdbcType=VARCHAR}, #{color,jdbcType=VARCHAR}, 
+      #{name,jdbcType=VARCHAR}, #{deacr,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.izhuixin.rsps.domain.automatic.BoxType">
+    <selectKey keyProperty="id" order="AFTER" resultType="Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into rsps_box_type
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="typeId != null">
+        type_id,
+      </if>
+      <if test="size != null">
+        size,
+      </if>
+      <if test="color != null">
+        color,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="deacr != null">
+        deacr,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="typeId != null">
+        #{typeId,jdbcType=VARCHAR},
+      </if>
+      <if test="size != null">
+        #{size,jdbcType=VARCHAR},
+      </if>
+      <if test="color != null">
+        #{color,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="deacr != null">
+        #{deacr,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.izhuixin.rsps.domain.automatic.BoxTypeCriteria" resultType="java.lang.Long">
+    select count(*) from rsps_box_type
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update rsps_box_type
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.typeId != null">
+        type_id = #{record.typeId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.size != null">
+        size = #{record.size,jdbcType=VARCHAR},
+      </if>
+      <if test="record.color != null">
+        color = #{record.color,jdbcType=VARCHAR},
+      </if>
+      <if test="record.name != null">
+        name = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.deacr != null">
+        deacr = #{record.deacr,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update rsps_box_type
+    set id = #{record.id,jdbcType=INTEGER},
+      type_id = #{record.typeId,jdbcType=VARCHAR},
+      size = #{record.size,jdbcType=VARCHAR},
+      color = #{record.color,jdbcType=VARCHAR},
+      name = #{record.name,jdbcType=VARCHAR},
+      deacr = #{record.deacr,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.izhuixin.rsps.domain.automatic.BoxType">
+    update rsps_box_type
+    <set>
+      <if test="typeId != null">
+        type_id = #{typeId,jdbcType=VARCHAR},
+      </if>
+      <if test="size != null">
+        size = #{size,jdbcType=VARCHAR},
+      </if>
+      <if test="color != null">
+        color = #{color,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="deacr != null">
+        deacr = #{deacr,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.izhuixin.rsps.domain.automatic.BoxType">
+    update rsps_box_type
+    set type_id = #{typeId,jdbcType=VARCHAR},
+      size = #{size,jdbcType=VARCHAR},
+      color = #{color,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      deacr = #{deacr,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <cache />
+  <select id="selectByExampleWithRowbounds" parameterType="com.izhuixin.rsps.domain.automatic.BoxTypeCriteria" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from rsps_box_type
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+</mapper>

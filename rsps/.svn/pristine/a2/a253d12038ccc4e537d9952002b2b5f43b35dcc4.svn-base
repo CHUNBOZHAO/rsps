@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<table id="related_operator_list_table" class="table table-striped" cellspacing="0" width="100%" style="border-bottom: 0px;">
+    <thead>
+    <tr>
+        <th style="padding-left: 10px;width: 5%">
+            <input type="checkbox" id="ck_all" />
+        </th>
+        <th style="padding-left: 10px;">配送员名称</th>
+        <th style="padding-left: 10px;">电话</th>
+        <th style="padding-left: 10px;">所属站点</th>
+        <th style="padding-left: 10px;width: 15%">是否关联</th>
+        <th style="padding-left: 15px;width: 15%">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="item,itemStat:${operatorInfos}">
+        <td>
+            <input th:id="|ck_item_${item.operatorId}|" type="checkbox" class="ck-item" th:value="${item.operatorId}" th:classappend="${item.lineRelated} ? 'item-related':'item-unrelated'" />
+        </td>
+        <td>
+            <span th:text="${item.realName}"></span>
+        </td>
+        <td>
+            <span th:text="${item.tel}"></span>
+        </td>
+        <td>
+            <span th:text="${item.parentNickName}"></span>
+        </td>
+        <td th:id="|related_flag_${item.operatorId}|">
+            <span th:if="${item.lineRelated}" style="color: #2eba2b">已关联</span>
+            <span th:unless="${item.lineRelated}" style="color: #9e9e9e">未关联</span>
+        </td>
+        <td>
+            <span class="btn-relate" style="color: #2caef5;cursor: pointer" th:attr="lineId=${lineId},operatorId=${item.operatorId}">关联</span>
+            <span class="btn-relate-cancel" style="color: #2caef5;cursor: pointer" th:attr="lineId=${lineId},operatorId=${item.operatorId}">取消关联</span>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<script type="text/javascript" th:src="@{/assets/js/manager/line/related-operator-list-content.js}"></script>
+
+</html>

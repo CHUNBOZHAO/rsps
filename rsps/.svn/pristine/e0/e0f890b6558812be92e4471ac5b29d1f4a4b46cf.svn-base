@@ -1,0 +1,38 @@
+package com.izhuixin.rsps.receiver;
+
+
+import com.izhuixin.rsps.message.InputMsg;
+
+import com.izhuixin.rsps.proto.BoxData;
+import com.izhuixin.rsps.service.BoxBaseService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.stream.annotation.EnableBinding;
+import org.springframework.cloud.stream.annotation.StreamListener;
+
+import java.awt.geom.Point2D;
+
+/**
+ * 绑定一个接收消息的通道
+ */
+@EnableBinding(InputMsg.class)
+public class MsgReceiver {
+    @Autowired
+    private BoxBaseService boxBaseService;
+
+    /**
+     * 创建日志
+     */
+    private static Logger logger = LoggerFactory.getLogger(MsgReceiver.class);
+
+    @StreamListener(InputMsg.INPUT_BOXDATA)
+    public void boxdataMessage(Object message){
+
+        BoxData bbsInfo = (BoxData)message;
+        boxBaseService.updateCommunicateNum(bbsInfo.getBoxid());
+
+        logger.info("recv: "+bbsInfo);
+    }
+
+}

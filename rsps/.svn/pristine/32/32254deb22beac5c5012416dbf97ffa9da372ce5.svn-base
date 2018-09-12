@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>我要下单</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- CSS Libs -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap.min.css}" href="../../lib/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/font-awesome.min.css}" href="../../lib/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/animate.min.css}" href="../../lib/css/animate.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap-switch.min.css}" href="../../lib/css/bootstrap-switch.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/checkbox3.min.css}" href="../../lib/css/checkbox3.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/jquery.dataTables.min.css}" href="../../lib/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/dataTables.bootstrap.css}" href="../../lib/css/dataTables.bootstrap.css">
+    <!--<link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/select2.min.css}" href="../../lib/css/select2.min.css">-->
+
+    <!-- CSS App -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/style.css}" href="../../css/style.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/themes/flat-blue.css}" href="../../css/themes/flat-green.css">
+
+    <!-- jquery plugin css -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/toastr/toastr.min.css}" >
+
+
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/css/custom/order/address-input.css}" >
+</head>
+
+<body class="flat-blue">
+<div class="app-container">
+    <div class="row content-container">
+        <!--<nav th:replace="custom/common/header::custom_navbar_top('下单')">-->
+        <!--</nav>-->
+        <!--<div th:replace="custom/common/menu::custom_side_menu(200)"></div>-->
+
+        <!-- Main Content -->
+        <form id="address_sure_form" th:action="@{/custom/order/handleInputAddress}" method="post" accept-charset="utf-8">
+            <input type="hidden" name="addressType" th:value="${addressType}" />
+            <div class="container-fluid">
+                <div class="row" style="padding-top: 8px;">
+                    <div class="col-xs-12" style="padding: 8px;margin-bottom: 15px;">
+                        <form class="form-horizontal" id="address_add_form" th:action="@{/custom/order/handleAddressAdd}" method="post" accept-charset="utf-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="card-title">
+                                        <div class="title" th:if="${addressType == 1}">寄件人信息</div>
+                                        <div class="title" th:if="${addressType == 2}">收件人信息</div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div th:replace="custom/common/area::address('','','')"></div>
+                                    <div class="checkbox3 checkbox-success checkbox-inline checkbox-check checkbox-round  checkbox-light" style="padding: 0px 0px 0px 15px;margin-bottom: 0px;">
+                                        <input type="checkbox" id="checkbox-fa-light-2" name="saveFlag">
+                                        <label for="checkbox-fa-light-2">
+                                            保存到地址簿
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="col-xs-12" style="width:100%;border-bottom: 1px solid #e3e3e3;margin-bottom: 10px;"></div>
+
+                    <div class="col-xs-12" style="padding: 8px;">
+                        <div th:each="item:${addresses}" class="panel panel-default" style="margin-bottom: 5px;">
+                            <!--<input type="hidden" name="addressType" th:value="addressType" />-->
+                            <div class="panel-body" style="font-size: 1.2em;line-height: 1.5em;padding-bottom: 3px;">
+                                <div class="address-div" th:attr="addressId=${item.id},addressType=${addressType},name=${item.name},tel=${item.tel},areaProvince=${item.areaProvince},areaCity=${item.areaCity},areaCounty=${item.areaCounty},detailAddress=${item.detailAddress}" style="cursor: pointer;margin-bottom: 8px;">
+                                    <div>
+                                        <span style="font-weight: bold" th:text="${item.name}">萧敬腾</span>&nbsp;
+                                        <span th:text="${item.tel}">13049238495</span>
+                                    </div>
+                                    <div>
+                                        <span th:text="${item.wholeAddress}">浙江省 杭州市 滨江区 剧院路8号创制海基地A幢605</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="btn_address_ok" type="submit" style="display: none"></button>
+                    <div class="btn-address-select">
+                        <span>确定</span>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!--<footer th:replace="custom/common/footer::manager_footer">-->
+    <!--</footer>-->
+</div>
+
+<!-- Javascript Libs -->
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.min.js}" src="../../lib/js/jquery.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/bootstrap.min.js}" src="../../lib/js/bootstrap.min.js"></script>
+<!--<script type="text/javascript" th:src="@{/assets/btzero/lib/js/Chart.min.js}" src="../../lib/js/Chart.min.js"></script>-->
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/bootstrap-switch.min.js}" src="../../lib/js/bootstrap-switch.min.js"></script>
+
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.matchHeight-min.js}" src="../../lib/js/jquery.matchHeight-min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.dataTables.min.js}" src="../../lib/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/dataTables.bootstrap.min.js}" src="../../lib/js/dataTables.bootstrap.min.js"></script>
+<!--<script type="text/javascript" th:src="@{/assets/btzero/lib/js/select2.full.min.js}" src="../../lib/js/select2.full.min.js"></script>-->
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/ace.js}" src="../../lib/js/ace/ace.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/mode-html.js}" src="../../lib/js/ace/mode-html.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/theme-github.js}" src="../../lib/js/ace/theme-github.js"></script>
+
+<!--<script type="text/javascript" th:src="@{/assets/btzero/js/app.js}" src="../../js/app.js"></script>-->
+
+<!-- jQuery plugin js -->
+<script type="text/javascript" th:src="@{/assets/toastr/toastr.min.js}"></script>
+<script type="text/javascript" th:src="@{/assets/js/common/jquery.form.min.js}"></script>
+<script type="text/javascript" th:src="@{/assets/js/common/validate/jquery.validate.min.js}"></script>
+<script type="text/javascript" th:src="@{/assets/js/common/validate/message_cn.js}"></script>
+
+<!-- 自定义js -->
+<script type="text/javascript" th:src="@{/assets/js/custom/header.js}"></script>
+<script type="text/javascript" th:src="@{/assets/js/distpicker/distpicker.js}" ></script>
+<script type="text/javascript" th:src="@{/assets/js/custom/order/address-input.js}" ></script>
+
+
+</body>
+
+</html>
+

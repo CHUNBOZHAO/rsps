@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.izhuixin.rsps.dao.manual.BoxRunningDao" >
+
+  <!-- 获取所有包装箱信息 -->
+  <select id="countBox" resultType="Integer" >
+    select count(*) from rsps_box_running_info where box_id = #{boxId, jdbcType=VARCHAR}
+  </select>
+
+  <!-- 更新包装箱循环次数 -->
+  <update id="updateCycleIndex">
+    update rsps_box_running_info set cycle_index = #{count, jdbcType=INTEGER} where box_id = #{boxId, jdbcType=VARCHAR};
+  </update>
+
+</mapper>

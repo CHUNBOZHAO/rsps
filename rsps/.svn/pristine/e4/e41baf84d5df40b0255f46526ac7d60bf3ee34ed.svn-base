@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.izhuixin.rsps.dao.manual.BoxDetailDao" >
+
+  <resultMap id="BoxDetail" type="com.izhuixin.rsps.domain.manual.BoxDetailInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="rfid" jdbcType="VARCHAR" property="boxId" />
+    <result column="opentime_longest" jdbcType="SMALLINT" property="opentimeLongest" />
+    <result column="closetime_longest" jdbcType="SMALLINT" property="closetimeLongest" />
+    <result column="opentime_last" jdbcType="SMALLINT" property="opentimeLast" />
+    <result column="closetime_last" jdbcType="SMALLINT" property="closetimeLast" />
+    <result column="vibration_count" jdbcType="SMALLINT" property="vibrationCount" />
+    <result column="voltage" jdbcType="SMALLINT" property="voltage" />
+    <result column="temperature" jdbcType="TINYINT" property="temperature" />
+    <result column="errcode" jdbcType="TINYINT" property="errcode" />
+    <result column="brcycle" jdbcType="TINYINT" property="brcycle" />
+    <result column="canconnect" jdbcType="TINYINT" property="canconnect" />
+    <result column="caninterrupt" jdbcType="TINYINT" property="caninterrupt" />
+    <result column="brpower" jdbcType="TINYINT" property="brpower" />
+    <result column="tempcycle" jdbcType="TINYINT" property="tempcycle" />
+    <result column="volcycle" jdbcType="TINYINT" property="volcycle" />
+    <result column="rfidcycle" jdbcType="TINYINT" property="rfidcycle" />
+    <result column="opencheckdelay" jdbcType="TINYINT" property="opencheckdelay" />
+    <result column="communicate_count" jdbcType="TINYINT" property="communicateCount" />
+    <result column="uuid" jdbcType="VARCHAR" property="uuid" />
+  </resultMap>
+
+
+   <!-- /**
+    * 保存
+    */
+    boolean saveBoxDetail();-->
+    <insert id="saveBoxDetail">
+      insert into rsps_box_detail(rfid,opentime_longest,closetime_longest,opentime_last,closetime_last,vibration_count,voltage,temperature,errcode,brcycle,canconnect,caninterrupt,brpower,tempcycle,volcycle,rfidcycle,opencheckdelay,uuid)
+      values(#{boxId},#{opentimeLongest},#{closetimeLongest},#{opentimeLast},#{closetimeLast},#{vibrationCount},#{voltage},#{temperature},#{errcode},#{brcycle},#{canconnect},#{caninterrupt},#{brpower},#{tempcycle},#{volcycle},#{rfidcycle},#{opencheckdelay},#{uuid})
+    </insert>
+   <!-- /**
+    * 更新
+    */
+    boolean updateBoxDetail();-->
+    <update id="updateBoxDetail">
+      update rsps_box_detail set brcycle=#{brcycle},canconnect=#{canconnect},caninterrupt=#{caninterrupt},brpower=#{brpower},tempcycle=#{tempcycle},volcycle=#{volcycle},rfidcycle=#{rfidcycle},opencheckdelay=#{opencheckdelay} where uuid=#{uuid}
+    </update>
+   <!-- /**
+    * 根据rfid查询boxDetail
+    */
+    BoxDetailInfo getBoxDetailInfoByBoxId(String boxId);-->
+    <select id="getBoxDetailInfoByBoxId" resultMap="BoxDetail">
+        select * from rsps_box_detail where uuid = #{uuid}
+    </select>
+
+  <!--/**
+  * 检测boxId是否存在
+  */
+  boolean checkBoxId(String boxId);-->
+  <select id="checkBoxId" resultType="Integer">
+    select count(*) from rsps_box_detail where rfid=#{boxId}
+  </select>
+
+</mapper>

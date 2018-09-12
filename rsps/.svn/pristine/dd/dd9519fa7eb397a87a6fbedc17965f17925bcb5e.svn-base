@@ -1,0 +1,295 @@
+package com.izhuixin.rsps.controller;
+
+import com.google.gson.Gson;
+import com.izhuixin.rsps.model.*;
+import com.izhuixin.rsps.service.AppRestService;
+import com.izhuixin.rsps.service.AuthService;
+import com.izhuixin.rsps.service.feign.AppFeignService;
+import com.izhuixin.rsps.service.feign.TokenService;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Base64;
+
+@RestController
+@RequestMapping("v2/")
+public class AppRestController {
+
+    /**
+     * 自动注入AppRestService接口
+     */
+    @Autowired
+    private AppRestService appRestService;
+
+    @Autowired
+    private AppFeignService feignService;
+
+    @Autowired
+    private AuthService authService;
+
+    @Autowired
+    private TokenService tokenService;
+
+
+    /**
+     * 用户密码修改
+     * @param appLoginUser
+     * @return
+     */
+    @RequestMapping("userData/user/updatePwd/{entCode}")
+    public String updatePwd(@RequestBody AppReqLoginUser appLoginUser, @PathVariable("entCode") String entCode) {
+        // 检测登录
+        appLoginUser.setEntCode(entCode);
+        boolean res = checkLogged(appLoginUser, appLoginUser.getUserName(), appLoginUser.getKickFlag());
+        if (res) {
+            AppAckContent appAckContent = new AppAckContent();
+            appAckContent.setStatus(ErrorCode.USER_LOGIN_LOGGED.getIndex().toString());
+            appAckContent.setMessage(ErrorCode.USER_LOGIN_LOGGED.getDescr());
+            return appAckContent.toString();
+        }
+
+        return feignService.updatePwd(appLoginUser, entCode);
+    }
+
+    /**
+     *根据AppReqPushOpLocation和entCode返回一个AppResBase(状态码和状态码信息)
+     * @param appReqPushOpLocation
+     * @param entCode
+     * @return
+     */
+    @RequestMapping(value = "userData/user/pushLocation/{entCode}",method = RequestMethod.POST)
+    public AppResBase pushUserLocation(@RequestBody AppReqPushOpLocation appReqPushOpLocation, @PathVariable("entCode") String entCode) {
+        // 检测登录
+        appReqPushOpLocation.setEntCode(entCode);
+        boolean res = checkLogged(appReqPushOpLocation, null, null);
+        if (res) {
+            AppResBase appResBase = new AppResBase();
+            appResBase.setStatus(ErrorCode.USER_LOGIN_LOGGED.getIndex());
+            appResBase.setMessage(ErrorCode.USER_LOGIN_LOGGED.getDescr());
+            return appResBase;
+        }
+
+        return appRestService.pushOperatorLocation(appReqPushOpLocation);
+    }
+
+    /**
+     * 获取包装箱信息
+     * @return
+     */
+    @RequestMapping(value = "boxData/box/list/{entCode}",method = RequestMethod.POST)
+    public String getBoxes(@RequestBody AppReqBoxes appReqBoxes, @PathVariable("entCode") String entCode) {
+        appReqBoxes.setEntCode(entCode);
+        boolean res = checkLogged(appReqBoxes, null, null);
+        if (res) {
+            AppAckContent appAckContent = new AppAckContent();
+            appAckContent.setStatus(ErrorCode.USER_LOGIN_LOGGED.getIndex().toString());
+            appAckContent.setMessage(ErrorCode.USER_LOGIN_LOGGED.getDescr());
+            return appAckContent.toString();
+        }
+
+        return feignService.getBoxes(appReqBoxes,entCode);
+    }
+
+    /**
+     * 线路订单
+     * @param appReqBoxes
+     * @param entCode
+     * @return
+     */
+    @RequestMapping(value = "boxData/line/box/list/{entCode}",method = RequestMethod.POST)
+    public String getLineBoxes(@RequestBody AppReqBoxes appReqBoxes, @PathVariable("entCode") String entCode) {
+        appReqBoxes.setEntCode(entCode);
+        boolean res = checkLogged(appReqBoxes, null, null);
+        if (res) {
+            AppAckContent appAckContent = new AppAckContent();
+            appAckContent.setStatus(ErrorCode.USER_LOGIN_LOGGED.getIndex().toString());
+            appAckContent.setMessage(ErrorCode.USER_LOGIN_LOGGED.getDescr());
+            return appAckContent.toString();
+        }
+
+        return feignService.getLineBoxes(appReqBoxes,entCode);
+    }
+
+    /**
+     * 线路查询
+     * @param appReqLines
+     * @return
+     */
+    @RequestMapping(value = "lineData/query/{entCode}",method = RequestMethod.POST)
+    public String queryLines(@RequestBody AppReqLines appReqLines, @PathVariable("entCode") String entCode) {
+
+        return feignService.queryLines(appReqLines,entCode);
+    }
+
+    /**
+     * 查询揽货订单
+     * @param appReqTakeOrder
+     * @param entCode
+     * @return
+     */
+    @RequestMapping(value = "order/takeOrder/query/{entCode}",method = RequestMethod.POST)
+    public String queryTakeOrders(@RequestBody AppReqTakeOrder appReqTakeOrder, @PathVariable("entCode") String entCode) {
+
+        return feignService.queryTakeOrders(appReqTakeOrder,entCode);
+    }
+
+    /**
+     * 设置线路
+     * @param appReqLineSetting
+     * @param entCode
+     * @return
+     */
+    @RequestMapping(value = "lineData/setting/{entCode}",method = RequestMethod.POST)
+    public String settingLine(@RequestBody AppReqLineSetting appReqLineSetting, @PathVariable("entCode") String entCode) {
+
+        return feignService.settingLine(appReqLineSetting,entCode);
+    }
+
+    /***
+     * 修改包装箱状态信息
+     * @return
+     */
+    @RequestMapping(value = "boxData/box/update/{entCode}",method = RequestMethod.POST)
+    public String updateBox(@RequestBody AppReqPushBoxInfo appReqPushBoxInfo, @PathVariable("entCode") String entCode) {
+        appReqPushBoxInfo.setEntCode(entCode);
+        boolean res = checkLogged(appReqPushBoxInfo, null, null);
+        if (res) {
+            AppAckContent appAckContent = new AppAckContent();
+            appAckContent.setStatus(ErrorCode.USER_LOGIN_LOGGED.getIndex().toString());
+            appAckContent.setMessage(ErrorCode.USER_LOGIN_LOGGED.getDescr());
+            return appAckContent.toString();
+        }
+
+        return feignService.updateBox(appReqPushBoxInfo,entCode);
+    }
+
+    /**
+     * app检查更新
+     * @param appReqQueryVersion
+     * @return
+     */
+    @RequestMapping(value = "version/query",method = RequestMethod.POST)
+    public String queryVersion(@RequestBody AppReqQueryVersion appReqQueryVersion) {
+        return feignService.queryVersion(appReqQueryVersion);
+    }
+
+    /***
+     * 通过条件查询包装箱信息
+     * @param appReqQueryBox
+     * @return
+     */
+    @RequestMapping(value = "boxData/box/queryBox/{entCode}",method = RequestMethod.POST)
+    public String queryBoxes(@RequestBody AppReqQueryBox appReqQueryBox, @PathVariable("entCode") String entCode) {
+        return feignService.queryBoxes(appReqQueryBox,entCode);
+    }
+
+    /**
+     * C端绑定包装项目
+     * @param boxBindingInfo
+     * @param entCode
+     * @return
+     */
+    @RequestMapping(value = "boxData/bindBox/{entCode}",method = RequestMethod.POST)
+    public String bindBox(@RequestBody BoxBindingInfo boxBindingInfo, @PathVariable("entCode") String entCode) {
+        return feignService.bindBox(boxBindingInfo,entCode);
+    }
+
+    /**
+     * 注册
+     * @param appReqOpRegister
+     * @param entCode
+     * @return
+     */
+    @RequestMapping(value = "opData/register/{entCode}",method = RequestMethod.POST)
+    public String registerOperator(@RequestBody AppReqOpRegister appReqOpRegister, @PathVariable("entCode") String entCode) {
+       return feignService.registerOperator(appReqOpRegister,entCode);
+    }
+
+    /**
+     * 登录
+     * @param appLoginUser
+     * @return
+     */
+    @RequestMapping(value = "/login",method = RequestMethod.POST, produces="application/json;charset=UTF-8")
+    public AppResOperator doLogin(@RequestBody AppReqLoginUser appLoginUser){
+        String entCode = feignService.checkUserName(appLoginUser.getUserName());
+
+        // 检测登录
+        appLoginUser.setEntCode(entCode);
+        boolean res = checkLogged(appLoginUser, appLoginUser.getUserName(), appLoginUser.getKickFlag());
+        if (res) {
+            AppResOperator appResOperator = new AppResOperator();
+            appResOperator.setStatus(ErrorCode.USER_LOGIN_LOGGED.getIndex().toString());
+            appResOperator.setMessage(ErrorCode.USER_LOGIN_LOGGED.getDescr());
+            return appResOperator;
+        }
+
+        Base64.Encoder encoder = Base64.getEncoder();
+        String client = "app";
+        String secret = "app";
+        String clientauth = client+":"+secret;
+        String encodedText="";
+        AppResOperator appResOperator;
+        String retToken;
+        try {
+            byte[] textByte = clientauth.getBytes("UTF-8");
+            encodedText = encoder.encodeToString(textByte);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
+
+        if (StringUtils.isNotBlank(entCode)) {
+            appLoginUser.setEntCode(entCode.concat("_"));
+            appResOperator = authService.handleLogin(appLoginUser);
+
+        } else {
+            appResOperator = new AppResOperator();
+            appResOperator.setStatus(ErrorCode.USER_NAME_NOT_EXIST.getIndex().toString());
+            appResOperator.setMessage(ErrorCode.USER_NAME_NOT_EXIST.getDescr());
+        }
+
+
+        if("0".equals(appResOperator.getStatus())){
+            retToken = tokenService.getToken(client+" "+appLoginUser.getUserName(), appLoginUser.getUserPwd(), "password", "Basic "+encodedText);
+
+            if(retToken.contains("access_token")){
+                JwtToken jwtToken = (new Gson()).fromJson(retToken, JwtToken.class);
+                appResOperator.setAccessToken(jwtToken.getAccessToken());
+            }
+        }
+        return appResOperator;
+    }
+
+    /**
+     *无效登录
+     * @param any
+     * @return
+     */
+    @RequestMapping(value = "/access/invalid",method = RequestMethod.POST, produces="application/json;charset=UTF-8")
+    public AppAckContent doLogin(@RequestBody String any){
+        AppAckContent appAckContent = new AppAckContent();
+        appAckContent.setStatus(ErrorCode.USER_LOGIN_SESSION_INVALID.getIndex().toString());
+        appAckContent.setMessage(ErrorCode.USER_LOGIN_SESSION_INVALID.getDescr());
+        return appAckContent;
+    }
+
+    /**
+     * 检查是否登录
+     * @param appReqBase
+     * @param userName
+     * @return
+     */
+    private boolean checkLogged(AppReqBase appReqBase, String userName, Byte kickFlag) {
+        boolean res = false;
+        // 判断是否已经登录
+        if (kickFlag == null || kickFlag.byteValue() != 1) {
+            res = feignService.checkLogged(userName, appReqBase.getOperatorId(), appReqBase.getImei(), appReqBase.getEntCode());
+        }
+        return res;
+    }
+
+
+}

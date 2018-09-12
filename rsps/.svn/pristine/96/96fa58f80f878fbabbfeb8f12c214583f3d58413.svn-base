@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>新增地址簿</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- CSS Libs -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap.min.css}" href="../../lib/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/font-awesome.min.css}" href="../../lib/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/animate.min.css}" href="../../lib/css/animate.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap-switch.min.css}" href="../../lib/css/bootstrap-switch.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/checkbox3.min.css}" href="../../lib/css/checkbox3.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/jquery.dataTables.min.css}" href="../../lib/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/dataTables.bootstrap.css}" href="../../lib/css/dataTables.bootstrap.css">
+    <!--<link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/select2.min.css}" href="../../lib/css/select2.min.css">-->
+
+    <!-- CSS App -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/style.css}" href="../../css/style.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/themes/flat-blue.css}" href="../../css/themes/flat-green.css">
+
+    <!-- jquery plugin css -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/toastr/toastr.min.css}" >
+
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/css/custom/order/address-add.css}" >
+</head>
+
+<body class="flat-blue">
+<div class="app-container">
+    <div class="row content-container">
+        <!-- Main Content -->
+        <form id="address_create_form" th:action="@{/custom/order/handleAddressAdd}" method="post" accept-charset="utf-8">
+            <input type="hidden" name="addressType" th:value="${addressType}" />
+            <!--<input type="hidden" name="id" th:value="*{id}" />-->
+            <div class="container-fluid">
+                <div class="row" style="padding-top: 8px;">
+                    <div class="col-xs-12" style="padding:8px;">
+                        <form class="form-horizontal" id="address_add_form" th:action="@{/custom/order/handleAddressAdd}" method="post" accept-charset="utf-8">
+                            <div class="card">
+                                <div class="card-body" style="padding:8px;padding-top: 20px !important;">
+                                    <div th:replace="custom/common/area::address('','','')"></div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <button id="btn_address_ok" type="submit" style="display: none"></button>
+                <span class="btn-address-ok">确定</span>
+            </div>
+        </form>
+    </div>
+    <!--<footer th:replace="custom/common/footer::manager_footer">-->
+    <!--</footer>-->
+</div>
+
+<!-- Javascript Libs -->
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.min.js}" src="../../lib/js/jquery.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/bootstrap.min.js}" src="../../lib/js/bootstrap.min.js"></script>
+<!--<script type="text/javascript" th:src="@{/assets/btzero/lib/js/Chart.min.js}" src="../../lib/js/Chart.min.js"></script>-->
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/bootstrap-switch.min.js}" src="../../lib/js/bootstrap-switch.min.js"></script>
+
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.matchHeight-min.js}" src="../../lib/js/jquery.matchHeight-min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.dataTables.min.js}" src="../../lib/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/dataTables.bootstrap.min.js}" src="../../lib/js/dataTables.bootstrap.min.js"></script>
+<!--<script type="text/javascript" th:src="@{/assets/btzero/lib/js/select2.full.min.js}" src="../../lib/js/select2.full.min.js"></script>-->
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/ace.js}" src="../../lib/js/ace/ace.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/mode-html.js}" src="../../lib/js/ace/mode-html.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/theme-github.js}" src="../../lib/js/ace/theme-github.js"></script>
+
+<!--<script type="text/javascript" th:src="@{/assets/btzero/js/app.js}" src="../../js/app.js"></script>-->
+
+<!-- jQuery plugin js -->
+<script type="text/javascript" th:src="@{/assets/toastr/toastr.min.js}"></script>
+<script type="text/javascript" th:src="@{/assets/js/common/jquery.form.min.js}"></script>
+<script type="text/javascript" th:src="@{/assets/js/common/validate/jquery.validate.min.js}"></script>
+<script type="text/javascript" th:src="@{/assets/js/common/validate/message_cn.js}"></script>
+
+<!-- 自定义js -->
+<script type="text/javascript" th:src="@{/assets/js/custom/header.js}"></script>
+<script type="text/javascript" th:src="@{/assets/js/distpicker/distpicker.js}" ></script>
+<script type="text/javascript" th:src="@{/assets/js/custom/order/address-add.js}" ></script>
+
+
+</body>
+
+</html>
+

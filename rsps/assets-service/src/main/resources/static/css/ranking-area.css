@@ -1,0 +1,18 @@
+.tab-rank-name{
+    padding: 0px;
+    height: 45px;
+    line-height: 45px;
+    width: 120px;
+    text-align: center;
+    font-size: 1.2em;
+    cursor: pointer;
+}
+.sp-rate{
+    padding: 0px;
+    height: 45px;
+    line-height: 45px;
+    width: 120px;
+    text-align: center;
+    font-size: 1.2em;
+    cursor: pointer;
+}

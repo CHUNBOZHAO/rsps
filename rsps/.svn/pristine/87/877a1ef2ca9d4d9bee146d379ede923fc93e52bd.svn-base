@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.izhuixin.rsps.dao.OrderDao" >
+
+    <resultMap id="order" type="com.izhuixin.rsps.pojo.Order">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="job_no" jdbcType="VARCHAR" property="jobNo" />
+        <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+        <result column="sd_station" jdbcType="VARCHAR" property="sdStation" />
+        <result column="deli_station" jdbcType="VARCHAR" property="deliStation" />
+        <result column="sd_client_no" jdbcType="VARCHAR" property="sdClientNo" />
+        <result column="sd_client_name" jdbcType="VARCHAR" property="sdClientName" />
+        <result column="re_company" jdbcType="VARCHAR" property="reCompany" />
+        <result column="re_tel" jdbcType="VARCHAR" property="reTel" />
+        <result column="re_tel2" jdbcType="VARCHAR" property="reTel2" />
+        <result column="return_type" jdbcType="VARCHAR" property="returnType" />
+        <result column="print_type" jdbcType="VARCHAR" property="printType" />
+        <result column="eir_no" jdbcType="VARCHAR" property="eirNo" />
+        <result column="eir_stano" jdbcType="VARCHAR" property="eirStano" />
+        <result column="eir_station" jdbcType="VARCHAR" property="eirStation" />
+        <result column="motor_man" jdbcType="VARCHAR" property="motorMan" />
+        <result column="motor_tel" jdbcType="VARCHAR" property="motorTel" />
+        <result column="motor_id" jdbcType="VARCHAR" property="motorId" />
+        <result column="times" jdbcType="VARCHAR" property="times" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="ent_code" jdbcType="VARCHAR" property="entCode" />
+        <result column="order_status" jdbcType="VARCHAR" property="orderStatus" />
+        <result column="send_ack_status" jdbcType="VARCHAR" property="sendAckStatus" />
+    </resultMap>
+
+    <!--List<Order> getAllOrderByMotorId(String motorId);根据司机编号获取订单信息-->
+    <select id="getAllOrderByMotorId" resultMap="order">
+        select * from common_order where motor_id = #{motorId}
+    </select>
+
+    <!--boolean saveOrder(Order order);保存订单信息-->
+    <insert id="saveOrder">
+        insert into common_order values(#{id},#{jobNo},#{orderNo},#{sdStation},#{deliStation},#{sdClientNo},#{sdClientName},#{reCompany},#{reTel}
+        ,#{reTel2},#{returnType},#{printType},#{eirNo},#{eirStano},#{eirStation},#{motorMan},#{motorTel},#{motorId},#{times},#{createTime},#{entCode},#{orderStatus},#{sendAckStatus})
+    </insert>
+
+    <!--boolean updateOrderStatus(Order order);更新订单签收状态注意顺序-->
+    <update id="updateOrderStatus">
+        update common_order set order_status=#{arg0} where order_no=#{arg1}
+    </update>
+
+    <!--List<Order> getOrderBySign(Integer flag);签收订单信息-->
+    <select id="getOrderBySign" resultMap="order">
+        select * from common_order where order_status = #{orderStatus}
+    </select>
+
+    <!--boolean deleteOrderByOrderId(String orderId);根据订单编号删除订单信息-->
+    <delete id="deleteOrderByOrderId">
+        delete from common_order where order_no = #{orderNo}
+    </delete>
+
+</mapper>

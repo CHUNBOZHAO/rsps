@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.izhuixin.rsps.dao.manual.OrderDriverDao" >
+
+    <resultMap id="BaseResultMap" type="com.izhuixin.rsps.domain.manual.OrderDriverInfo">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="order_id" jdbcType="VARCHAR" property="orderId" />
+        <result column="driver_id" jdbcType="VARCHAR" property="driverId" />
+        <result column="driver_name" jdbcType="VARCHAR" property="driverName" />
+        <result column="driver_phone" jdbcType="VARCHAR" property="driverPhone" />
+        <result column="driver_order" jdbcType="TINYINT" property="driverOrder" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="truck_number" jdbcType="VARCHAR" property="truckNumber" />
+        <result column="next_driver_id" jdbcType="VARCHAR" property="nextDriverId" />
+        <result column="transport_type" jdbcType="TINYINT" property="transportType" />
+        <result column="state" jdbcType="TINYINT" property="state" />
+    </resultMap>
+
+    <!-- 通过司机ID、订单ID获取配送信息 -->
+    <select id="getInfoByDriverAndOrderId" resultMap="BaseResultMap" statementType="STATEMENT">
+      select * from rsps_${entCode}order_driver where driver_id = '${driverId}' and order_id = '${orderId}'
+    </select>
+    
+    <!--  -->
+    <select id="countOrderDriverInfo" resultType="Integer" statementType="STATEMENT">
+      select count(*) from rsps_${entCode}order_driver where driver_id = '${driverId}' and order_id = '${orderId}'
+    </select>
+
+    <!-- 插入数据 -->
+    <insert id="saveOrderDriverInfo" parameterType="com.izhuixin.rsps.domain.manual.OrderDriverInfo" statementType="STATEMENT">
+        insert into rsps_${entCode}order_driver
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderDriverInfo.orderId != null">
+                order_id,
+            </if>
+            <if test="orderDriverInfo.driverId != null">
+                driver_id,
+            </if>
+            <if test="orderDriverInfo.driverName != null">
+                driver_name,
+            </if>
+            <if test="orderDriverInfo.driverPhone != null">
+                driver_phone,
+            </if>
+            <if test="orderDriverInfo.driverOrder != null">
+                driver_order,
+            </if>
+            <if test="orderDriverInfo.createTimeStr != null">
+                create_time,
+            </if>
+            <if test="orderDriverInfo.truckNumber != null">
+                truck_number,
+            </if>
+            <if test="orderDriverInfo.nextDriverId != null">
+                next_driver_id,
+            </if>
+            <if test="orderDriverInfo.transportType != null">
+                transport_type,
+            </if>
+            <if test="orderDriverInfo.state != null">
+                state,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderDriverInfo.orderId != null">
+                '${orderDriverInfo.orderId}',
+            </if>
+            <if test="orderDriverInfo.driverId != null">
+                '${orderDriverInfo.driverId}',
+            </if>
+            <if test="orderDriverInfo.driverName != null">
+                '${orderDriverInfo.driverName}',
+            </if>
+            <if test="orderDriverInfo.driverPhone != null">
+                '${orderDriverInfo.driverPhone}',
+            </if>
+            <if test="orderDriverInfo.driverOrder != null">
+                ${orderDriverInfo.driverOrder},
+            </if>
+            <if test="orderDriverInfo.createTimeStr != null">
+                '${orderDriverInfo.createTimeStr}',
+            </if>
+            <if test="orderDriverInfo.truckNumber != null">
+                '${orderDriverInfo.truckNumber}',
+            </if>
+            <if test="orderDriverInfo.nextDriverId != null">
+                '${orderDriverInfo.nextDriverId}',
+            </if>
+            <if test="orderDriverInfo.transportType != null">
+                ${orderDriverInfo.transportType},
+            </if>
+            <if test="orderDriverInfo.state != null">
+                ${orderDriverInfo.state},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 更新数据 -->
+    <update id="updateByOrderIdAndDriverId" parameterType="com.izhuixin.rsps.domain.manual.OrderDriverInfo" statementType="STATEMENT">
+        update rsps_${entCode}order_driver
+        <set>
+            <if test="orderDriverInfo.driverName != null">
+                driver_name = '${orderDriverInfo.driverName}',
+            </if>
+            <if test="orderDriverInfo.driverPhone != null">
+                driver_phone = '${orderDriverInfo.driverPhone}',
+            </if>
+            <if test="orderDriverInfo.driverOrder != null">
+                driver_order = ${orderDriverInfo.driverOrder},
+            </if>
+            <if test="orderDriverInfo.truckNumber != null">
+                truck_number = '${orderDriverInfo.truckNumber}',
+            </if>
+            <if test="orderDriverInfo.nextDriverId != null">
+                next_driver_id = '${orderDriverInfo.nextDriverId}',
+            </if>
+            <if test="orderDriverInfo.transportType != null">
+                transport_type = ${orderDriverInfo.transportType},
+            </if>
+            <if test="orderDriverInfo.state != null">
+                state = ${orderDriverInfo.state},
+            </if>
+        </set>
+        where order_id = '${orderDriverInfo.orderId}' and driver_id = '${orderDriverInfo.driverId}'
+    </update>
+
+</mapper>

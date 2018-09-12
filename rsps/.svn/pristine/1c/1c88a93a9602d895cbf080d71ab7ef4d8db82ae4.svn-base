@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>RSPS智能包装系统</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- CSS Libs -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap.min.css}" href="../../lib/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/font-awesome.min.css}" href="../../lib/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/animate.min.css}" href="../../lib/css/animate.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap-switch.min.css}" href="../../lib/css/bootstrap-switch.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/checkbox3.min.css}" href="../../lib/css/checkbox3.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/jquery.dataTables.min.css}" href="../../lib/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/dataTables.bootstrap.css}" href="../../lib/css/dataTables.bootstrap.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/select2.min.css}" href="../../lib/css/select2.min.css">
+
+    <!-- CSS App -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/style.css}" href="../../css/style.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/themes/flat-blue.css}" href="../../css/themes/flat-green.css">
+
+    <!-- jquery plugin css -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/jquery-confirm/jquery-confirm.min.css}" >
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/toastr/toastr.min.css}" >
+
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/css/custom/order/show-order.css}" >
+
+</head>
+
+<body class="flat-blue">
+<div class="app-container">
+    <div class="row content-container">
+        <nav th:replace="custom/common/header::custom_navbar_top('下单')">
+        </nav>
+        <div th:replace="custom/common/menu::custom_side_menu(200)"></div>
+
+        <!-- Main Content -->
+        <div class="container-fluid">
+            <div class="row" style="padding-top: 60px;">
+                <div class="col-xs-12" style="padding: 8px;">
+                    <!--<form class="form-horizontal" id="order_create_form" th:action="@{/custom/order/createOrder}" method="post" accept-charset="utf-8">-->
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title" style="width: 50%">
+                                    <div class="title" style="font-size: 1.0em">
+                                        寄件人
+                                    </div>
+                                </div>
+                                <div class="address-book">
+                                    <span class="address-book-span" type="1">地址簿</span>
+                                </div>
+                            </div>
+                            <div class="card-body" style="padding: 10px 25px;">
+                                <div class="form-group">
+                                    <!--<label for="sender" class="col-sm-2 control-label"></label>-->
+                                    <div class="col-sm-12 input-parent" style="padding: 0px;">
+                                        <!--<input type="hidden" name="senderAddressBookId" th:value="${senderAddressBookId}" />-->
+                                        <input class="form-control" id="senderInfo" name="senderInfo" maxlength="48" placeholder="请输入寄件人信息" th:value="${senderInfo}" style="height: 48px;font-size: 1.2em" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card" style="margin-top: 8px;">
+                            <div class="card-header">
+                                <div class="card-title" style="width: 50%">
+                                    <div class="title" style="font-size: 1.0em">
+                                        收件人
+                                    </div>
+                                </div>
+                                <div class="address-book">
+                                    <span class="address-book-span" type="2">地址簿</span>
+                                </div>
+                            </div>
+                            <div class="card-body" style="padding: 10px 25px;">
+                                <div class="form-group">
+                                    <div class="col-sm-12 input-parent" style="padding: 0px;">
+                                        <!--<input type="hidden" name="receiverAddressBookId" th:value="${receiverAddressBookId}" />-->
+                                        <input class="form-control" id="receiverInfo" name="receiverInfo" maxlength="48" placeholder="请输入收件人信息" th:value="${receiverInfo}" style="height: 48px;font-size: 1.2em" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card" style="margin-top: 8px;">
+                            <div class="card-header">
+                                <div class="card-title" style="width: 50%">
+                                    <div class="title" style="font-size: 1.0em">
+                                        备注
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body" style="padding: 10px 25px;">
+                                <div class="form-group">
+                                    <div class="col-sm-12 input-parent" style="padding: 0px;">
+                                        <textarea id="box_detail" class="form-control" name="detail" maxlength="120" placeholder="请输入备注信息" th:text="${detail}" rows="3" style="font-size: 1.0em" ></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card" style="margin-top: 8px;">
+                            <div class="card-header">
+                                <div class="card-title" style="width: 50%">
+                                    <div class="title" style="font-size: 1.0em">
+                                        智能包装箱
+                                    </div>
+                                </div>
+                                <div style="float: left;text-align: right;width: 50%;padding: 1.2em 20px;cursor: pointer;color: #2caef5;font-size: 1.2em">
+                                </div>
+                            </div>
+                            <div class="card-body" style="padding: 10px 25px;">
+                                <div class="box-selected-div" th:each="item:${boxes}">
+                                    <div style="width: 50%;float: left">
+                                        <span th:text="${item.name}"></span>
+                                    </div>
+                                    <div style="width: 30%;float: left">
+                                        <span th:if="${item.color} == 'white'" th:text="|白色|"></span>
+                                        <span th:if="${item.color} == 'blue'" th:text="|蓝色|"></span>
+                                    </div>
+                                    <div style="width: 20%;float: left">
+                                        <span th:text="|${item.count}个|"></span>
+                                    </div>
+                                </div>
+                                <div style="width: 100%;text-align: center;font-size: 1.1em;color: #2caef5;">
+                                    <span id="box_select" style="cursor: pointer">点击选择包装箱</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 8px;">
+                            <div class="radio3" id="box-no-div">
+                                <input type="radio" id="boxNotSelect" name="boxNotSelect">
+                                <label for="boxNotSelect" style="font-size: 1.1em;">
+                                    已有包装箱，不需要选择
+                                </label>
+                            </div>
+                        </div>
+
+                        <!--<div style="margin-top: 8px;">-->
+                            <!--<div style="padding: 10px 25px;">-->
+
+
+                            <!--</div>-->
+                        <!--</div>-->
+
+                        <div class="form-group">
+                            <div class="col-sm-12" style="text-align: right">
+                                <input type="hidden" id="longitude" name="longitude" />
+                                <input type="hidden" id="latitude" name="latitude" />
+                                <!--<button type="submit" style="width: 100%;height: 45px;background-color: #2caef5;font-size:1.2em;color: white" class="btn btn-default">确  定</button>-->
+                            </div>
+                        </div>
+
+
+                    <!--</form>-->
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-order-create">
+            <span>确定</span>
+        </div>
+    </div>
+    <!--<footer th:replace="custom/common/footer::manager_footer">-->
+    <!--</footer>-->
+</div>
+
+<div class="modal fade" id="order_process_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <span>正在为您生成订单...</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Javascript Libs -->
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.min.js}" src="../../lib/js/jquery.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/bootstrap.min.js}" src="../../lib/js/bootstrap.min.js"></script>
+<!--<script type="text/javascript" th:src="@{/assets/btzero/lib/js/Chart.min.js}" src="../../lib/js/Chart.min.js"></script>-->
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/bootstrap-switch.min.js}" src="../../lib/js/bootstrap-switch.min.js"></script>
+
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.matchHeight-min.js}" src="../../lib/js/jquery.matchHeight-min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.dataTables.min.js}" src="../../lib/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/dataTables.bootstrap.min.js}" src="../../lib/js/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/select2.full.min.js}" src="../../lib/js/select2.full.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/ace.js}" src="../../lib/js/ace/ace.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/mode-html.js}" src="../../lib/js/ace/mode-html.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/theme-github.js}" src="../../lib/js/ace/theme-github.js"></script>
+
+<script type="text/javascript" th:src="@{/assets/btzero/js/app.js}" src="../../js/app.js"></script>
+<!--<script type="text/javascript" th:src="@{/assets/btzero/js/index.js}" src="../../js/index.js"></script>-->
+
+<!-- jQuery plugin js -->
+<script type="text/javascript" th:src="@{/assets/jquery-confirm/jquery-confirm.min.js}" ></script>
+<script type="text/javascript" th:src="@{/assets/toastr/toastr.min.js}"></script>
+<script type="text/javascript" th:src="@{/assets/js/common/jquery.form.min.js}"></script>
+<script type="text/javascript" th:src="@{/assets/js/common/validate/jquery.validate.min.js}"></script>
+<script type="text/javascript" th:src="@{/assets/js/common/validate/message_cn.js}"></script>
+
+<!-- 自定义js -->
+<script type="text/javascript" th:src="@{/assets/js/custom/order/show-order.js}"></script>
+<script type="text/javascript" th:src="@{/assets/js/custom/header.js}"></script>
+
+<script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+
+</body>
+
+</html>
+
+<script th:inline="javascript">
+
+    var appId = [[${wxConfigModel.appId}]];
+    var noncestr = [[${wxConfigModel.noncestr}]];
+    var timestamp = [[${wxConfigModel.timestamp}]];
+    var signature = [[${wxConfigModel.signature}]];
+
+//    alert(appId + " " + noncestr + " " + timestamp + " " + signature);
+
+    wx.config({
+        debug: false,
+        appId: appId,
+        timestamp: timestamp,
+        nonceStr: noncestr,
+        signature: signature,
+        jsApiList: [
+            // 所有要调用的 API 都要加到这个列表中
+            'checkJsApi',
+            'openLocation',
+            'getLocation'
+        ]
+    });
+
+    wx.ready(function () {
+
+        wx.checkJsApi({
+            jsApiList: [
+                'getLocation'
+            ],
+            success: function (res) {
+                // alert(JSON.stringify(res));
+                // alert(JSON.stringify(res.checkResult.getLocation));
+                if (res.checkResult.getLocation == false) {
+                    alert('你的微信版本太低，不支持微信JS接口，请升级到最新的微信版本！');
+                    return;
+                }
+            }
+        });
+
+        wx.getLocation({
+            success: function (res) {
+                var latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
+                var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
+                var speed = res.speed; // 速度，以米/每秒计
+                var accuracy = res.accuracy; // 位置精度
+
+                // 设置经纬度
+                $("#longitude").val(longitude);
+                $("#latitude").val(latitude);
+            },
+            cancel: function (res) {
+                console.log('用户拒绝授权获取地理位置');
+            }
+        });
+    });
+</script>

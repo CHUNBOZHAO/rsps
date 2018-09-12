@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.izhuixin.rsps.dao.manual.SysUserDao" >
+
+    <resultMap id="UserInfoResultMap" type="com.izhuixin.rsps.domain.manual.SysUserInfo">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="user_id" jdbcType="VARCHAR" property="userId" />
+        <result column="user_name" jdbcType="VARCHAR" property="userName" />
+        <result column="user_pwd" jdbcType="VARCHAR" property="userPwd" />
+        <result column="real_name" jdbcType="VARCHAR" property="realName" />
+        <result column="nickname" jdbcType="VARCHAR" property="nickname" />
+        <result column="tel" jdbcType="VARCHAR" property="tel" />
+        <result column="email" jdbcType="VARCHAR" property="email" />
+        <result column="age" jdbcType="TINYINT" property="age" />
+        <result column="sex" jdbcType="TINYINT" property="sex" />
+        <result column="level" jdbcType="TINYINT" property="level" />
+        <result column="pid" jdbcType="VARCHAR" property="pid" />
+        <result column="p_nickname" jdbcType="VARCHAR" property="parentNickname" />
+        <result column="status" jdbcType="TINYINT" property="status" />
+        <result column="ent_id" jdbcType="VARCHAR" property="entId" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+        <result column="ent_code" jdbcType="VARCHAR" property="entCode" />
+    </resultMap>
+
+    <!-- 获取管理用户信息 -->
+    <select id="getUserInfoByUserId" resultMap="UserInfoResultMap">
+        SELECT * FROM sys_user where user_id = #{userId}
+    </select>
+
+    <!-- 获取管理用户信息 -->
+    <select id="getUserInfo" resultMap="UserInfoResultMap">
+      SELECT u.*, e.ent_code FROM sys_user as u left join rsps_enterprise as e on u.ent_id = e.ent_id where u.user_name = #{userName}
+    </select>
+
+    <!-- 获取子用户ID -->
+    <select id="getChildUserIds" resultType="String">
+      select user_id from sys_user where pid = #{userId}
+    </select>
+
+    <!-- 获取子用户信息 -->
+    <select id="getChildUserInfos" resultMap="UserInfoResultMap">
+      select u1.*, u2.nickname as p_nickname from sys_user as u1 left join sys_user as u2 on u1.pid = u2.user_id where u1.pid = #{userId} and u1.user_type=0
+    </select>
+
+    <!-- List<SysUserInfo> getChildUserInfosByUserType(String userId,Integer userType);根据userId和userType查询子用户-->
+    <select id="getChildUserInfosByUserType" resultMap="UserInfoResultMap">
+        select u1.*, u2.nickname as p_nickname from sys_user as u1 left join sys_user as u2 on u1.pid = u2.user_id where u1.pid = #{arg0} and u1.user_type=#{arg1}
+    </select>
+
+    <!-- 获取企业主账号 -->
+    <select id="getPrimaryUser" resultMap="UserInfoResultMap">
+        SELECT * FROM sys_user where ent_id = #{ent_id} and level = 1
+    </select>
+
+    <!-- 删除管理用户 -->
+    <delete id="deleteSysUser">
+        delete from sys_user where user_id = #{userId}
+    </delete>
+
+    <!-- 保存管理用户 -->
+    <insert id="saveSysUser" parameterType="com.izhuixin.rsps.domain.manual.SysUserInfo">
+        <selectKey keyProperty="id" order="AFTER" resultType="Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into sys_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sysUserInfo.userId != null">
+                user_id,
+            </if>
+            <if test="sysUserInfo.userName != null">
+                user_name,
+            </if>
+            <if test="sysUserInfo.userPwd != null">
+                user_pwd,
+            </if>
+            <if test="sysUserInfo.realName != null">
+                real_name,
+            </if>
+            <if test="sysUserInfo.nickname != null">
+                nickname,
+            </if>
+            <if test="sysUserInfo.tel != null">
+                tel,
+            </if>
+            <if test="sysUserInfo.email != null">
+                email,
+            </if>
+            <if test="sysUserInfo.age != null">
+                age,
+            </if>
+            <if test="sysUserInfo.sex != null">
+                sex,
+            </if>
+            <if test="sysUserInfo.level != null">
+                level,
+            </if>
+            <if test="sysUserInfo.pid != null">
+                pid,
+            </if>
+            <if test="sysUserInfo.status != null">
+                status,
+            </if>
+            <if test="sysUserInfo.entId != null">
+                ent_id,
+            </if>
+            <if test="sysUserInfo.createTime != null">
+                create_time,
+            </if>
+            <if test="sysUserInfo.modifyTime != null">
+                modify_time,
+            </if>
+            <if test="sysUserInfo.userType != null">
+                user_type
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="sysUserInfo.userId != null">
+                #{sysUserInfo.userId,jdbcType=VARCHAR},
+            </if>
+            <if test="sysUserInfo.userName != null">
+                #{sysUserInfo.userName,jdbcType=VARCHAR},
+            </if>
+            <if test="sysUserInfo.userPwd != null">
+                #{sysUserInfo.userPwd,jdbcType=VARCHAR},
+            </if>
+            <if test="sysUserInfo.realName != null">
+                #{sysUserInfo.realName,jdbcType=VARCHAR},
+            </if>
+            <if test="sysUserInfo.nickname != null">
+                #{sysUserInfo.nickname,jdbcType=VARCHAR},
+            </if>
+            <if test="sysUserInfo.tel != null">
+                #{sysUserInfo.tel,jdbcType=VARCHAR},
+            </if>
+            <if test="sysUserInfo.email != null">
+                #{sysUserInfo.email,jdbcType=VARCHAR},
+            </if>
+            <if test="sysUserInfo.age != null">
+                #{sysUserInfo.age,jdbcType=TINYINT},
+            </if>
+            <if test="sysUserInfo.sex != null">
+                #{sysUserInfo.sex,jdbcType=TINYINT},
+            </if>
+            <if test="sysUserInfo.level != null">
+                #{sysUserInfo.level,jdbcType=TINYINT},
+            </if>
+            <if test="sysUserInfo.pid != null">
+                #{sysUserInfo.pid,jdbcType=VARCHAR},
+            </if>
+            <if test="sysUserInfo.status != null">
+                #{sysUserInfo.status,jdbcType=TINYINT},
+            </if>
+            <if test="sysUserInfo.entId != null">
+                #{sysUserInfo.entId,jdbcType=VARCHAR},
+            </if>
+            <if test="sysUserInfo.createTime != null">
+                #{sysUserInfo.createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="sysUserInfo.modifyTime != null">
+                #{sysUserInfo.modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="sysUserInfo.userType != null">
+                #{sysUserInfo.userType,jdbcType=TINYINT},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 修改管理用户 -->
+    <update id="updateSysUser" parameterType="com.izhuixin.rsps.domain.manual.SysUserInfo">
+        update sys_user
+        <set>
+            <if test="sysUserInfo.userId != null">
+                user_id = #{sysUserInfo.userId,jdbcType=VARCHAR},
+            </if>
+            <if test="sysUserInfo.userName != null">
+                user_name = #{sysUserInfo.userName,jdbcType=VARCHAR},
+            </if>
+            <if test="sysUserInfo.realName != null">
+                real_name = #{sysUserInfo.realName,jdbcType=VARCHAR},
+            </if>
+            <if test="sysUserInfo.nickname != null">
+                nickname = #{sysUserInfo.nickname,jdbcType=VARCHAR},
+            </if>
+            <if test="sysUserInfo.tel != null">
+                tel = #{sysUserInfo.tel,jdbcType=VARCHAR},
+            </if>
+            <if test="sysUserInfo.email != null">
+                email = #{sysUserInfo.email,jdbcType=VARCHAR},
+            </if>
+            <if test="sysUserInfo.age != null">
+                age = #{sysUserInfo.age,jdbcType=TINYINT},
+            </if>
+            <if test="sysUserInfo.sex != null">
+                sex = #{sysUserInfo.sex,jdbcType=TINYINT},
+            </if>
+            <if test="sysUserInfo.level != null">
+                level = #{sysUserInfo.level,jdbcType=TINYINT},
+            </if>
+            <if test="sysUserInfo.pid != null">
+                pid = #{sysUserInfo.pid,jdbcType=VARCHAR},
+            </if>
+            <if test="sysUserInfo.status != null">
+                status = #{sysUserInfo.status,jdbcType=TINYINT},
+            </if>
+            <if test="sysUserInfo.entId != null">
+                ent_id = #{sysUserInfo.entId,jdbcType=VARCHAR},
+            </if>
+            <if test="sysUserInfo.createTime != null">
+                create_time = #{sysUserInfo.createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="sysUserInfo.modifyTime != null">
+                modify_time = #{sysUserInfo.modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="sysUserInfo.userType != null">
+                user_type = #{sysUserInfo.userType,jdbcType=TINYINT}
+            </if>
+        </set>
+        <if test="sysUserInfo.userId != null">
+            where user_id = #{sysUserInfo.userId,jdbcType=VARCHAR}
+        </if>
+    </update>
+
+    <!-- 重置密码 -->
+    <update id="resetPwd">
+        update sys_user
+        <set>
+            <if test="newPwd != null">
+                user_pwd = #{newPwd,jdbcType=VARCHAR},
+            </if>
+        </set>
+        <if test="userId != null">
+            where user_id = #{userId,jdbcType=VARCHAR}
+        </if>
+    </update>
+
+    <!-- 新增用户检测重名 -->
+    <select id="checkUserNameForAdd" resultType="Integer">
+      select count(*) from sys_user where user_name = #{userName, jdbcType=VARCHAR}
+    </select>
+
+    <!-- 编辑用户检测重名 -->
+    <select id="checkUserNameForEdit" resultType="Integer">
+      select count(*) from sys_user where user_name = #{userName, jdbcType=VARCHAR} and user_id != #{userId, jdbcType=VARCHAR}
+    </select>
+    
+    <select id="checkPwd" resultType="Integer">
+      select count(*) from sys_user where id = #{id, jdbcType=TINYINT} and user_pwd = #{oldPwd, jdbcType=VARCHAR}
+    </select>
+    
+    <update id="updatePwd">
+        update sys_user set user_pwd = #{newPwd, jdbcType=VARCHAR} where id = #{id,jdbcType=TINYINT}
+    </update>
+
+</mapper>

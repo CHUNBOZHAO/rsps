@@ -1,0 +1,57 @@
+package com.izhuixin.rsps.controller;
+
+import com.izhuixin.rsps.model.BoxCmd;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisKeyValueTemplate;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Base64;
+
+@RestController
+@RequestMapping("/")
+public class CmdController {
+
+    @Autowired
+    private RedisKeyValueTemplate redisKeyValueTemplate;
+
+    @ResponseBody
+    @RequestMapping(value = "/cmd/period",method = RequestMethod.POST, produces="application/json;charset=UTF-8")
+    public String cmdPeriod(@RequestParam String id, @RequestParam int period, @RequestParam String unit){
+        if(unit.toUpperCase().equals("H")){
+            period=60*period;
+        }
+        else if(unit.toUpperCase().equals("D")){
+            period=60*24*period;
+        }
+        else{
+
+        }
+
+        String key=null;
+        if(id.contains(":")) {
+            key = id.replaceAll(":", "").toUpperCase();
+        }
+        else if(id.length()>=12){
+            key=id.substring(id.length()-12,id.length()).toUpperCase();
+        }
+        else{
+            key = id;
+        }
+        BoxCmd boxCmd = new BoxCmd();
+        boxCmd.setBoxid(key);
+        boxCmd.setType((byte)1);
+        byte[] cmd = new byte[] {
+                (byte)((period >> 8)&0xff),
+                (byte) (period & 0xFF)
+        };
+        boxCmd.setCmd(cmd);
+        BoxCmd b = redisKeyValueTemplate.findById(boxCmd.getBoxid(), BoxCmd.class);
+        if(null == b) {
+            redisKeyValueTemplate.insert(boxCmd.getBoxid(), boxCmd);
+        }
+        else{
+            redisKeyValueTemplate.update(boxCmd.getBoxid(), boxCmd);
+        }
+        return "";
+    }
+}

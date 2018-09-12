@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<!--<input type="hidden" id="id" th:value="${id}" />-->
+<table id="box_base_list_table" class="table table-striped" cellspacing="0" width="100%" style="border-bottom: 0px;">
+
+    <thead>
+    <tr>
+        <th style="padding-left: 10px;">#</th>
+        <th style="padding-left: 10px;">#</th>
+        <th style="padding-left: 10px;">包装箱ID</th>
+        <th style="padding-left: 10px;">循环次数</th>
+        <th style="padding-left: 10px;">最近使用时间</th>
+        <th style="padding-left: 10px;">通讯次数</th>
+        <th style="padding-left: 10px;">上线时间</th>
+        <th style="padding-left: 15px;width: 20%">操作</th>
+
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="boxBase,stat:${boxBaseInfoVOS}">
+       <!-- <th scope="row" th:text="${stat.count}"></th>-->
+        <td>
+            <span th:text="${boxBase.rfid}"></span>
+        </td>
+        <td>
+            <span th:text="${boxBase.type}"></span>
+        </td>
+        <td>
+            <span th:text="${boxBase.entName}"></span>
+        </td>
+        <td>
+            <span th:text="${boxBase.uuid}"></span>
+        </td>
+        <td>
+            <span th:text="${boxBase.createTime}"></span>
+        </td>
+        <td>
+            <span th:text="${boxBase.softwareVersion}"></span>
+        </td>
+        <td>
+            <span th:text="${boxBase.hardwareVersion}"></span>
+        </td>
+        <td>
+            <span th:text="${boxBase.epc}"></span>
+        </td>
+        <td>
+            <span th:text="${boxBase.tid}"></span>
+        </td>
+        <td>
+            <span class="btn-edit" style="color: #2caef5;cursor: pointer" th:attr="id=${boxBase.id}">编辑</span>
+            <span class="btn-del" style="color: #2caef5;cursor: pointer" th:attr="id=${boxBase.id}">删除</span>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<script type="text/javascript" th:src="@{/assets/js/manager/boxBase/box.js}"></script>
+</html>

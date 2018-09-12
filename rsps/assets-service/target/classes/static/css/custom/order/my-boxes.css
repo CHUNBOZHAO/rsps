@@ -1,0 +1,36 @@
+.btn-select-return-box {
+    height: 45px;
+    text-align: center;
+    background-color: #2caef5;
+    color: white;
+    font-size: 1.2em;
+    line-height: 45px;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    z-index: 999;
+    cursor: pointer;
+}
+
+.my-box {
+    margin-bottom: 5px;
+    cursor: pointer;
+    position: relative;
+    width: 100%;
+    border-bottom: 1px solid #dcdcdc;
+    padding-left: 5px;
+}
+
+.my-box-style {
+    border: 2px solid #2caef5 !important;
+}
+
+.my-box-select-flag {
+    position: absolute;
+    right: 10px;
+    top: 5px;
+    font-size: 2em;
+    color: #2caef5;
+    display: none;
+}

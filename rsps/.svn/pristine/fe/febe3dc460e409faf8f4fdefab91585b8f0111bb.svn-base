@@ -1,0 +1,33 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:9100/eureka/
+server:
+  port: 10900
+spring:
+  application:
+    name: enterprise-service
+  profiles:
+    active: dev
+  cloud:
+    stream:
+      bindings:
+        input_order:
+          group: order-service
+          destination: order
+  rabbitmq:
+    host: 192.168.0.111
+    port: 5672
+    username: izhuixin
+    password: rsps123456
+  zipkin:
+    base-url: http://localhost:9300
+  sleuth:
+    sampler:
+      percentage: 1.0
+endpoints.shutdown.enabled: true    #开启优雅关闭方式
+management.security.enabled: false  #关闭安全认证
+
+
+
+

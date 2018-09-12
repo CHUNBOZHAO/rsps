@@ -1,0 +1,113 @@
+package com.izhuixin.rsps.service.impl;
+
+import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
+import com.izhuixin.rsps.common.dba.AbstractCrudService;
+import com.izhuixin.rsps.common.dba.FilterExample;
+import com.izhuixin.rsps.domain.automatic.BoxBaseDO;
+import com.izhuixin.rsps.service.BoxBaseService;
+import com.izhuixin.rsps.service.EnterpriseService;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+
+@Service
+public class BoxBaseServiceImpl extends AbstractCrudService<BoxBaseDO> implements BoxBaseService {
+
+    @Autowired
+    private EnterpriseService enterpriseService;
+
+    /**
+     * 通过boxId获取rfid(epcId)
+     * @param rfid -- epcId或tid
+     * @return
+     */
+    @Override
+    public String getBoxId(String rfid) {
+        String boxId = "";
+
+        FilterExample fe = new FilterExample();
+        FilterExample.Criteria criteria = fe.createCriteria();
+        criteria.andFieldEqualTo("epc", rfid);
+        fe.or().andFieldEqualTo("tid", rfid);
+
+        try {
+            Optional<BoxBaseDO> optional = get(fe);
+            if (optional.isPresent()) {
+                boxId = optional.get().getRfid();
+            }
+        } catch (Exception e) {
+            logger.error(String.format("通过包装箱ID(%s)获取rfid出现异常", rfid), e);
+        }
+        return boxId;
+    }
+
+    /**
+     * 通过Ble获取boxId
+     * @param bleMac
+     * @return
+     */
+    @Override
+    public String getBoxIdByBle(String bleMac) {
+        String boxId = "";
+
+        FilterExample fe = new FilterExample();
+        fe.createCriteria().andFieldEqualTo("uuid", bleMac);
+        try {
+            Optional<BoxBaseDO> optional = get(fe);
+            if (optional.isPresent()) {
+                boxId = optional.get().getRfid();
+            }
+        } catch (Exception e) {
+            logger.error(String.format("通过包装箱bleMac(%s)获取boxId出现异常", bleMac), e);
+        }
+        return boxId;
+    }
+
+    /**
+     * 通过包装箱ID获取TID -- 以后boxId是系统自动生成的ID
+     * @param boxId
+     * @return
+     */
+    @Override
+    public String getTidFromBoxId(String boxId) {
+        String tid = "";
+        FilterExample fe = new FilterExample();
+        fe.createCriteria().andFieldEqualTo("rfid", boxId);
+        try {
+            Optional<BoxBaseDO> optional = get(fe);
+            if (optional.isPresent()) {
+                tid = optional.get().getTid();
+            }
+        } catch (Exception e) {
+            logger.error(String.format("通过包装箱ID(%s)获取tid出现异常", boxId), e);
+        }
+        return tid;
+    }
+
+    /**
+     * 获取rfid -- tid的Map集合
+     * @param entCode
+     * @return
+     */
+    @Override
+    public Map<String, String> getBoxIdMap(String entCode) {
+
+        String entId = enterpriseService.getEntIdByEntCode(entCode.replaceAll("_",""));
+        FilterExample fe = new FilterExample();
+        FilterExample.Criteria criteria = fe.createCriteria();
+        if (StringUtils.isNotBlank(entId)) {
+            criteria.andFieldEqualTo("ent_id", entId);
+        }
+        List<BoxBaseDO> baseDOList = getList(fe);
+        Map<String, String> idMap = Maps.newHashMap();
+        for (BoxBaseDO item : baseDOList) {
+            idMap.put(item.getRfid(), item.getTid());
+        }
+        return idMap;
+    }
+
+}

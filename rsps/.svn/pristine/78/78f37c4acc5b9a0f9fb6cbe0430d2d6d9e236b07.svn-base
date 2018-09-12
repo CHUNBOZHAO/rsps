@@ -1,0 +1,115 @@
+package com.izhuixin.rsps.service.impl;
+
+
+import com.izhuixin.rsps.constants.CommonOrderRefuseReason;
+import com.izhuixin.rsps.constants.CommonOrderStatus;
+import com.izhuixin.rsps.dao.OrderDao;
+import com.izhuixin.rsps.message.OutputMsg;
+import com.izhuixin.rsps.domain.Order;
+import com.izhuixin.rsps.domain.SignInfo;
+import com.izhuixin.rsps.service.OrderMsgService;
+import com.izhuixin.rsps.service.feign.ApiFeignService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cloud.stream.annotation.EnableBinding;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import java.util.List;
+
+@Service
+@EnableBinding(OutputMsg.class)
+public class OrderMsgServiceImpl implements OrderMsgService {
+
+
+    @Autowired
+    private TransactionTemplate transactionTemplate;
+    @Autowired
+    private ApiFeignService apiFeignService;
+    /**
+     *创建一个新的消息通道发送消息
+     */
+    @Autowired
+    @Qualifier(OutputMsg.OUTPUT_ORDER)
+    MessageChannel output_order;
+
+    @Autowired
+    private OrderDao orderDao;
+
+    @Override
+    public List<Order> getAllOrderByMotorId(String motorId) {
+        return orderDao.getAllOrderByMotorId(motorId);
+    }
+
+    @Override
+    public boolean saveOrder(Order order) {
+        boolean b = true;
+//        return transactionTemplate.execute(new TransactionCallback<Boolean>() {
+//
+//            @Override
+//            public Boolean doInTransaction(TransactionStatus transactionStatus) {
+//                Boolean res = false;
+//
+//                try{
+//                    orderDao.saveOrder(order);
+//                    //更新包装箱责任人
+////                    boolean m = apiFeignService.updateBoxOperator(order.getOrderNO(),order.getMotorId(),order.getEntCode());
+//                    res = true;
+//                }catch (Exception e) {
+//                    transactionStatus.setRollbackOnly();
+//                    e.printStackTrace();
+//                }
+//                return res;
+//            }
+//        });
+        try{
+            orderDao.saveOrder(order);
+        }catch (Exception e){
+            e.printStackTrace();
+            b = false;
+        }
+        return b;
+    }
+
+    @Override
+    public boolean updateOrderStatus(String orderId) {
+
+        Integer orderStatus = CommonOrderStatus.SIGN.getIndex();
+
+        return orderDao.updateOrderStatus(orderStatus,orderId);
+    }
+    @Override
+    public boolean deleteOrderByOrderId(String orderId) {
+        return orderDao.deleteOrderByOrderId(orderId);
+    }
+
+    @Override
+    public boolean sendOrder(SignInfo signInfo) throws Exception{
+
+        boolean flag = false;
+        if (signInfo != null) {
+
+            //发送签收信息
+            boolean flag1 = output_order.send(MessageBuilder.withPayload(signInfo).build());
+            //更新订单状态
+            Integer orderStatus = CommonOrderStatus.SIGN.getIndex();
+            boolean flag2 = orderDao.updateOrderStatus(orderStatus, signInfo.getCustJobno());
+            //更新拒签数量,和拒签原因
+            Order order = new Order();
+            order.setRefusedCount(signInfo.getRefuseCount());
+            order.setRefusedReason(signInfo.getRefusedReason());
+            order.setOrderNO(signInfo.getCustJobno());
+            orderDao.updateRefuseCountAndReason(order);
+//        //通过订单id删除订单
+//        boolean flag2 = orderDao.deleteOrderByOrderId(signInfo.getCustJobno());
+            if (flag1 && flag2) {
+                flag = true;
+            }
+        }
+        return flag;
+    }
+}

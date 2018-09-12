@@ -1,0 +1,10 @@
+package com.izhuixin.rsps.service;
+
+public interface OrderService {
+
+    /**
+     * 发送订单签收信息
+     */
+    boolean sendOrder(String orderMsg);
+
+}

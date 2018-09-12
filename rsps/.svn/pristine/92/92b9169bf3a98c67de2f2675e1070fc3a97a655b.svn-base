@@ -1,0 +1,32 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:9100/eureka/
+server:
+  port: 10100
+spring:
+  application:
+    name: api-service
+  zipkin:
+    base-url: http://localhost:9300
+  sleuth:
+    sampler:
+      percentage: 1.0
+  datasource:
+    url: jdbc:mysql://192.168.0.111/rspsdb?useUnicode=true&characterEncoding=utf-8
+    username: rspsadmin
+    password: rsps!@#Test
+    driver-class-name: com.mysql.jdbc.Driver
+  jackson:
+    parser:
+      allow_numeric_leading_zeros: true
+  profiles:
+    active: test
+endpoints.shutdown.enabled: true    #开启优雅关闭方式
+management.security.enabled: false  #关闭安全认证
+mybatis:
+  mapper-locations: classpath:com.izhuixin.rsps.mapping/**/*.xml
+  type-aliases-package: com.izhuixin.rsps.domain.*
+
+
+

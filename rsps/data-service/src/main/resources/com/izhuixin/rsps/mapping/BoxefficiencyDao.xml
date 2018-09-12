@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.izhuixin.rsps.dao.BoxEfficiencyDao" >
+
+    <!-- 获取指定条的报表数据 -->
+    <select id="getEfficiencyInfo" resultType="com.izhuixin.rsps.domain.BoxEfficiencyInfo">
+        SELECT id, ent_id as entId, type, generate_date as generateDate, idle_rate as idleRate,
+        turnover_rate as turnoverRate, lose_rate as loseRate, overdue_rate as overdueRate,
+        other1_rate as other1Rate, other2_rate as other2Rate, other3_rate as other3Rate, create_time as createTime
+        FROM rsps_box_efficiency_report where type = #{type, jdbcType=TINYINT} and ent_id = #{entId, jdbcType=VARCHAR} and
+        generate_date between #{beginTime, jdbcType=TIMESTAMP} and #{endTime, jdbcType=TIMESTAMP};
+    </select>
+
+    <!-- 保存包装箱信息 -->
+    <insert id="saveInfo" parameterType="com.izhuixin.rsps.domain.BoxEfficiencyInfo">
+        insert into rsps_box_efficiency_report
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="boxEfficiencyInfo.entId != null">
+                ent_id,
+            </if>
+            <if test="boxEfficiencyInfo.type != null">
+                type,
+            </if>
+            <if test="boxEfficiencyInfo.generateDate != null">
+                generate_date,
+            </if>
+            <if test="boxEfficiencyInfo.idleRate != null">
+                idle_rate,
+            </if>
+            <if test="boxEfficiencyInfo.turnoverRate != null">
+                turnover_rate,
+            </if>
+            <if test="boxEfficiencyInfo.loseRate != null">
+                lose_rate,
+            </if>
+            <if test="boxEfficiencyInfo.overdueRate != null">
+                overdue_rate,
+            </if>
+            <if test="boxEfficiencyInfo.other1Rate != null">
+                other1_rate,
+            </if>
+            <if test="boxEfficiencyInfo.other2Rate != null">
+                other2_rate,
+            </if>
+            <if test="boxEfficiencyInfo.other3Rate != null">
+                other3_rate,
+            </if>
+            <if test="boxEfficiencyInfo.createTime != null">
+                create_time
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="boxEfficiencyInfo.entId != null">
+                #{boxEfficiencyInfo.entId, jdbcType=VARCHAR},
+            </if>
+            <if test="boxEfficiencyInfo.type != null">
+                #{boxEfficiencyInfo.type, jdbcType=TINYINT},
+            </if>
+            <if test="boxEfficiencyInfo.generateDate != null">
+                #{boxEfficiencyInfo.generateDate, jdbcType=TIMESTAMP},
+            </if>
+            <if test="boxEfficiencyInfo.idleRate != null">
+                #{boxEfficiencyInfo.idleRate, jdbcType=FLOAT},
+            </if>
+            <if test="boxEfficiencyInfo.turnoverRate != null">
+                #{boxEfficiencyInfo.turnoverRate, jdbcType=FLOAT},
+            </if>
+            <if test="boxEfficiencyInfo.loseRate != null">
+                #{boxEfficiencyInfo.loseRate, jdbcType=FLOAT},
+            </if>
+            <if test="boxEfficiencyInfo.overdueRate != null">
+                #{boxEfficiencyInfo.overdueRate, jdbcType=FLOAT},
+            </if>
+            <if test="boxEfficiencyInfo.other1Rate != null">
+                #{boxEfficiencyInfo.other1Rate, jdbcType=FLOAT},
+            </if>
+            <if test="boxEfficiencyInfo.other2Rate != null">
+                #{boxEfficiencyInfo.other2Rate, jdbcType=FLOAT},
+            </if>
+            <if test="boxEfficiencyInfo.other3Rate != null">
+                #{boxEfficiencyInfo.other3Rate, jdbcType=FLOAT},
+            </if>
+            <if test="boxEfficiencyInfo.createTime != null">
+                #{boxEfficiencyInfo.createTime, jdbcType=TIMESTAMP}
+            </if>
+
+        </trim>
+    </insert>
+
+</mapper>

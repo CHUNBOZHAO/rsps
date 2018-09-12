@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<table id="list_table" class="table table-striped" cellspacing="0" width="100%" style="border-bottom: 0px;">
+    <thead>
+    <tr>
+        <th style="padding-left: 10px;">#</th>
+        <th style="padding-left: 10px;">用户名称</th>
+        <th style="padding-left: 10px;">企业名称</th>
+        <th style="padding-left: 10px;">企业地址</th>
+        <th style="padding-left: 10px;">企业编码</th>
+        <th style="padding-left: 10px;">所属企业</th>
+        <th style="padding-left: 15px;width: 20%">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="euInfo,stat:${enterpriseAndUserInfo}">
+        <th scope="row" th:text="${stat.count}"></th>
+        <td>
+            <span th:text="${euInfo.userName}"></span>
+        </td>
+        <td>
+            <span th:text="${euInfo.entName}"></span>
+        </td>
+        <td>
+            <span th:text="${euInfo.entAddress}"></span>
+        </td>
+        <td>
+            <span th:text="${euInfo.entCode}"></span>
+        </td>
+        <td>
+            <span th:text="${euInfo.parentNickName}"></span>
+        </td>
+        <td>
+            <span class="btn-edit" style="color: #2caef5;cursor: pointer" th:attr="entId=${euInfo.entId}">编辑</span>
+            <span class="btn-permission" style="color: #2caef5;cursor: pointer" th:attr="pid=${euInfo.pid},userId=${euInfo.userId},nickname=${euInfo.nickName}">分配权限</span>
+            <span class="btn-reset" style="color: #2caef5;cursor: pointer" th:attr="userId=${euInfo.userId}">重置密码</span>
+            <span class="btn-del" style="color: #2caef5;cursor: pointer" th:attr="entId=${euInfo.entId},userId=${euInfo.userId}">删除</span>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<script type="text/javascript" th:src="@{/assets/js/manager/common/common-table.js}"></script>
+
+
+</html>

@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<input type="hidden" id="lineId" th:value="${lineId}" />
+<table id="shipment_record_list_table" class="table table-striped" cellspacing="0" width="100%" style="border-bottom: 0px;">
+    <thead>
+        <tr>
+            <th style="padding-left: 10px;">订单ID</th>
+            <th style="padding-left: 10px;">包装箱ID</th>
+            <th style="padding-left: 10px;">客户ID</th>
+            <th style="padding-left: 10px;">客户名称</th>
+            <th style="padding-left: 15px;">配货日期</th>
+            <th style="padding-left: 15px;">线路</th>
+            <th style="padding-left: 15px;" th:text="|装车(${fetchDescr})|">装车</th>
+            <th style="padding-left: 15px;" th:text="|送达(${signDescr})|">送达</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="object:${data}">
+            <td>
+                <span th:text="${object[0]}"></span>
+            </td>
+            <td>
+                <span th:text="${object[1]}"></span>
+            </td>
+            <td>
+                <span th:text="${object[2]}"></span>
+            </td>
+            <td>
+                <span th:text="${#strings.abbreviate(object[3],12)}"></span>
+            </td>
+            <td>
+                <span th:text="${object[4]}"></span>
+            </td>
+            <td>
+                <span th:text="${#strings.abbreviate(object[5],10)}"  th:alt-title="${object[4]}"></span>
+            </td>
+            <td>
+                <span th:text="${object[6]}"></span>
+            </td>
+            <td>
+                <span th:text="${object[7]}"></span>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<!--<script type="text/javascript" th:src="@{/assets/js/manager/report/shipment-record-table.js}"></script>-->
+
+</html>

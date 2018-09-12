@@ -1,0 +1,180 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <title>RSPS管理平台</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="icon" type="image/x-icon" th:href="@{/assets/images/manager/favicon.png}">
+
+    <!-- CSS Libs -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap.min.css}" href="../../lib/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/font-awesome.min.css}" href="../../lib/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/animate.min.css}" href="../../lib/css/animate.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap-switch.min.css}" href="../../lib/css/bootstrap-switch.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/checkbox3.min.css}" href="../../lib/css/checkbox3.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/jquery.dataTables.min.css}" href="../../lib/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/dataTables.bootstrap.css}" href="../../lib/css/dataTables.bootstrap.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/select2.min.css}" href="../../lib/css/select2.min.css">
+
+    <!-- CSS App -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/style.css}" href="../../css/style.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/themes/flat-blue.css}" href="../../css/themes/flat-green.css">
+
+    <!-- My Css -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/css/rsps-response.css}" href="">
+</head>
+
+<body class="flat-blue">
+<div class="app-container">
+    <div class="row content-container">
+        <nav th:replace="manager/common/header::manager_navbar_top('总览','')">
+        </nav>
+        <div th:replace="manager/common/menu::manager_side_menu(100)"></div>
+
+        <!-- Main Content -->
+        <div class="container-fluid">
+            <div class="side-body padding-top">
+                <!-- 包装箱数量展示 -->
+                <input type="hidden" id="countTotal" th:value="${countTotal}" />
+                <div class="row">
+                    <div class="col-zx10-lg-2 col-zx10-md-5 col-zx10-sm-5 col-zx10-sx-10">
+                        <a th:href="@{/manager/box/queryCustoms(boxStatus=1,total=${countBinding})}">
+                            <div class="card summary-inline" style="background-color: #ba5784;color: white">
+                                <div class="card-body">
+                                    <i class="icon fa fa-send fa-4x"></i>
+                                    <div class="content">
+                                        <div class="title" th:text="${countBinding}">0</div>
+                                        <div class="sub-title">配货</div>
+                                    </div>
+                                    <div class="clear-both"></div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-zx10-lg-2 col-zx10-md-5 col-zx10-sm-5 col-zx10-sx-10">
+                        <a th:href="@{/manager/box/queryCustoms(boxStatus=2,total=${countTransporting})}">
+                            <div class="card summary-inline" style="background-color: #7646cd;color: white">
+                                <div class="card-body">
+                                    <i class="icon fa fa-truck fa-4x"></i>
+                                    <div class="content">
+                                        <div class="title" th:text="${countTransporting}">0</div>
+                                        <div class="sub-title">运输</div>
+                                    </div>
+                                    <div class="clear-both"></div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-zx10-lg-2 col-zx10-md-5 col-zx10-sm-5 col-zx10-sx-10">
+                        <a th:href="@{/manager/box/queryCustoms(boxStatus=3,total=${countRetention})}">
+                            <div class="card summary-inline" style="background-color: #f4b039;color: white">
+                                <div class="card-body">
+                                    <i class="icon fa fa-exclamation-circle fa-4x"></i>
+                                    <div class="content">
+                                        <div class="title" th:text="${countRetention}">0</div>
+                                        <div class="sub-title">滞留</div>
+                                    </div>
+                                    <div class="clear-both"></div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-zx10-lg-2 col-zx10-md-5 col-zx10-sm-5 col-zx10-sx-10">
+                        <a th:href="@{/manager/box/queryOperators(boxStatus=4,total=${countRecycle})}">
+                            <div class="card summary-inline" style="background-color: #33b781;color: white">
+                                <div class="card-body">
+                                    <i class="icon fa fa-recycle fa-4x"></i>
+                                    <div class="content">
+                                        <div class="title" th:text="${countRecycle}">0</div>
+                                        <div class="sub-title">回收</div>
+                                    </div>
+                                    <div class="clear-both"></div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-zx10-lg-2 col-zx10-md-5 col-zx10-sm-5 col-zx10-sx-10">
+                        <a th:href="@{/manager/box/listLeisureBox}">
+                            <div class="card summary-inline" style="background-color: #D3D3D3;color: white">
+                                <div class="card-body">
+                                    <i class="icon fa fa-home fa-4x"></i>
+                                    <div class="content">
+                                        <div class="title" th:text="${countLeisure}">0</div>
+                                        <div class="sub-title">闲置</div>
+                                    </div>
+                                    <div class="clear-both"></div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 图形区域 -->
+                <div class="row no-margin-bottom">
+                    <div class="col-sm-6 col-xs-12">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="card primary" id="box_status_pie" style="height: 380px;width: 100%;">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 col-xs-12">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="card primary" id="box_status_line" style="height: 380px;width: 100%;">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 col-xs-12">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="card primary" id="box_status_column" style="height: 380px;width: 100%;">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <footer th:replace="manager/common/footer::manager_footer">
+    </footer>
+</div>
+
+<!-- Javascript Libs -->
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.min.js}" src="../../lib/js/jquery.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/bootstrap.min.js}" src="../../lib/js/bootstrap.min.js"></script>
+<!--<script type="text/javascript" th:src="@{/assets/btzero/lib/js/Chart.min.js}" src="../../lib/js/Chart.min.js"></script>-->
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/bootstrap-switch.min.js}" src="../../lib/js/bootstrap-switch.min.js"></script>
+
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.matchHeight-min.js}" src="../../lib/js/jquery.matchHeight-min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.dataTables.min.js}" src="../../lib/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/dataTables.bootstrap.min.js}" src="../../lib/js/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/select2.full.min.js}" src="../../lib/js/select2.full.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/ace.js}" src="../../lib/js/ace/ace.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/mode-html.js}" src="../../lib/js/ace/mode-html.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/theme-github.js}" src="../../lib/js/ace/theme-github.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/js/app.js}" src="../../js/app.js"></script>
+
+<script type="text/javascript" th:src="@{/assets/echarts/echarts.common.min.js}"></script>
+
+<script type="text/javascript" th:src="@{/assets/js/common/jquery.fileDownload.js}"></script>
+
+<!-- 自定义js -->
+<script type="text/javascript" th:src="@{/assets/js/manager/index.js}"></script>
+<script type="text/javascript" th:src="@{/assets/js/manager/header.js}"></script>
+
+</body>
+
+</html>

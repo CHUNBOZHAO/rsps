@@ -1,0 +1,17 @@
+.p-card-body {
+    /*padding-top: 18px;*/
+}
+
+.p-row {
+    padding:0px;
+    height: 50px;
+    line-height: 50px;
+}
+
+.p-split-row {
+    border-bottom: 1px solid #eeeeee;
+}
+
+.p-padding {
+    padding: 0px;
+}

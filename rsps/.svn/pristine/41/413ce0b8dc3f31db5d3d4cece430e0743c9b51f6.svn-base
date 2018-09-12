@@ -1,0 +1,58 @@
+.shape-0, .shape-1, .shape-2, .shape-3, .shape-4, .shape-5, .shape-6 {
+    height:35px;
+}
+
+.shape-0 {
+    background: url("status.png") no-repeat scroll 50% 1px rgba(0,0,0,0);
+}
+
+/* 起始 */
+.shape-1 {
+    background: url("status.png") no-repeat scroll 50% -33px rgba(0,0,0,0);
+}
+
+.shape-2 {
+    background: url("status.png") no-repeat scroll 50% -67px rgba(0,0,0,0);
+}
+
+/* 中间未完成 */
+.shape-3 {
+    background: url("status.png") no-repeat scroll 50% -101px rgba(0,0,0,0);
+}
+
+.shape-4 {
+    background: url("status.png") no-repeat scroll 50% -135px rgba(0,0,0,0);
+}
+
+/* 结束完成 */
+.shape-5 {
+    background: url("status.png") no-repeat scroll 50% -169px rgba(0,0,0,0);
+}
+
+/* 起始完成 */
+.shape-6 {
+    background: url("status.png") no-repeat scroll 50% -203px rgba(0,0,0,0);
+}
+
+/* 文字状态显示 */
+.text-show {
+    text-align: right;
+    margin-top: -25px;
+    margin-right: -15px;
+    font-size: 0.9em;
+}
+
+/* 动作 */
+.text-action {
+    text-align: left;
+    top: 33px;
+    font-size: 0.9em;
+    position: relative;
+    height:30px;
+    text-align: center;
+}
+
+/* 当前动作 */
+.text-action-enabled {
+    left: -33px;
+}

@@ -1,0 +1,114 @@
+package com.izhuixin.rsps.dao.manual;
+
+import com.izhuixin.rsps.domain.manual.BoxRecordInfo;
+import com.izhuixin.rsps.domain.manual.ShipmentReportInfo;
+import com.izhuixin.rsps.domain.manual.StatusReportInfo;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+
+@Repository
+public interface BoxRecordDao {
+
+    /**
+     * 通过订单、包装箱rfid获取包装箱流转记录
+     * @param rfid
+     * @param orderId
+     * @return
+     */
+    List<BoxRecordInfo> getInfoByRfidAndOrderId(@Param("rfid") String rfid,
+                                                @Param("orderId") String orderId,
+                                                @Param("entCode") String entCode);
+
+    /**
+     * 查询包装箱的流转记录
+     * @param boxId
+     * @param orderId
+     * @param entCode
+     * @param count
+     * @return
+     */
+    List<BoxRecordInfo> getInfoByRfid(@Param("boxId") String boxId,
+                                      @Param("orderId") String orderId,
+                                      @Param("entCode") String entCode,
+                                      @Param("count") Integer count);
+
+    /**
+     * 保存包装箱流转记录
+     * @param boxRecordInfo
+     * @param entCode
+     * @return
+     */
+    Integer saveBoxRecord(@Param("boxRecordInfo") BoxRecordInfo boxRecordInfo,
+                          @Param("entCode") String entCode);
+
+
+    /**
+     * 获取指定条件包装箱记录数量
+     * @param rfid
+     * @param orderId
+     * @param operateType
+     * @param entCode
+     * @return
+     */
+    Integer countInfo(@Param("rfid") String rfid,
+                      @Param("orderId") String orderId,
+                      @Param("operateType") Byte operateType,
+                      @Param("entCode") String entCode);
+
+
+    /**
+     * 获取某个时间段内不同状态的操作次数
+     * @param entCode
+     * @param beginTime
+     * @param endTime
+     * @return
+     */
+    List<StatusReportInfo> getSectionRecord(@Param("entCode") String entCode,
+                                            @Param("beginTime") String beginTime,
+                                            @Param("endTime") String endTime);
+
+
+    /**
+     * 更新指定条件包装箱记录信息
+     * @param boxRecordInfo
+     * @param rfid
+     * @param orderId
+     * @param operateType
+     * @param entCode
+     * @return
+     */
+    Integer updateBoxRecord(@Param("boxRecordInfo") BoxRecordInfo boxRecordInfo,
+                            @Param("rfid") String rfid,
+                            @Param("orderId") String orderId,
+                            @Param("operateType") Byte operateType,
+                            @Param("entCode") String entCode);
+
+
+    /**
+     * 获取出货量数据
+     * @param entCode
+     * @param beginTime
+     * @param entTime
+     * @return
+     */
+    List<ShipmentReportInfo> getShipmentReport(@Param("entCode") String entCode,
+                                               @Param("beginTime") String beginTime,
+                                               @Param("endTime") String entTime);
+
+
+    /**
+     * 获取包装箱操作记录
+     * @param entCode
+     * @param beginTime
+     * @param entTime
+     * @return
+     */
+    List<ShipmentReportInfo> getBoxRecords(@Param("entCode") String entCode,
+                                           @Param("beginTime") String beginTime,
+                                           @Param("endTime") String entTime);
+
+
+}

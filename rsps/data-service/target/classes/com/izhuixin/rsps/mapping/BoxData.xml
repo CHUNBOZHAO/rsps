@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.izhuixin.rsps.dao.DataDao" >
+
+  <resultMap id="efficiency" type="com.izhuixin.rsps.domain.DataEfficiency">
+    <id column="id" jdbcType="BIGINT" property="id"></id>
+    <result column="ent_id" jdbcType="VARCHAR" property="entId" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="generate_date" jdbcType="TIMESTAMP" property="generateDate" />
+    <result column="idle_rate" jdbcType="VARCHAR" property="idleRate" />
+    <result column="turnover_rate" jdbcType="DOUBLE" property="turnoverRate" />
+    <result column="lose_rate" jdbcType="DOUBLE" property="loseRate" />
+    <result column="overdue_rate" jdbcType="DOUBLE" property="overdueRate" />
+    <result column="other1_rate" jdbcType="DOUBLE" property="other1Rate" />
+    <result column="other2_rate" jdbcType="VARCHAR" property="other2Rate" />
+    <result column="other3_rate" jdbcType="VARCHAR" property="other3Rate" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <!--//获取总体包装箱当月30天数据
+   List<DataEfficiency> getEfficiency(@Param("entId") String entId, @Param("type") Integer type, @Param("beginTime") String beginTime, @Param("entTime") String endTime);-->
+  <select id="getEfficiency" resultMap="efficiency">
+    select distinct * from rsps_box_efficiency_report where 1=1
+    <if test="entId != null">
+      and ent_id = #{entId}
+    </if>
+    <if test="type != null">
+      and type = #{type}
+    </if>
+    <if test="beginTime != null">
+      and <![CDATA[  generate_date >=  #{beginTime}]]>
+    </if>
+    <if test="endTime != null">
+      and <![CDATA[  generate_date <=  #{endTime}]]>
+    </if>
+    group by generate_date
+  </select>
+
+</mapper>

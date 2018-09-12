@@ -1,0 +1,150 @@
+package com.izhuixin.rsps.controller;
+
+import com.izhuixin.rsps.common.ManagerUserDetail;
+import com.izhuixin.rsps.common.dao.SysUserInfo;
+import com.izhuixin.rsps.common.dto.ShipmentInfoDTO;
+import com.izhuixin.rsps.common.vo.web.DataTableReqDataVO;
+import com.izhuixin.rsps.common.vo.web.LineInfoVO;
+import com.izhuixin.rsps.common.vo.web.OperatorInfoVO;
+import com.izhuixin.rsps.service.BoxOperateRecordReportService;
+import com.izhuixin.rsps.service.LineService;
+import com.izhuixin.rsps.service.OperatorInfoService;
+import com.izhuixin.rsps.service.SysUserService;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+
+@RequestMapping("report")
+@Controller
+public class ManagerReportController {
+
+    @Autowired
+    private BoxOperateRecordReportService boxOperateRecordReportService;
+
+    @Autowired
+    private OperatorInfoService operatorInfoService;
+
+    @Autowired
+    private LineService lineService;
+
+    @Autowired
+    private SysUserService sysUserService;
+
+
+    @RequestMapping("/shipments/show/index")
+    public String showShipmentBoxOperateRecordInfo() {
+        return "manager/report/shipment_record_index";
+    }
+
+    @RequestMapping("/shipments/show/content")
+    public String showShipmentBoxOperateRecordInfoContent(ModelMap modelMap, HttpServletRequest request) {
+        ManagerUserDetail userDetail = (ManagerUserDetail) request.getSession().getAttribute("user");
+
+        List<OperatorInfoVO> operatorInfoVOS = operatorInfoService.getOperatorsByUserId(userDetail.getEntCode().concat("_"), userDetail.getUserId());
+        List<LineInfoVO> lineInfos = lineService.queryChildLines(userDetail.getUserId(), userDetail.getEntCode().concat("_"));
+
+        // 获取承运商
+        List<SysUserInfo> sysUserInfos = sysUserService.getSiteUserInfoByUserId(userDetail.getUserId());
+
+        String defaultEndDate = new DateTime().toString("yyyy-MM-dd");
+        String defalutBeginDate = new DateTime().minusDays(7).toString("yyyy-MM-dd");
+
+        modelMap.put("forwarder", sysUserInfos);
+        modelMap.put("operators", operatorInfoVOS);
+        modelMap.put("lineInfos", lineInfos);
+        modelMap.put("defaultBeginDate", defalutBeginDate);
+        modelMap.put("defaultEndDate", defaultEndDate);
+
+        return "manager/report/shipment_record_content";
+    }
+
+
+    /**
+     * 导出出货信息的操作信息
+     * @return
+     */
+    @RequestMapping("/shipments/record/data/get")
+    public String getBoxOperateRecordInfo(ModelMap modelMap,
+                                          HttpServletRequest request,
+                                          DataTableReqDataVO dtReqData,
+                                          String beginDate,
+                                          String endDate,
+                                          String lineName,
+                                          String operator,
+                                          String forwarder,
+                                          String orderId,
+                                          String customName) {
+        ManagerUserDetail userDetail = (ManagerUserDetail) request.getSession().getAttribute("user");
+        ShipmentInfoDTO shipmentInfoDTO = boxOperateRecordReportService.getBoxOperateRecordInfo(dtReqData,
+                                                                                            userDetail.getEntCode().concat("_"),
+                                                                                            beginDate,
+                                                                                            endDate,
+                                                                                            lineName,
+                                                                                            operator,
+                                                                                            forwarder,
+                                                                                            orderId,
+                                                                                            customName);
+        generateSummary(modelMap, shipmentInfoDTO);
+        modelMap.put("data", shipmentInfoDTO.getDatas());
+        return "manager/report/shipment_record_table";
+    }
+
+    /**
+     * 导出出货信息的操作信息
+     * @return
+     */
+    @RequestMapping("/shipments/record/export")
+    public ResponseEntity<byte[]> exportBoxOperateRecordInfo(HttpServletRequest request,
+                                                             String beginDate,
+                                                             String endDate,
+                                                             String lineName,
+                                                             String operator,
+                                                             String forwarder,
+                                                             String orderId,
+                                                             String customName) {
+        ManagerUserDetail userDetail = (ManagerUserDetail) request.getSession().getAttribute("user");
+        return boxOperateRecordReportService.exportCSV(
+                userDetail.getEntCode().concat("_"),
+                beginDate,
+                endDate,
+                lineName,
+                operator,
+                forwarder,
+                orderId,
+                customName);
+    }
+
+    /**
+     * 生成报表相关数据
+     * @param modelMap
+     * @param shipmentInfoDTO
+     */
+    private void generateSummary(ModelMap modelMap, ShipmentInfoDTO shipmentInfoDTO) {
+        int fetchCount = shipmentInfoDTO.getFetchCount();
+        int signCount = shipmentInfoDTO.getSignCount();
+        int recycleCount = shipmentInfoDTO.getRecycleCount();
+        int gohomeCount = shipmentInfoDTO.getGohomeCount();
+        int totalCount = shipmentInfoDTO.getTotalCount();
+
+        Integer fetchRate = Math.round((fetchCount * 1.0f/ totalCount) * 100);
+        Integer signRate = Math.round((signCount * 1.0f/ totalCount) * 100);
+        Integer recycleRate = Math.round((recycleCount * 1.0f/ totalCount) * 100);
+        Integer gohomeRate = Math.round((gohomeCount * 1.0f/ totalCount) * 100);
+
+        String fetchDescr = fetchCount + "/" + totalCount + " | " + fetchRate.toString() + "%";
+        String signDescr = signCount + "/" + totalCount + " | " + signRate.toString() + "%";
+        String recycleDescr = recycleCount + "/" + totalCount + " | " + recycleRate.toString() + "%";
+        String gohomeDescr = gohomeCount + "/" + totalCount + " | " + gohomeRate.toString() + "%";
+
+        modelMap.put("fetchDescr", fetchDescr);
+        modelMap.put("signDescr", signDescr);
+        modelMap.put("recycleDescr", recycleDescr);
+        modelMap.put("gohomeDescr", gohomeDescr);
+    }
+}

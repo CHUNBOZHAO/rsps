@@ -1,0 +1,88 @@
+package com.izhuixin.rsps.domain;
+
+import java.util.Date;
+
+public class AppOrder {
+
+    //    // 运单号
+
+    private String jobno;
+    //    // 订单号
+    private String orderNO;
+    // 收件公司
+    private String reCompany;
+    //    // 收件电话
+    private String reTel;
+    //    // 交接站点代号
+    private String eirStano;
+    //    // 交接站点名称
+    private String eirStation;
+    //    // 订单数量
+    private String jobnoPcs;
+    //    // 创建时间
+    private Date createTime;
+
+    public String getJobno() {
+        return jobno;
+    }
+
+    public void setJobno(String jobno) {
+        this.jobno = jobno;
+    }
+
+    public String getOrderNO() {
+        return orderNO;
+    }
+
+    public void setOrderNO(String orderNO) {
+        this.orderNO = orderNO;
+    }
+
+    public String getReCompany() {
+        return reCompany;
+    }
+
+    public void setReCompany(String reCompany) {
+        this.reCompany = reCompany;
+    }
+
+    public String getReTel() {
+        return reTel;
+    }
+
+    public void setReTel(String reTel) {
+        this.reTel = reTel;
+    }
+
+    public String getEirStano() {
+        return eirStano;
+    }
+
+    public void setEirStano(String eirStano) {
+        this.eirStano = eirStano;
+    }
+
+    public String getEirStation() {
+        return eirStation;
+    }
+
+    public void setEirStation(String eirStation) {
+        this.eirStation = eirStation;
+    }
+
+    public String getJobnoPcs() {
+        return jobnoPcs;
+    }
+
+    public void setJobnoPcs(String jobnoPcs) {
+        this.jobnoPcs = jobnoPcs;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+}

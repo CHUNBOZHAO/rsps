@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.izhuixin.rsps.dao.EnterpriseDao" >
+
+    <resultMap id="BaseResultMap" type="com.izhuixin.rsps.domain.EnterpriseInfo">
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="user_name" jdbcType="VARCHAR" property="userName" />
+        <result column="user_pwd" jdbcType="VARCHAR" property="userPwd" />
+        <result column="ent_id" jdbcType="VARCHAR" property="entId" />
+        <result column="ent_name" jdbcType="VARCHAR" property="entName" />
+        <result column="ent_address" jdbcType="VARCHAR" property="entAddress" />
+        <result column="ent_postcode" jdbcType="VARCHAR" property="entPostcode" />
+        <result column="ent_code" jdbcType="VARCHAR" property="entCode" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="key_id" jdbcType="VARCHAR" property="keyId" />
+        <result column="key_secret" jdbcType="VARCHAR" property="keySecret" />
+        <result column="ak" jdbcType="VARCHAR" property="ak" />
+        <result column="status" jdbcType="TINYINT" property="status" />
+        <result column="type" jdbcType="TINYINT" property="type" />
+        <result column="access_way" jdbcType="TINYINT" property="accessWay" />
+    </resultMap>
+
+
+    <!-- 通过ak获取企业信息 -->
+    <select id="getAllEnterprises" resultMap="BaseResultMap">
+      select * from rsps_enterprise;
+    </select>
+
+
+</mapper>

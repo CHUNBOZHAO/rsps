@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+
+<div th:fragment="status-1" style="background-color: #ffffff;z-index: 999999;position: relative;width: 60%;left: 30%;top: -15px;">
+    <!-- 复检完成 -->
+    <table cellpadding="0" cellspacing="0" align="center" width="100%">
+        <tr>
+            <td class="text-action text-action-enabled">复检</td>
+            <td class="text-action">装车</td>
+            <td class="text-action">送达</td>
+            <td class="text-action">回收</td>
+            <td class="text-action">回库</td>
+        </tr>
+        <tr>
+            <td class="shape-6" height="30">
+                <div class="text-show">
+                    <span>配货</span>
+                </div>
+            </td>
+            <td class="shape-3">
+                <div class="text-show">
+                    <span>运输</span>
+                </div>
+            </td>
+            <td class="shape-3">
+                <div class="text-show">
+                    <span>滞留</span>
+                </div>
+            </td>
+            <td class="shape-3">
+                <div class="text-show">
+                    <span>回收</span>
+                </div>
+            </td>
+            <td class="shape-4">
+                &nbsp;
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div th:fragment="status-2" style="background-color: #ffffff;z-index: 999999;position: relative;width: 60%;left: 30%;top: -15px;">
+    <!-- 装车完成 -->
+    <table cellpadding="0" cellspacing="0" align="center" width="100%">
+        <tr>
+            <td class="text-action text-action-enabled">复检</td>
+            <td class="text-action text-action-enabled">装车</td>
+            <td class="text-action">送达</td>
+            <td class="text-action">回收</td>
+            <td class="text-action">回库</td>
+        </tr>
+        <tr>
+            <td class="shape-6">
+                <div class="text-show">
+                    <span>配货</span>
+                </div>
+            </td>
+            <td class="shape-5">
+                <div class="text-show">
+                    <span>运输</span>
+                </div>
+            </td>
+            <td class="shape-3">
+                <div class="text-show">
+                    <span>滞留</span>
+                </div>
+            </td>
+            <td class="shape-3">
+                <div class="text-show">
+                    <span>回收</span>
+                </div>
+            </td>
+            <td class="shape-4"></td>
+        </tr>
+    </table>
+</div>
+
+<div th:fragment="status-3" style="background-color: #ffffff;z-index: 999999;position: relative;width: 60%;left: 30%;top: -15px;">
+    <!-- 送达完成 -->
+    <table cellpadding="0" cellspacing="0" align="center" width="100%">
+        <tr>
+            <td class="text-action text-action-enabled">复检</td>
+            <td class="text-action text-action-enabled">装车</td>
+            <td class="text-action text-action-enabled">送达</td>
+            <td class="text-action">回收</td>
+            <td class="text-action">回库</td>
+        </tr>
+        <tr>
+            <td class="shape-6">
+                <div class="text-show">
+                    <span>配货</span>
+                </div>
+            </td>
+            <td class="shape-5">
+                <div class="text-show">
+                    <span>运输</span>
+                </div>
+            </td>
+            <td class="shape-5">
+                <div class="text-show">
+                    <span>滞留</span>
+                </div>
+            </td>
+            <td class="shape-3">
+                <div class="text-show">
+                    <span>回收</span>
+                </div>
+            </td>
+            <td class="shape-4"></td>
+        </tr>
+    </table>
+
+</div>
+
+<div th:fragment="status-4" style="background-color: #ffffff;z-index: 999999;position: relative;width: 60%;left: 30%;top: -15px;">
+    <!-- 回收完成 -->
+    <table cellpadding="0" cellspacing="0" align="center" width="100%">
+        <tr>
+            <td class="text-action text-action-enabled">复检</td>
+            <td class="text-action text-action-enabled">装车</td>
+            <td class="text-action text-action-enabled">送达</td>
+            <td class="text-action text-action-enabled">回收</td>
+            <td class="text-action">回库</td>
+        </tr>
+        <tr>
+            <td class="shape-6">
+                <div class="text-show">
+                    <span>配货</span>
+                </div>
+            </td>
+            <td class="shape-5">
+                <div class="text-show">
+                    <span>运输</span>
+                </div>
+            </td>
+            <td class="shape-5">
+                <div class="text-show">
+                    <span>滞留</span>
+                </div>
+            </td>
+            <td class="shape-5">
+                <div class="text-show">
+                    <span>回收</span>
+                </div>
+            </td>
+            <td class="shape-4"></td>
+        </tr>
+    </table>
+</div>
+
+<div th:fragment="status-5" style="background-color: #ffffff;z-index: 999999;position: relative;width: 60%;left: 30%;top: -15px;">
+    <!-- 回库完成 -->
+    <table cellpadding="0" cellspacing="0" align="center" width="100%">
+        <tr>
+            <td class="text-action text-action-enabled">复检</td>
+            <td class="text-action text-action-enabled">装车</td>
+            <td class="text-action text-action-enabled">送达</td>
+            <td class="text-action text-action-enabled">回收</td>
+            <td class="text-action text-action-enabled">回库</td>
+        </tr>
+        <tr>
+            <td class="shape-6">
+                <div class="text-show">
+                    <span>配货</span>
+                </div>
+            </td>
+            <td class="shape-5">
+                <div class="text-show">
+                    <span>运输</span>
+                </div>
+            </td>
+            <td class="shape-5">
+                <div class="text-show">
+                    <span>滞留</span>
+                </div>
+            </td>
+            <td class="shape-5">
+                <div class="text-show">
+                    <span>回收</span>
+                </div>
+            </td>
+            <td class="shape-2"></td>
+        </tr>
+    </table>
+</div>

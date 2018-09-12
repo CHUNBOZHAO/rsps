@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.izhuixin.rsps.dao.manual.LineTransferDao" >
+
+  <!-- 线路关联客户或中转站 -->
+  <resultMap id="LineRelatedInfoResultMap" type="com.izhuixin.rsps.domain.manual.LineRelatedInfo">
+    <result column="custom_id" jdbcType="VARCHAR" property="relatedId" />
+    <result column="related_type" jdbcType="TINYINT" property="relatedType" />
+  </resultMap>
+
+  <resultMap id="UserInfoResultMap" type="com.izhuixin.rsps.domain.manual.SysUserInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="user_pwd" jdbcType="VARCHAR" property="userPwd" />
+    <result column="real_name" jdbcType="VARCHAR" property="realName" />
+    <result column="nickname" jdbcType="VARCHAR" property="nickname" />
+    <result column="tel" jdbcType="VARCHAR" property="tel" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="age" jdbcType="TINYINT" property="age" />
+    <result column="sex" jdbcType="TINYINT" property="sex" />
+    <result column="level" jdbcType="TINYINT" property="level" />
+    <result column="pid" jdbcType="VARCHAR" property="pid" />
+    <result column="p_nickname" jdbcType="VARCHAR" property="pNickName" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="ent_id" jdbcType="VARCHAR" property="entId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="ent_code" jdbcType="VARCHAR" property="entCode" />
+  </resultMap>
+
+  <!-- 获取中转站下所有线路的关联信息 -->
+  <select id="getLineRelatedInfos" resultMap="LineRelatedInfoResultMap" statementType="STATEMENT">
+    SELECT custom_id, related_type FROM rspsdb.rsps_${entCode}route_custom as rc inner join
+    (select route_id from rsps_${entCode}route_hauling where user_id = '${transferId}')
+    as u on rc.route_id = u.route_id;
+  </select>
+  
+  <!-- 获取配送员关联线路所在中转站点ID集合 -->
+  <select id="getTransferIdsByOperatorId" resultType="java.lang.String" statementType="STATEMENT">
+    select distinct case when u.level <![CDATA[ <= 2 ]]> then 0 else u1.user_id end as transfer_id
+    from (SELECT ro.*,rh.user_id FROM rsps_${entCode}route_operator as ro left join
+    rsps_${entCode}route_hauling as rh on ro.route_id = rh.route_id where
+    ro.operator_id = '${operatorId}') as u1 left join sys_user as u on u1.user_id = u.user_id
+  </select>
+
+  <!-- 获取配送员关联所有线路，这些线路关联的所有中转站 -->
+  <select id="getRelatedLineTransferIds" resultType="java.lang.String" statementType="STATEMENT">
+    select distinct rc.custom_id from rsps_${entCode}route_operator as ro left join
+    rsps_${entCode}route_custom as rc on ro.route_id = rc.route_id where
+    ro.operator_id = '${operatorId}' and rc.related_type = 2
+  </select>
+
+  <!-- 获取中转站点上级站点 -->
+  <select id="getParentTransferInfo" resultMap="UserInfoResultMap" statementType="STATEMENT">
+      select u.* from (select rh.user_id from rsps_${entCode}route_hauling as rh left join
+      rsps_${entCode}route_custom as rc on rh.route_id = rc.route_id where
+      rc.custom_id = '${transferId}' and rc.related_type = 2) as u1 left join
+      sys_user as u on u1.user_id = u.user_id;
+  </select>
+
+  <!-- 获取包装箱订单客户所在上级中转站ID -->
+  <select id="getParentTransferIdsByBoxId" resultType="java.lang.String" statementType="STATEMENT">
+    select rh.user_id from rsps_${entCode}route_hauling as rh inner join
+    (select rc.* from rsps_${entCode}route_custom as rc inner join
+    (select o.customer_id from rsps_${entCode}order as o left join
+    rsps_${entCode}box_info as bi on o.order_id = bi.order_id where
+    bi.rfid = '${boxId}') as t on rc.custom_id = t.customer_id where rc.related_type = 1) as t1 on
+    rh.route_id = t1.route_id;
+  </select>
+
+</mapper>

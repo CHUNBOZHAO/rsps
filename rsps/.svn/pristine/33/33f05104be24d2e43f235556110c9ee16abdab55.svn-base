@@ -1,0 +1,18 @@
+package com.izhuixin.rsps.service;
+
+import com.izhuixin.rsps.common.dba.CrudService;
+import com.izhuixin.rsps.domain.automatic.BoxBaseDO;
+
+import java.util.Map;
+
+public interface BoxBaseService extends CrudService<BoxBaseDO> {
+
+
+    String getBoxId(String boxId);
+
+    String getBoxIdByBle(String bleMac);
+
+    String getTidFromBoxId(String boxId);
+
+    Map<String, String> getBoxIdMap(String entCode);
+}

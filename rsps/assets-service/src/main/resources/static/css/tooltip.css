@@ -1,0 +1,6 @@
+.mytooltip .tooltip-inner{
+    padding:10px;
+    line-height: 30px;
+    text-align: left;
+    background-color:  rgba(0,0,0,0.80);;
+}

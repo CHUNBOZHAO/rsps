@@ -1,0 +1,8 @@
+package com.izhuixin.rsps.domain;
+
+/***
+ * app版本查询
+ */
+public class AppReqQueryVersion extends AppReqBase {
+
+}

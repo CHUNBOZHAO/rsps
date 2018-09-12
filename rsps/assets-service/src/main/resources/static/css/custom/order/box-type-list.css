@@ -1,0 +1,33 @@
+.btn-select-box {
+    height: 45px;
+    text-align: center;
+    background-color: #2caef5;
+    color: white;
+    font-size: 1.2em;
+    line-height: 45px;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    z-index: 999;
+    cursor: pointer;
+}
+
+.box-type-div {
+    margin-bottom: 5px;
+    cursor: pointer;
+    position: relative
+}
+
+.box-type-style {
+    border: 2px solid #2caef5 !important;
+}
+
+.box-select-flag {
+    position: absolute;
+    right: 10px;
+    top: 5px;
+    font-size: 2em;
+    color: #2caef5;
+    display: none;
+}

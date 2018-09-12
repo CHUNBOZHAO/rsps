@@ -1,0 +1,203 @@
+package com.izhuixin.rsps.service.impl;
+
+import com.google.common.collect.Lists;
+import com.izhuixin.rsps.common.constant.OperateType;
+import com.izhuixin.rsps.common.dba.AbstractCrudService;
+import com.izhuixin.rsps.common.vo.web.BoxFlowRecordVO;
+import com.izhuixin.rsps.dao.manual.BoxRecordDao;
+import com.izhuixin.rsps.dao.manual.OrderDao;
+import com.izhuixin.rsps.dao.manual.SysUserDao;
+import com.izhuixin.rsps.domain.automatic.BoxRecordDO;
+import com.izhuixin.rsps.domain.manual.BoxRecordInfo;
+import com.izhuixin.rsps.domain.manual.OrderInfo;
+import com.izhuixin.rsps.domain.manual.SysUserInfo;
+import com.izhuixin.rsps.service.BoxRecordService;
+import org.joda.time.DateTime;
+import org.joda.time.Period;
+import org.joda.time.PeriodType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+
+@Service
+public class BoxRecordServiceImpl extends AbstractCrudService<BoxRecordDO> implements BoxRecordService {
+
+    @Autowired
+    private BoxRecordDao boxRecordDao;
+
+    @Autowired
+    private OrderDao orderDao;
+
+    @Autowired
+    private SysUserDao sysUserDao;
+
+    /**
+     * 包装包装箱记录
+     * @param boxRecordInfo
+     * @param entCode
+     * @return
+     */
+    @Override
+    public boolean saveBoxRecord(BoxRecordInfo boxRecordInfo, String entCode) {
+        boolean res = false;
+        String rfid = "";
+        try {
+            rfid = boxRecordInfo.getRfid();
+            Integer saveRes = boxRecordDao.saveBoxRecord(boxRecordInfo, entCode);
+            if (saveRes < 1) {
+                logger.error(String.format("保存企业(%s)包装箱(%s)操作记录失败", entCode, rfid));
+            } else {
+                res = true;
+            }
+        } catch (Exception e) {
+            logger.error(String.format("企业(%s)包装箱(%s)操作记录出现异常", entCode, rfid), e);
+        }
+        return res;
+    }
+
+    /**
+     * 获取指定条件下的包装箱操作记录数量
+     * @param rfid
+     * @param orderId
+     * @param operateType
+     * @param entCode
+     * @return
+     */
+    @Override
+    public Integer countBoxRecord(String rfid,
+                                  String orderId,
+                                  Byte operateType,
+                                  String entCode) {
+        Integer count = 0;
+        try {
+            count = boxRecordDao.countInfo(rfid, orderId, operateType, entCode);
+        } catch (Exception e) {
+            logger.error(String.format("获取企业(%s)包装箱(%s)记录数量出现异常", rfid, entCode), e);
+        }
+        return count;
+    }
+
+    /**
+     * 通过指定条件更包装箱记录信息
+     * @param boxRecordInfo
+     * @param rfid
+     * @param orderId
+     * @param operateType
+     * @param entCode
+     * @return
+     */
+    @Override
+    public boolean updateBoxRecord(BoxRecordInfo boxRecordInfo,
+                                   String rfid,
+                                   String orderId,
+                                   Byte operateType,
+                                   String entCode) {
+        boolean res = false;
+        try {
+            Integer updateRes = boxRecordDao.updateBoxRecord(boxRecordInfo, rfid, orderId, operateType, entCode);
+            res = true;
+        } catch (Exception e) {
+            logger.error(String.format("更新企业(%s)包装箱(%s)记录信息出现异常", entCode, rfid));
+        }
+        return res;
+    }
+
+    /**
+     * 获取包装箱的流转状态
+     * @param boxId
+     * @param entCode
+     * @return
+     */
+    @Override
+    public List<BoxFlowRecordVO> getBoxFlowInfo(String boxId, String orderId, String entCode) {
+
+        List<BoxFlowRecordVO> flowRecords = Lists.newArrayList();
+        try {
+            List<BoxRecordInfo> boxRecordInfos = boxRecordDao.getInfoByRfid(boxId, orderId, entCode, 50);
+
+            BoxFlowRecordVO flowRecordVO = null;
+            BoxFlowRecordVO flowRecordVO1 = null;
+            Date lastDate = null;
+            for (BoxRecordInfo recordInfo : boxRecordInfos) {
+                String customer = getCustomer(recordInfo.getOrderId(), entCode);
+
+                flowRecordVO = new BoxFlowRecordVO();
+                flowRecordVO.setCreateTime(recordInfo.getCreateTime());
+                flowRecordVO.setOperateType(recordInfo.getOperateType());
+                flowRecordVO.setOperator(recordInfo.getOperator());
+                flowRecordVO.setRfid(recordInfo.getRfid());
+                flowRecordVO.setOrderId(recordInfo.getOrderId());
+                flowRecordVO.setCustomer(customer);
+//                // 获取持续时间
+//                Integer duration = 0;
+                if (lastDate == null) {
+                    lastDate = DateTime.now().toDate();
+                }
+//                if (recordInfo.getCreateTime() != null) {
+//                    duration = Math.round((lastDate.getTime() - recordInfo.getCreateTime().getTime()) / 1000 / 60 / 60);
+//                }
+//                flowRecordVO.setDuration(duration);
+                Period p = new Period(new DateTime(recordInfo.getCreateTime()), DateTime.now(), PeriodType.minutes());
+                int hour = p.getMinutes() / 60;
+                int minute = p.getMinutes() % 60;
+                String duration = hour + "小时" + minute + "分钟";
+                flowRecordVO.setDurationStr(duration);
+
+                // 中转站点处理
+                if (recordInfo.getOperateType().byteValue() == OperateType.TRANSIT_SIGN_IN.getIndex().byteValue()) {
+                    SysUserInfo sysUserInfo = sysUserDao.getUserInfoByUserId(recordInfo.getExtraValue());
+                    if (sysUserInfo != null) {
+                        flowRecordVO.setExtraValue(sysUserInfo.getNickname());
+                    }
+                }
+                flowRecords.add(flowRecordVO);
+
+                if (recordInfo.getExceptionType() != null && recordInfo.getExceptionType().byteValue() == 1) {   // 如有开箱异常，则增加一条异常信息
+                    flowRecordVO1 = new BoxFlowRecordVO();
+                    flowRecordVO1.setCreateTime(recordInfo.getCreateTime());
+                    flowRecordVO1.setOperateType(recordInfo.getOperateType());
+                    flowRecordVO1.setOperator(recordInfo.getOperator());
+                    flowRecordVO1.setRfid(recordInfo.getRfid());
+                    flowRecordVO1.setOrderId(recordInfo.getOrderId());
+                    flowRecordVO1.setExceptionType(recordInfo.getExceptionType());
+                    flowRecordVO1.setCustomer(customer);
+                    flowRecords.add(flowRecordVO1);
+                }
+                flowRecordVO.setExceptionType((byte)0);
+
+                lastDate = recordInfo.getCreateTime();
+            }
+        } catch (Exception e) {
+            logger.error("获取包装箱操作记录数据出现异常", e);
+        }
+
+        return flowRecords;
+    }
+
+    /**
+     * 获取客户名称
+     * @param orderId
+     * @param entCode
+     * @return
+     */
+    public String getCustomer(String orderId, String entCode) {
+        // 获取客户名称
+        String customer = "";
+        try {
+            OrderInfo orderInfo = orderDao.getOrderById(orderId, entCode);
+            if (orderInfo == null) {
+                orderInfo = orderDao.getOrder(orderId);
+                if (orderInfo != null) {
+                    customer = orderInfo.getReceiverName();
+                }
+            } else {
+                customer = orderInfo.getCustomer();
+            }
+        } catch (Exception e) {
+            logger.error(String.format("通过订单（%s）获取用户信息", orderId), e);
+        }
+        return customer;
+    }
+}

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<table id="list_table" class="table table-striped" cellspacing="0" width="100%" style="border-bottom: 0px;">
+    <thead>
+    <tr>
+        <th style="padding-left: 10px;">#</th>
+        <th style="padding-left: 10px;">用户名</th>
+        <th style="padding-left: 10px;">昵称</th>
+        <th style="padding-left: 10px;">联系方式</th>
+        <th style="padding-left: 10px;">所属用户</th>
+        <th style="padding-left: 15px;width: 20%">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="sysUserInfo,stat:${sysUserInfos}">
+        <th scope="row" th:text="${stat.count}"></th>
+        <td>
+            <span th:text="${sysUserInfo.userName}"></span>
+        </td>
+        <td>
+            <span th:text="${sysUserInfo.nickname}"></span>
+        </td>
+        <td>
+            <span th:text="${sysUserInfo.tel}"></span>
+        </td>
+        <td>
+            <span th:text="${sysUserInfo.parentNickname}"></span>
+        </td>
+        <td>
+            <span class="btn-edit" style="color: #2caef5;cursor: pointer" th:attr="userId=${sysUserInfo.userId}">编辑</span>
+            <span class="btn-permission" style="color: #2caef5;cursor: pointer" th:attr="pid=${sysUserInfo.pid},userId=${sysUserInfo.userId},nickname=${sysUserInfo.nickname}">分配权限</span>
+            <span class="btn-reset" style="color: #2caef5;cursor: pointer" th:attr="userId=${sysUserInfo.userId}">重置密码</span>
+            <span class="btn-del" style="color: #2caef5;cursor: pointer" th:attr="userId=${sysUserInfo.userId}">删除</span>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<script type="text/javascript" th:src="@{/assets/js/manager/common/common-table.js}"></script>
+<script type="text/javascript" th:src="@{/assets/js/manager/normalSysUser/sys-user-list-content.js}"></script>
+
+</html>

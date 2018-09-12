@@ -1,0 +1,141 @@
+package com.izhuixin.rsps.model;
+
+import java.util.List;
+
+/**
+ * 包装箱绑定信息
+ */
+public class BoxBindingInfo extends WmsReqBase{
+
+    /** 条码ID */
+    private String barcodeId;
+
+    /** 包装箱ID */
+    private String boxId;
+
+    /** bleMac */
+    private String bleMac;
+
+    /** 包装箱名称 */
+    private String boxName;
+
+    /** 订单ID */
+    private String orderId;
+
+    /** 药品清单 */
+    private List<DrugInfo> drugs;
+
+    /** 复核人ID */
+    private String recheckerId;
+
+    /** 复核人姓名 */
+    private String recheckerName;
+
+    /** 复核人电话 */
+    private String recheckerPhone;
+
+    /** 客户信息 */
+    private CustomerInfo customer;
+
+    /** 操作方式 save or update */
+    private String handleType;
+
+    /** 订单类型 C端用户、B端用户 */
+    private String orderType;
+
+    public String getBarcodeId() {
+        return barcodeId;
+    }
+
+    public void setBarcodeId(String barcodeId) {
+        this.barcodeId = barcodeId;
+    }
+
+    public String getBoxId() {
+        return boxId;
+    }
+
+    public void setBoxId(String boxId) {
+        this.boxId = boxId;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
+    public List<DrugInfo> getDrugs() {
+        return drugs;
+    }
+
+    public void setDrugs(List<DrugInfo> drugs) {
+        this.drugs = drugs;
+    }
+
+    public String getRecheckerId() {
+        return recheckerId;
+    }
+
+    public void setRecheckerId(String recheckerId) {
+        this.recheckerId = recheckerId;
+    }
+
+    public String getRecheckerName() {
+        return recheckerName;
+    }
+
+    public void setRecheckerName(String recheckerName) {
+        this.recheckerName = recheckerName;
+    }
+
+    public String getRecheckerPhone() {
+        return recheckerPhone;
+    }
+
+    public void setRecheckerPhone(String recheckerPhone) {
+        this.recheckerPhone = recheckerPhone;
+    }
+
+    public String getHandleType() {
+        return handleType;
+    }
+
+    public void setHandleType(String handleType) {
+        this.handleType = handleType;
+    }
+
+    public String getBoxName() {
+        return boxName;
+    }
+
+    public void setBoxName(String boxName) {
+        this.boxName = boxName;
+    }
+
+    public CustomerInfo getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(CustomerInfo customer) {
+        this.customer = customer;
+    }
+
+    public String getOrderType() {
+        return orderType;
+    }
+
+    public void setOrderType(String orderType) {
+        this.orderType = orderType;
+    }
+
+    public String getBleMac() {
+        return bleMac;
+    }
+
+    public void setBleMac(String bleMac) {
+        this.bleMac = bleMac;
+    }
+}

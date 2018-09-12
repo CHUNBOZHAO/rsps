@@ -1,0 +1,245 @@
+package com.izhuixin.rsps.domain;
+
+import java.io.Serializable;
+import java.util.Date;
+
+public class Order{
+
+    private Integer id;
+    private String Jobno;
+    private String OrderNO;
+    private String SDStation;
+    private String DeliStation;
+    private String SDClno;
+    private String SDShipp;
+    private String ReCompany;
+    private String ReTel;
+    private String ReTel2;
+    private String ReturnType;
+    private String PrintType;
+    private String EirNO;
+    private String EirStano;
+    private String EirStation;
+    private String MotorMan;
+    private String MotorTel;
+    private String EXTCOL1;
+    private String Times;
+    private Date createTime;
+    private String entCode;
+    private Integer orderStatus;
+    private Integer sendAckStatus;
+    //拒收原因
+    private String refusedReason;
+    //拒收数量
+    private String refusedCount;
+    //订单总件数
+    private String JobnoPcs;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getJobno() {
+        return Jobno;
+    }
+
+    public void setJobno(String jobno) {
+        Jobno = jobno;
+    }
+
+    public String getOrderNO() {
+        return OrderNO;
+    }
+
+    public void setOrderNO(String orderNO) {
+        OrderNO = orderNO;
+    }
+
+    public String getSDStation() {
+        return SDStation;
+    }
+
+    public void setSDStation(String SDStation) {
+        this.SDStation = SDStation;
+    }
+
+    public String getDeliStation() {
+        return DeliStation;
+    }
+
+    public void setDeliStation(String deliStation) {
+        DeliStation = deliStation;
+    }
+
+    public String getSDClno() {
+        return SDClno;
+    }
+
+    public void setSDClno(String SDClno) {
+        this.SDClno = SDClno;
+    }
+
+    public String getSDShipp() {
+        return SDShipp;
+    }
+
+    public void setSDShipp(String SDShipp) {
+        this.SDShipp = SDShipp;
+    }
+
+    public String getReCompany() {
+        return ReCompany;
+    }
+
+    public void setReCompany(String reCompany) {
+        ReCompany = reCompany;
+    }
+
+    public String getReTel() {
+        return ReTel;
+    }
+
+    public void setReTel(String reTel) {
+        ReTel = reTel;
+    }
+
+    public String getReTel2() {
+        return ReTel2;
+    }
+
+    public void setReTel2(String reTel2) {
+        ReTel2 = reTel2;
+    }
+
+    public String getReturnType() {
+        return ReturnType;
+    }
+
+    public void setReturnType(String returnType) {
+        ReturnType = returnType;
+    }
+
+    public String getPrintType() {
+        return PrintType;
+    }
+
+    public void setPrintType(String printType) {
+        PrintType = printType;
+    }
+
+    public String getEirNO() {
+        return EirNO;
+    }
+
+    public void setEirNO(String eirNO) {
+        EirNO = eirNO;
+    }
+
+    public String getEirStano() {
+        return EirStano;
+    }
+
+    public void setEirStano(String eirStano) {
+        EirStano = eirStano;
+    }
+
+    public String getEirStation() {
+        return EirStation;
+    }
+
+    public void setEirStation(String eirStation) {
+        EirStation = eirStation;
+    }
+
+    public String getMotorMan() {
+        return MotorMan;
+    }
+
+    public void setMotorMan(String motorMan) {
+        MotorMan = motorMan;
+    }
+
+    public String getMotorTel() {
+        return MotorTel;
+    }
+
+    public void setMotorTel(String motorTel) {
+        MotorTel = motorTel;
+    }
+
+    public String getEXTCOL1() {
+        return EXTCOL1;
+    }
+
+    public void setEXTCOL1(String EXTCOL1) {
+        this.EXTCOL1 = EXTCOL1;
+    }
+
+    public String getTimes() {
+        return Times;
+    }
+
+    public void setTimes(String times) {
+        Times = times;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getEntCode() {
+        return entCode;
+    }
+
+    public void setEntCode(String entCode) {
+        this.entCode = entCode;
+    }
+
+    public Integer getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(Integer orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
+    public Integer getSendAckStatus() {
+        return sendAckStatus;
+    }
+
+    public void setSendAckStatus(Integer sendAckStatus) {
+        this.sendAckStatus = sendAckStatus;
+    }
+
+    public String getRefusedReason() {
+        return refusedReason;
+    }
+
+    public void setRefusedReason(String refusedReason) {
+        this.refusedReason = refusedReason;
+    }
+
+    public String getRefusedCount() {
+        return refusedCount;
+    }
+
+    public void setRefusedCount(String refusedCount) {
+        this.refusedCount = refusedCount;
+    }
+
+    public String getJobnoPcs() {
+        return JobnoPcs;
+    }
+
+    public void setJobnoPcs(String jobnoPcs) {
+        JobnoPcs = jobnoPcs;
+    }
+}

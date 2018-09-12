@@ -1,0 +1,59 @@
+package com.izhuixin.rsps.proto;
+
+public class Status {
+    short opentime;
+    short closetime;
+    short vibrationCount;
+    short voltage;
+    byte temperature;
+    byte errcode;
+
+
+    public short getOpentime() {
+        return opentime;
+    }
+
+    public void setOpentime(short opentime) {
+        this.opentime = opentime;
+    }
+
+    public short getClosetime() {
+        return closetime;
+    }
+
+    public void setClosetime(short closetime) {
+        this.closetime = closetime;
+    }
+
+    public short getVibrationCount() {
+        return vibrationCount;
+    }
+
+    public void setVibrationCount(short vibrationCount) {
+        this.vibrationCount = vibrationCount;
+    }
+
+    public short getVoltage() {
+        return voltage;
+    }
+
+    public void setVoltage(short voltage) {
+        this.voltage = voltage;
+    }
+
+    public byte getTemperature() {
+        return temperature;
+    }
+
+    public void setTemperature(byte temperature) {
+        this.temperature = temperature;
+    }
+
+    public byte getErrcode() {
+        return errcode;
+    }
+
+    public void setErrcode(byte errcode) {
+        this.errcode = errcode;
+    }
+}

@@ -1,0 +1,46 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:9100/eureka/
+server:
+  port: 10500
+spring:
+  profiles:
+    active: dev
+  application:
+    name: location-service
+  cloud:
+    stream:
+      bindings:
+        input_basestation:
+          group: location-service
+          destination: basestation
+          consumer:
+            concurrency: 10
+        input_operlocation:
+          group: location-service
+          destination: operlocation
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: izhuixin
+    password: rsps123456
+  zipkin:
+    base-url: http://localhost:9300
+  sleuth:
+    sampler:
+      percentage: 1.0
+  datasource:
+    url: jdbc:mysql://121.40.204.36/base_station?charset=utf8
+    username: rspsadmin
+    password: rsps#@!Zhuixin
+    #rsps!@#Test
+    driver-class-name: com.mysql.jdbc.Driver
+mybatis:
+  mapper-locations: classpath:com.izhuixin.rsps.mapping/*.xml
+  type-aliases-package: com.izhuixin.rsps.model.CoapModel.*
+endpoints.shutdown.enabled: true    #开启优雅关闭方式
+management.security.enabled: false  #关闭安全认证
+
+
+

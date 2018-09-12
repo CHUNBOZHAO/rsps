@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="api-service" />
+        <module name="app-service" />
+        <module name="assets-service" />
+        <module name="auth-center" />
+        <module name="box-service" />
+        <module name="coap-service" />
+        <module name="data-service" />
+        <module name="enterprise-service" />
+        <module name="gate-way" />
+        <module name="location-service" />
+        <module name="manage-service" />
+        <module name="order-service" />
+        <module name="registry-center" />
+        <module name="server-trace" />
+        <module name="wechat-service" />
+      </profile>
+    </annotationProcessing>
+  </component>
+</project>

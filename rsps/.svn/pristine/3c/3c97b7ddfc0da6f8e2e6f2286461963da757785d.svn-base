@@ -1,0 +1,72 @@
+package com.izhuixin.rsps.pojo;
+
+import org.joda.time.DateTime;
+
+import java.io.Serializable;
+
+public class SignInfo implements Serializable {
+    private String Jobno;
+    private String CustJobno;
+    private DateTime SignDateTime;
+    private String dateShow;
+    private String SignDriverNO;
+    //拒收原因和拒收数量
+    private String refusedReason;
+    private Integer refuseCount;
+
+    public String getJobno() {
+        return Jobno;
+    }
+
+    public void setJobno(String jobno) {
+        Jobno = jobno;
+    }
+
+    public String getCustJobno() {
+        return CustJobno;
+    }
+
+    public void setCustJobno(String custJobno) {
+        CustJobno = custJobno;
+    }
+
+    public String getSignDriverNO() {
+        return SignDriverNO;
+    }
+
+    public void setSignDriverNO(String signDriverNO) {
+        SignDriverNO = signDriverNO;
+    }
+
+    public DateTime getSignDateTime() {
+        return SignDateTime;
+    }
+
+    public void setSignDateTime(DateTime signDateTime) {
+        SignDateTime = signDateTime;
+    }
+
+    public String getDateShow() {
+        return dateShow;
+    }
+
+    public void setDateShow(String dateShow) {
+        this.dateShow = dateShow;
+    }
+
+    public String getRefusedReason() {
+        return refusedReason;
+    }
+
+    public void setRefusedReason(String refusedReason) {
+        this.refusedReason = refusedReason;
+    }
+
+    public Integer getRefuseCount() {
+        return refuseCount;
+    }
+
+    public void setRefuseCount(Integer refuseCount) {
+        this.refuseCount = refuseCount;
+    }
+}

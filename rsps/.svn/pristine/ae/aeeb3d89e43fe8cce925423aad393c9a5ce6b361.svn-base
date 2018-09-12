@@ -1,0 +1,16 @@
+package com.izhuixin.rsps.service;
+
+import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+@FeignClient("coap-service")
+//@RequestMapping("")
+public interface CoapCmdService {
+
+    @PostMapping("/cmd/period")
+    String settingCmdPeriod(@RequestParam("id") String id,
+                            @RequestParam("period") Integer period,
+                            @RequestParam("unit") String unit);
+
+}

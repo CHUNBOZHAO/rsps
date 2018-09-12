@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <title>RSPS管理平台</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="icon" type="image/x-icon" th:href="@{/assets/images/manager/favicon.png}">
+
+    <!-- CSS Libs -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap.min.css}" href="../../lib/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/font-awesome.min.css}" href="../../lib/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/animate.min.css}" href="../../lib/css/animate.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap-switch.min.css}" href="../../lib/css/bootstrap-switch.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/checkbox3.min.css}" href="../../lib/css/checkbox3.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/jquery.dataTables.min.css}" href="../../lib/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/dataTables.bootstrap.css}" href="../../lib/css/dataTables.bootstrap.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/select2.min.css}" href="../../lib/css/select2.min.css">
+
+    <!-- CSS App -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/style.css}" href="../../css/style.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/themes/flat-blue.css}" href="../../css/themes/flat-green.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/bootstrap-datepicker/css/bootstrap-datepicker3.css}" >
+
+</head>
+
+<body class="flat-blue">
+<div class="app-container">
+    <div class="row content-container">
+        <nav th:replace="manager/common/header::manager_navbar_top('运营总览','')">
+        </nav>
+        <div th:replace="manager/common/menu::manager_side_menu(900)"></div>
+
+        <!-- Main Content -->
+        <div class="container-fluid">
+            <div class="side-body padding-top">
+                <!-- 包装箱数量展示 -->
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card summary-inline" style="background-color: white;color: black">
+                            <div class="card-body">
+                                <div class="content">
+                                    <div>
+                                    <i class="fa fa-question-circle " aria-hidden="true" data-html="true" data-toggle="tooltip" data-placement="bottom" title="闲置状态包装箱的数量/包装箱的总数"></i>
+                                    </div>
+                                </div>
+
+                                <div class="clear-both"><span style="font-size:25px">闲置率</span></div><br/>
+                                <div class="clear-both" style="text-align:left;"><span style="font-size:35px;font-weight:bold" th:text="${idle_rate}">30.43%</span></div><br/>
+                               <!-- <div class="clear-both">
+                                    <span style="font-size:18px">同比&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <i class="fa fa-sort-asc" aria-hidden="true" style="color:green"></i>12%&nbsp;&nbsp;
+                                          环比&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <i class="fa fa-sort-desc" aria-hidden="true" style="color:red"></i>11%
+                                    </span>
+                                </div>-->
+                                <div class="clear-both row">
+                                    <div class="col-md-6">
+                                        <span style="font-size:18px">同比&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <i class="fa fa-sort-asc" aria-hidden="true" style="color:green"></i><span th:text="${idle_rate_compareCurrent}">12%</span></span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <span style="font-size:18px">环比&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <i class="fa fa-sort-desc" aria-hidden="true" style="color:red"></i><span th:text="${idle_rate_compareLast}">11%</span></span>
+                                    </div>
+
+                                </div>
+
+                                <hr style="height:1px;border:none;border-top:1px solid #C0C0C0;" />
+                                <div class="clear-both"><span style="font-size:18px">闲置数量&nbsp;&nbsp;&nbsp;&nbsp;<span th:text="${idle_count}">12423</span></span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="card summary-inline" style="background-color: white;color: black">
+                            <div class="card-body">
+                                <div class="content">
+                                    <div>
+                                        <i class="fa fa-question-circle " aria-hidden="true" data-html="true" data-toggle="tooltip" data-placement="bottom" title="周转次数/周转天数"></i>
+                                    </div>
+                                </div>
+                                <div class="clear-both"><span style="font-size:25px">周转率</span></div><br/>
+                                <div class="clear-both"><span style="font-size:35px;font-weight:bold" th:text="${turnover_rate}">30.43%</span></div><br/>
+                                <div class="clear-both row">
+                                    <div class="col-md-6">
+                                        <span style="font-size:18px">同比&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <i class="fa fa-sort-asc" aria-hidden="true" style="color:green"></i><span th:text="${turnover_rate_compareCurrent}">12%</span></span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <span style="font-size:18px">环比&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <i class="fa fa-sort-desc" aria-hidden="true" style="color:red"></i><span th:text="${turnover_rate_compareLast}">12%</span></span>
+                                    </div>
+
+                                </div>
+
+                                <hr style="height:1px;border:none;border-top:1px solid #C0C0C0;" />
+                                <div class="clear-both"><span style="font-size:18px">周转数量&nbsp;&nbsp;&nbsp;&nbsp;<span th:text="${turnover_count}">12423</span></span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="card summary-inline" style="background-color: white;color: black">
+                            <div class="card-body">
+                                <div class="content">
+                                    <div>
+                                        <i class="fa fa-question-circle " aria-hidden="true" data-html="true" data-toggle="tooltip" data-placement="bottom" title="遗失的包装箱数量/包装箱总数"></i>
+                                    </div>
+                                </div>
+                                <div class="clear-both"><span style="font-size:25px">遗失率</span></div><br/>
+                                <div class="clear-both" style="font-size:35px;font-weight:bold" th:text="${lose_rate}"><span>30.43%</span></div><br/>
+                                <div class="clear-both row">
+                                    <div class="col-md-6">
+                                        <span style="font-size:18px">同比&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <i class="fa fa-sort-asc" aria-hidden="true" style="color:green"></i><span th:text="${lose_rate_compareCurrent}">12%</span></span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <span style="font-size:18px">环比&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <i class="fa fa-sort-desc" aria-hidden="true" style="color:red"></i><span th:text="${lose_rate_compareLast}">12%</span></span>
+                                    </div>
+
+                                </div>
+
+                                <hr style="height:1px;border:none;border-top:1px solid #C0C0C0;" />
+                                <div class="clear-both"><span style="font-size:18px">遗失数量&nbsp;&nbsp;&nbsp;&nbsp;<span th:text="${lose_count}">12423</span></span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="card summary-inline" style="background-color: white;color: black">
+                            <div class="card-body">
+                                <div class="content">
+                                    <div>
+                                        <i class="fa fa-question-circle " aria-hidden="true" data-html="true" data-toggle="tooltip" data-placement="bottom" title="过期的包装箱数量/包装箱总数"></i>
+                                    </div>
+                                </div>
+                                <div class="clear-both"><span style="font-size:25px">过期率</span></div><br/>
+                                <div class="clear-both" style="font-size:35px;font-weight:bold" th:text="${overdue_rate}"><span>30.43%</span></div><br/>
+                                <div class="clear-both row">
+                                    <div class="col-md-6">
+                                        <span style="font-size:18px">同比&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <i class="fa fa-sort-asc" aria-hidden="true" style="color:green"></i><span th:text="${overdue_rate_compareCurrent}">12%</span></span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <span style="font-size:18px">环比&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <i class="fa fa-sort-desc" aria-hidden="true" style="color:red"></i><span th:text="${overdue_rate_compareLast}">12%</span></span>
+                                    </div>
+
+                                </div>
+
+                                <hr style="height:1px;border:none;border-top:1px solid #C0C0C0;" />
+                                <div class="clear-both"><span style="font-size:18px">过期数量&nbsp;&nbsp;&nbsp;&nbsp;<span th:text="${overdue_count}">12423</span></span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row" style="height: 30px;width: 100%;">
+                    <div class="col-md-6">
+                        <ul class="breadcrumb" style="background-color:transparent;">
+                            <li>
+                                <a href="#" id="clickA" th:attr="effi='idle'"><span style="font-size:20px">闲置率</span></a>
+                            </li>
+                            <li>
+                                <a href="#" id="clickB"  th:attr="effi='turnover'"><span style="font-size:20px">周转率</span></a>
+                            </li>
+                            <li>
+                                <a href="#" id="clickC"  th:attr="effi='lose'"><span style="font-size:20px">遗失率</span></a>
+                            </li>
+                            <li>
+                                <a href="#" id="clickD"  th:attr="effi='overdue'"><span style="font-size:20px">过期率</span></a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="col-md-6" style="text-align:right;vertical-align:middle;">
+                        <div class="row">
+                            <div class="col-md-6" style="">
+                                <span style="width:200px;font-size:20px"><a href="" id="day" th:attr="type='day'">日</a></span>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <span style="width:200px;font-size:20px"><a href="" id="week">周</a></span>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <span style="width:200px;font-size:20px"><a href="" id="month">月</a></span>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <span style="width:200px;font-size:20px"><a href="" id="year">年</a></span>&nbsp;&nbsp;&nbsp;&nbsp;
+                            </div>
+
+                            <div class="input-daterange input-group col-md-6" id="datepicker" style="height: 30px;width: 300px;float:right;">
+
+                                <input class="input-sm form-control" name="start" id="beginDate" th:value="${defaultBeginDate}"/>
+                                <span class="input-group-addon">to</span>
+                                <input class="input-sm form-control" name="end" id="endDate" th:value="${defaultEndDate}"/>
+                                <!-- <span style="font-size:18px">日 周 月 年</span>-->
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div style="height:500px;width:15%;float:right;margin-left:0px;margin-top:0px;">
+                    <div id="top10" class="col-xs-12">
+
+                        <div style="margin-bottom:5px" class="row">
+                            <div class="col-md-6" style="margin-right:0px;padding-right:0px"><span style="font-size:19px;font-weight:bold;">企业闲置率排名</span></div>
+                           <!-- <select class="form-control" name="entName" id="myInput" class="btn btn-default">
+                                <option value="0" selected="selected">搜索框</option>
+                            </select>-->
+                            <div class="input-group col-md-6" style="width:168px;height:30px;">
+                                <input type="text" class="form-control" placeholder="企业名">
+                                <span class="input-group-btn">
+                                <button class="btn btn-default" type="button" style="margin-top:0px;margin-bottom:0px;">Go!</button>
+                                </span>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6"><i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;<span style="font-size:19px" id="all">总体</span></div>
+                            <div class="col-md-6" style="text-align:right;"><span style="font-size:19px" th:text="${idle_rate}">50.23%</span></div>
+                        </div>
+                        <div th:each="rank,stat:${rankingVOS}">
+                            <div class="row">
+                                <div class="col-md-6"><i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;<span style="font-size:19px" th:text="${rank.entName}" th:attr="entId=${rank.entId}" class="changEnt"></span></div>
+                                <div class="col-md-6" style="text-align:right;"><span style="font-size:19px" th:text="${rank.idleRateVO}"></span></span></div>
+                            </div>
+                        </div>
+
+
+
+                       <!-- <div class="row">
+                            <div class="col-md-6"><i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;<span style="font-size:19px">华东医药</span></div>
+                            <div class="col-md-6" style="text-align:right;"><span style="font-size:19px">50.23%</span></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6"><i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;<span style="font-size:19px">国药湖北</span></div>
+                            <div class="col-md-6" style="text-align:right;"><span style="font-size:19px">50.23%</span></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6"><i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;<span style="font-size:19px">温州英特</span></div>
+                            <div class="col-md-6" style="text-align:right;"><span style="font-size:19px">50.23%</span></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6"><i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;<span style="font-size:19px">XXX</span></div>
+                            <div class="col-md-6" style="text-align:right;"><span style="font-size:19px">50.23%</span></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6"><i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;<span style="font-size:19px">XXX</span></div>
+                            <div class="col-md-6" style="text-align:right;"><span style="font-size:19px">50.23%</span></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6"><i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;<span style="font-size:19px">XXX</span></div>
+                            <div class="col-md-6" style="text-align:right;"><span style="font-size:19px">50.23%</span></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6"><i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;<span style="font-size:19px">XXX</span></div>
+                            <div class="col-md-6" style="text-align:right;"><span style="font-size:19px">50.23%</span></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6"><i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;<span style="font-size:19px">XXX</span></div>
+                            <div class="col-md-6" style="text-align:right;"><span style="font-size:19px">50.23%</span></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6"><i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;<span style="font-size:19px">XXX</span></div>
+                            <div class="col-md-6" style="text-align:right;"><span style="font-size:19px">50.23%</span></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6"><i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;<span style="font-size:19px">XXX</span></div>
+                            <div class="col-md-6" style="text-align:right;"><span style="font-size:19px">50.23%</span></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6"><i class="fa fa-circle" aria-hidden="true"></i>&nbsp;&nbsp;<span style="font-size:19px">XXX</span></div>
+                            <div class="col-md-6" style="text-align:right;"><span style="font-size:19px">50.23%</span></div>
+                        </div>-->
+
+                    </div>
+                </div>
+                <div class="row" style="height: 800px;width:85%;overflow:visible;margin-left:0px">
+                        <div class="col-xs-12">
+                        <div class="card primary" id="box_statistics_column" style="height: 700px;width: 100%;">
+                        </div>
+                    </div>
+                </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <footer th:replace="manager/common/footer::manager_footer">
+    </footer>
+</div>
+
+<!-- Javascript Libs -->
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.min.js}" src="../../lib/js/jquery.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/bootstrap.min.js}" src="../../lib/js/bootstrap.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/Chart.min.js}" src="../../lib/js/Chart.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/bootstrap-switch.min.js}" src="../../lib/js/bootstrap-switch.min.js"></script>
+
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.matchHeight-min.js}" src="../../lib/js/jquery.matchHeight-min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.dataTables.min.js}" src="../../lib/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/dataTables.bootstrap.min.js}" src="../../lib/js/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/select2.full.min.js}" src="../../lib/js/select2.full.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/ace.js}" src="../../lib/js/ace/ace.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/mode-html.js}" src="../../lib/js/ace/mode-html.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/theme-github.js}" src="../../lib/js/ace/theme-github.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/js/app.js}" src="../../js/app.js"></script>
+
+<script type="text/javascript" th:src="@{/assets/echarts/echarts.common.min.js}"></script>
+
+<script type="text/javascript" th:src="@{/assets/js/common/jquery.fileDownload.js}"></script>
+
+<!-- jQuery Plugin  -->
+<script type="text/javascript" th:src="@{/assets/jquery-confirm/jquery-confirm.min.js}" ></script>
+<script type="text/javascript" th:src="@{/assets/toastr/toastr.min.js}"></script>
+<script type="text/javascript" th:src="@{/assets/bootstrap-datepicker/js/bootstrap-datepicker.js}"></script>
+<script type="text/javascript" th:src="@{/assets/bootstrap-datepicker/locales/bootstrap-datepicker.zh-CN.min.js}"></script>
+
+<!-- 自定义js -->
+<script type="text/javascript" th:src="@{/assets/js/manager/header.js}"></script>
+
+<!--柱状图-->
+<script type="text/javascript" th:src="@{/assets/js/manager/index1.js}"></script>
+<script>
+    $("[data-toggle='tooltip']").tooltip();
+</script>
+</body>
+
+</html>

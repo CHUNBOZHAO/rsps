@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.izhuixin.rsps.dao.manual.LineDao" >
+
+  <!-- 线路和配送员关联 -->
+  <resultMap id="LineAndOperatorIdResultMap" type="com.izhuixin.rsps.domain.manual.LineInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="route_id" jdbcType="VARCHAR" property="lineId" />
+    <result column="route_name" jdbcType="VARCHAR" property="lineName" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="flag" jdbcType="TINYINT" property="flag" />
+  </resultMap>
+
+  <!-- 线路基本信息映射 -->
+  <resultMap id="LineEntityInfoResultMap" type="com.izhuixin.rsps.domain.manual.LineEntityInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="route_id" jdbcType="VARCHAR" property="lineId" />
+    <result column="route_name" jdbcType="VARCHAR" property="lineName" />
+    <result column="route_name" jdbcType="VARCHAR" property="lineName" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="descr" jdbcType="VARCHAR" property="descr" />
+    <result column="track" jdbcType="VARCHAR" property="track" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="user_nickname" jdbcType="VARCHAR" property="userNickName" />
+  </resultMap>
+
+  <!-- 关联客户映射 -->
+  <resultMap id="CustomRelatedInfoResultMap" type="com.izhuixin.rsps.domain.manual.CustomerInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="custom_id" jdbcType="VARCHAR" property="customerId" />
+    <result column="custom_name" jdbcType="VARCHAR" property="name" />
+    <result column="custom_address" jdbcType="VARCHAR" property="address" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="lastModify" />
+    <result column="flag" jdbcType="BOOLEAN" property="lineRelated" />
+  </resultMap>
+
+  <!-- 关联中转站映射 -->
+  <resultMap id="TransferRelatedInfoResultMap" type="com.izhuixin.rsps.domain.manual.RelatedSysUserInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="route_id" jdbcType="VARCHAR" property="lineId" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="real_name" jdbcType="VARCHAR" property="realName" />
+    <result column="nickname" jdbcType="VARCHAR" property="nickname" />
+    <result column="level" jdbcType="TINYINT" property="level" />
+    <result column="p_nickname" jdbcType="VARCHAR" property="pNickname" />
+    <result column="flag" jdbcType="BOOLEAN" property="lineRelated" />
+  </resultMap>
+
+  <!-- 关联配送员映射 -->
+  <resultMap id="OperatorRelatedInfoResultMap" type="com.izhuixin.rsps.domain.manual.RelatedOperatorInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="route_id" jdbcType="VARCHAR" property="lineId" />
+    <result column="operator_id" jdbcType="VARCHAR" property="operatorId" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="name" jdbcType="VARCHAR" property="realName" />
+    <result column="tel" jdbcType="VARCHAR" property="tel" />
+    <result column="flag" jdbcType="TINYINT" property="lineRelated" />
+    <result column="p_nickname" jdbcType="VARCHAR" property="parentNickName" />
+  </resultMap>
+
+  <!-- 查询线路及关联信息 -->
+  <select id="queryLines" resultMap="LineAndOperatorIdResultMap" statementType="STATEMENT">
+    select rh.route_id, rh.route_name, (case t1.operator_id when '${operatorId}' then 1 else 0 end) as flag, rh.user_id
+    from rsps_${entCode}route_hauling as rh left join (select * from rsps_${entCode}route_operator where operator_id = '${operatorId}')
+    as t1 on rh.route_id = t1.route_id where rh.status = 1 and rh.user_id in
+    <foreach item="item" collection="transferIds" index="index" open="(" separator="," close=")">'${item}'</foreach>
+  </select>
+
+  <!-- 删除配送员和线路的关联 -->
+  <delete id="removeOperatorAndLine" statementType="STATEMENT">
+    delete from rsps_${entCode}route_operator where operator_id = '${operatorId}'
+  </delete>
+
+  <!-- 保存配送员和线路的关联 -->
+  <insert id="saveOperatorAndLine" parameterType="com.izhuixin.rsps.domain.manual.LineAndOperatorInfo" statementType="STATEMENT">
+    insert into rsps_${entCode}route_operator
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="lineAndOperatorInfo.lineId != null">
+        route_id,
+      </if>
+      <if test="lineAndOperatorInfo.lineName != null">
+        route_name,
+      </if>
+      <if test="lineAndOperatorInfo.operatorId != null">
+        operator_id,
+      </if>
+      <if test="lineAndOperatorInfo.operatorName != null">
+        operator_name,
+      </if>
+      <if test="lineAndOperatorInfo.createDateStr != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="lineAndOperatorInfo.lineId != null">
+        '${lineAndOperatorInfo.lineId}',
+      </if>
+      <if test="lineAndOperatorInfo.lineName != null">
+        '${lineAndOperatorInfo.lineName}',
+      </if>
+      <if test="lineAndOperatorInfo.operatorId != null">
+        '${lineAndOperatorInfo.operatorId}',
+      </if>
+      <if test="lineAndOperatorInfo.operatorName != null">
+        '${lineAndOperatorInfo.operatorName}',
+      </if>
+      <if test="lineAndOperatorInfo.createDateStr != null">
+        '${lineAndOperatorInfo.createDateStr}',
+      </if>
+    </trim>
+  </insert>
+
+  <!-- 查询所有线路 -->
+  <select id="queryUserLines" resultMap="LineEntityInfoResultMap" statementType="STATEMENT">
+    select r.*, u.nickname as user_nickname from rsps_${entCode}route_hauling as r left join sys_user as u on r.user_id = u.user_id where r.user_id in
+    <foreach item="item" collection="userIds" index="index" open="(" separator="," close=")">'${item}'</foreach>
+    order by u.level, r.modify_time desc;
+  </select>
+
+  <!-- 查询线路 -->
+  <select id="queryLine" resultMap="LineEntityInfoResultMap" statementType="STATEMENT">
+    select * from rsps_${entCode}route_hauling where route_id = '${lineId}';
+  </select>
+
+  <!-- 保存线路 -->
+  <insert id="saveLine" parameterType="com.izhuixin.rsps.domain.manual.LineEntityInfo" statementType="STATEMENT">
+    insert into rsps_${entCode}route_hauling
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="lineInfo.lineId != null">
+        route_id,
+      </if>
+      <if test="lineInfo.lineName != null">
+        route_name,
+      </if>
+      <if test="lineInfo.createTimeStr != null">
+        create_time,
+      </if>
+      <if test="lineInfo.modifyTimeStr != null">
+        modify_time,
+      </if>
+      <if test="lineInfo.descr != null">
+        descr,
+      </if>
+      <if test="lineInfo.track != null">
+        track,
+      </if>
+      <if test="lineInfo.userId != null">
+        user_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="lineInfo.lineId != null">
+        '${lineInfo.lineId}',
+      </if>
+      <if test="lineInfo.lineName != null">
+        '${lineInfo.lineName}',
+      </if>
+      <if test="lineInfo.createTimeStr != null">
+        '${lineInfo.createTimeStr}',
+      </if>
+      <if test="lineInfo.modifyTimeStr != null">
+        '${lineInfo.modifyTimeStr}',
+      </if>
+      <if test="lineInfo.descr != null">
+        '${lineInfo.descr}',
+      </if>
+      <if test="lineInfo.track != null">
+        '${lineInfo.track}',
+      </if>
+      <if test="lineInfo.userId != null">
+        '${lineInfo.userId}',
+      </if>
+    </trim>
+  </insert>
+
+  <!-- 删除线路 -->
+  <delete id="removeLine" parameterType="Long">
+    delete from rsps_${entCode}route_hauling where route_id = '${lineId}'
+  </delete>
+
+  <!-- 删除线路所有关联客户、中转站点 -->
+  <delete id="removeLineRelated" statementType="STATEMENT">
+    delete from rsps_${entCode}route_custom where route_id = '${lineId}'
+  </delete>
+
+  <!-- 删除线路所有关联配送员 -->
+  <delete id="removeLineRelatedOperator" statementType="STATEMENT">
+    delete from rsps_${entCode}route_operator where route_id = '${lineId}'
+  </delete>
+
+  <!-- 更新线路 -->
+  <update id="updateLine" parameterType="com.izhuixin.rsps.domain.manual.LineEntityInfo" statementType="STATEMENT">
+    update rsps_${entCode}route_hauling
+    <set>
+      <if test="lineInfo.lineId != null">
+        route_id = '${lineInfo.lineId}',
+      </if>
+      <if test="lineInfo.lineName != null">
+        route_name = '${lineInfo.lineName}',
+      </if>
+      <if test="lineInfo.createTimeStr != null">
+        create_time = '${lineInfo.createTimeStr}',
+      </if>
+      <if test="lineInfo.modifyTimeStr != null">
+        modify_time = '${lineInfo.modifyTimeStr}',
+      </if>
+      <if test="lineInfo.descr != null">
+        descr = '${lineInfo.descr}',
+      </if>
+      <if test="lineInfo.track != null">
+        track = '${lineInfo.track}',
+      </if>
+      <if test="lineInfo.userId != null">
+        user_id = '${lineInfo.userId}',
+      </if>
+    </set>
+    where route_id = '${lineInfo.lineId}'
+  </update>
+
+  <!-- 保存线路-用户关联 -->
+  <insert id="saveLineAndCustom" statementType="STATEMENT">
+    insert into rsps_${entCode}route_custom
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="lineId != null">
+        route_id,
+      </if>
+      <if test="customId != null">
+        custom_id,
+      </if>
+      <if test="relatedType != null">
+        related_type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="lineId != null">
+        '${lineId}',
+      </if>
+      <if test="customId != null">
+        '${customId}',
+      </if>
+      <if test="relatedType != null">
+        '${relatedType}',
+      </if>
+    </trim>
+  </insert>
+
+  <!-- 保存线路-用户关联 -->
+  <insert id="saveLineAndOperator" statementType="STATEMENT">
+    insert into rsps_${entCode}route_operator
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="lineId != null">
+        route_id,
+      </if>
+      <if test="operatorId != null">
+        operator_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="lineId != null">
+        '${lineId}',
+      </if>
+      <if test="operatorId != null">
+        '${operatorId}',
+      </if>
+    </trim>
+  </insert>
+
+  <!-- 删除线路客户关联 -->
+  <delete id="removeLineAndCustom" statementType="STATEMENT">
+    delete from rsps_${entCode}route_custom where route_id = '${lineId}' and custom_id = '${customId}' and related_type = ${relatedType}
+  </delete>
+
+  <!-- 删除线路客户关联 -->
+  <delete id="removeLineAndOperator" statementType="STATEMENT">
+    delete from rsps_${entCode}route_operator where route_id = '${lineId}' and operator_id = '${operatorId}'
+  </delete>
+
+  <!-- 获取客户总数 -->
+  <select id="countAllCustom" resultType="Integer">
+    SELECT count(*) from rsps_custom_info where ent_id = #{entId, jdbcType=VARCHAR}
+  </select>
+
+
+  <!-- 获取符合条件客户信息数量 -->
+  <select id="countCustoms" resultType="Integer" statementType="STATEMENT">
+    select count(*) from rsps_custom_info where ent_id = '${entId}' and (custom_name like '%${search}%' or custom_id like '%${search}%');
+  </select>
+
+  <!-- 获取客户数量 -->
+  <select id="countUnrelatedCustoms" resultType="Integer" statementType="STATEMENT">
+    select count(*) from (SELECT *, (select count(*) from rsps_${entCode}route_custom where custom_id = ci.custom_id) as flag FROM rsps_custom_info as ci where ci.ent_id = '${entId}') as t where t.flag  = 0;
+  </select>
+
+  <!-- 获取符合条件客户信息 -->
+  <select id="queryCustoms" resultMap="CustomRelatedInfoResultMap" statementType="STATEMENT">
+    select * from (SELECT *, (select count(*) from rsps_${entCode}route_custom where custom_id = ci.custom_id) as flag
+    FROM rsps_custom_info as ci where ci.ent_id = '${entId}' and (ci.custom_name like '%${search}%' or ci.custom_id like '%${search}%')) as t
+    order by t.flag, t.custom_name limit ${start},${length};
+  </select>
+
+  <!-- 获取客户关联的线路 -->
+  <select id="queryCustomRelatedLine" resultType="com.izhuixin.rsps.domain.manual.CustomLineInfo" statementType="STATEMENT">
+    select rc.custom_id as customId, rh.route_id as lineId, rh.route_name as lineName from rsps_${entCode}route_hauling as rh
+    inner join (select * from rsps_${entCode}route_custom where custom_id in
+    <foreach item="item" collection="customIds" index="index" open="(" separator="," close=")">'${item}'</foreach>
+    ) as rc
+    on rh.route_id = rc.route_id;
+  </select>
+
+  <!-- 获取线路的客户信息及关联的记录数 -->
+  <select id="countAssociatedCustom" resultType="Integer">
+    select count(*) from
+    rsps_custom_info as ci left join (select * from rsps_${entCode}route_custom where
+    route_id = '${lineId}' and related_type = 1)  as rc on ci.custom_id = rc.custom_id where
+    ci.ent_id = '${entId}' and ci.custom_type = 1 and ci.custom_name like '%${search}%'
+  </select>
+
+  <!-- 获取线路关联客户 -->
+  <select id="queryAssociatedCustom" resultMap="CustomRelatedInfoResultMap" statementType="STATEMENT">
+    select * from (select ci.*, case when rc.route_id is null then FALSE else TRUE end as flag from
+    rsps_custom_info as ci left join (select * from rsps_${entCode}route_custom where
+    route_id = '${lineId}' and related_type = 1)  as rc on ci.custom_id = rc.custom_id where
+    ci.ent_id = '${entId}' and ci.custom_type = 1 and ci.custom_name like '%${search}%') as t order by t.flag desc, t.custom_name limit ${start}, ${length}
+  </select>
+
+  <!-- 获取线路关联中转站 -->
+  <select id="queryAssociatedTransfer" resultMap="TransferRelatedInfoResultMap" statementType="STATEMENT">
+    select * from (select u1.*, case when u2.route_id is null then false else true end as flag from
+    (select * from sys_user where pid in
+    <foreach item="item" collection="userIds" index="index" open="(" separator="," close=")">'${item}'</foreach>
+    )
+    as u1 left join
+    (select * from rsps_${entCode}route_custom where route_id = '${lineId}' and related_type = 2) as u2 on u1.user_id = u2.custom_id) as u3
+    order by u3.flag desc, u3.modify_time desc
+  </select>
+
+  <!-- 获取当前站点下配送员信息以及配送员与该线路的关联信息 -->
+  <select id="queryAssociatedOperator" resultMap="OperatorRelatedInfoResultMap" statementType="STATEMENT">
+    select t3.*, u.nickname as p_nickname from sys_user as u right join (
+    select t.*, case when t1.route_id is null then false else true end as flag from
+    (select route_id, operator_id from rsps_${entCode}route_operator where route_id = '${lineId}') as t1 right join
+    (select * from rsps_${entCode}operator_info where user_id IN
+    <foreach item="item" collection="userIds" index="index" open="(" separator="," close=")">'${item}'</foreach>
+    ) as t on
+    t1.operator_id = t.operator_id) as t3 on u.user_id = t3.user_id order by t3.flag desc
+  </select>
+
+  <!-- 检测重名 -->
+  <select id="checkLineNameForAdd" resultType="java.lang.Integer" statementType="STATEMENT">
+    select count(*) from rsps_${entCode}route_hauling where user_id = '${userId}' and route_name = '${lineName}'
+  </select>
+
+  <!-- 检测重名 -->
+  <select id="checkLineNameForEdit" resultType="java.lang.Integer" statementType="STATEMENT">
+    select count(*) from rsps_${entCode}route_hauling where user_id = '${userId}' and route_name = '${lineName}' and route_id != '${lineId}';
+  </select>
+
+  <!-- 线路关联客户的数量 -->
+  <select id="countRelatedCustom" resultType="java.lang.Integer" statementType="STATEMENT">
+    select count(*) from rsps_${entCode}route_custom where route_id = '${lineId}' and related_type = 1
+  </select>
+
+  <!-- 线路关联中转的数量 -->
+  <select id="countRelatedTransfer" resultType="java.lang.Integer" statementType="STATEMENT">
+    select count(*) from rsps_${entCode}route_custom where route_id = '${lineId}' and related_type = 2
+  </select>
+
+  <!-- 线路关联配送员的数量 -->
+  <select id="countRelatedOperator" resultType="java.lang.Integer" statementType="STATEMENT">
+    select count(*) from rsps_${entCode}route_operator where route_id = '${lineId}'
+  </select>
+
+  <!-- 线路关联中转的信息 -->
+  <select id="queryRelatedTransfer" resultMap="TransferRelatedInfoResultMap" statementType="STATEMENT">
+    select u.user_id, u.nickname from rsps_${entCode}route_custom as rc inner join sys_user as u on rc.custom_id = u.user_id where rc.route_id = '${lineId}' and rc.related_type = 2
+  </select>
+
+  <!-- 线路关联配送员的信息 -->
+  <select id="queryRelatedOperator" resultMap="OperatorRelatedInfoResultMap" statementType="STATEMENT">
+    SELECT o.operator_id, o.name FROM rsps_${entCode}route_operator as ro inner join rsps_${entCode}operator_info as o on o.operator_id = ro.operator_id where ro.route_id = '${lineId}';
+  </select>
+
+  <!-- 所有线路关联中转的信息 -->
+  <select id="queryAllRelatedTransfer" resultMap="TransferRelatedInfoResultMap" statementType="STATEMENT">
+    select rc.route_id, u.user_id, u.nickname from rsps_${entCode}route_custom as rc inner join sys_user as u on rc.custom_id = u.user_id where rc.related_type = 2
+  </select>
+
+  <!-- 所有线路关联配送员的信息 -->
+  <select id="queryAllRelatedOperator" resultMap="OperatorRelatedInfoResultMap" statementType="STATEMENT">
+    SELECT ro.route_id, o.operator_id, o.name FROM rsps_${entCode}route_operator as ro inner join rsps_${entCode}operator_info as o on o.operator_id = ro.operator_id;
+  </select>
+
+  <!-- 所有线路关联客户的数量 -->
+  <select id="queryRelatedCustomCount" resultType="com.izhuixin.rsps.domain.manual.RelatedCustomCountInfo" statementType="STATEMENT">
+    select route_id as lineId, count(*) as customCount from rsps_${entCode}route_custom where related_type = 1 group by route_id;
+  </select>
+
+  <!-- 查询客户线路信息 -->
+  <select id="queryLinesByCustomId" resultType="com.izhuixin.rsps.domain.manual.LineEntityInfo" statementType="STATEMENT">
+    select rh.route_id as lineId, rh.route_name as lineName from rsps_${entCode}route_hauling as rh inner join (SELECT * FROM rsps_${entCode}route_custom where custom_id = '${customId}') as t on rh.route_id = t.route_id;
+  </select>
+
+  <!-- 获取所有关联的线路信息 -->
+  <select id="queryCustomLines" resultType="com.izhuixin.rsps.domain.manual.CustomLineInfo" statementType="STATEMENT">
+    select t.custom_id as customId, rh.route_id as lineId, rh.route_name as lineName from rsps_${entCode}route_hauling as rh inner join (SELECT * FROM rsps_${entCode}route_custom where related_type = 1
+    <if test="customIds != null">
+      and custom_id in <foreach item="item" collection="customIds" index="index" open="(" separator="," close=")">'${item}'</foreach>
+    </if>
+    ) as t on rh.route_id = t.route_id;
+  </select>
+
+  <!-- 获取线路上级站点关联的线路 -->
+  <select id="queryUpperLines" resultType="com.izhuixin.rsps.domain.manual.LineEntityInfo" statementType="STATEMENT">
+    select t1.route_name as lineName from rsps_${entCode}route_hauling as t1 inner join (select rc.* from rsps_${entCode}route_hauling as rh inner join rsps_${entCode}route_custom as rc on rh.user_id = rc.custom_id where rh.route_id = '${lineId}' and rc.related_type = 2) as t2 on t1.route_id = t2.route_id;
+  </select>
+
+  <!-- 获取客户关联的线路信息 -->
+  <select id="queryAssociatedLine" resultType="com.izhuixin.rsps.domain.manual.LineInfo" statementType="STATEMENT">
+    select * from (select rh.route_id as lineId, rh.route_name as lineName, rh.descr as lineDescr,
+    (select count(*) from rsps_${entCode}route_custom where custom_id = '${customId}' and route_id = rh.route_id) as
+    flag
+    FROM rsps_${entCode}route_hauling as rh where rh.user_id in
+    <foreach item="item" collection="userIds" index="index" open="(" separator="," close=")">'${item}'</foreach>
+    ) as t order by t.flag desc
+  </select>
+
+</mapper>

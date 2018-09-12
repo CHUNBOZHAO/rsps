@@ -1,0 +1,17 @@
+ .table>tbody>tr>td{
+     border:0px;
+}
+ #th1{
+    border:0px;
+ }
+ #th2{
+     border:0px;
+  }
+  #head1{
+    border:0px;
+  }
+/*
+table{
+    border-collapse:separate;
+    border-spacing:1px 0px;
+}*/

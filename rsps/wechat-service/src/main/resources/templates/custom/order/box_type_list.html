@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>选择智能包装箱</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- CSS Libs -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap.min.css}" href="../../lib/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/font-awesome.min.css}" href="../../lib/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/animate.min.css}" href="../../lib/css/animate.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap-switch.min.css}" href="../../lib/css/bootstrap-switch.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/checkbox3.min.css}" href="../../lib/css/checkbox3.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/jquery.dataTables.min.css}" href="../../lib/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/dataTables.bootstrap.css}" href="../../lib/css/dataTables.bootstrap.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/select2.min.css}" href="../../lib/css/select2.min.css">
+
+    <!-- CSS App -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/style.css}" href="../../css/style.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/themes/flat-blue.css}" href="../../css/themes/flat-green.css">
+
+    <!-- jquery plugin css -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/toastr/toastr.min.css}" >
+
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/css/custom/order/box-type-list.css}" >
+
+</head>
+
+<body class="flat-blue">
+<div class="app-container">
+    <div class="row content-container">
+        <!--<nav th:replace="custom/common/header::custom_navbar_top('选择智能包装箱')">-->
+        <!--</nav>-->
+        <!--<div th:replace="custom/common/menu::custom_side_menu(200)"></div>-->
+
+        <!-- Main Content -->
+        <div class="container-fluid">
+            <div class="row" style="padding-top: 8px;">
+                <div class="col-xs-12" style="padding: 8px;">
+                    <div th:each="item:${boxes}" class="panel panel-default box-type-div">
+                        <div class="box-select-flag">
+                            <span class="fa fa-check-circle"></span>
+                        </div>
+                        <div class="panel-body" style="font-size: 1.2em;line-height: 1.5em;padding-bottom: 3px;">
+                            <div style="padding: 8px;">
+                                <span style="font-weight: bold" th:text="${item.name}">1号包装箱</span>
+                                <input type="hidden" name="id" th:value="${item.typeId}" />
+                                <input type="hidden" name="name" th:value="${item.name}" />
+                            </div>
+                            <div style="padding: 8px;">
+                                <span>长宽高（单位：mm） </span>
+                                <span th:text="${item.size}">360✖️260✖️285</span>
+                                <input type="hidden" name="size" th:value="${item.size}" />
+                            </div>
+                            <div style="padding: 8px;">
+                                <div style="float: left;width: 20%">
+                                    <span>颜色</span>
+                                </div>
+                                <div style="float: left;">
+                                    <input type="hidden" name="color" th:value="${item.color}" />
+                                    <span th:if="${item.color} == 'blue'">蓝色</span>
+                                    <span th:if="${item.color} == 'white'">白色</span>
+                                    <!--<div class="radio3 radio-check radio-success radio-inline radio-box-color">-->
+                                        <!--<input type="radio" th:id="|radio_blue_${item.typeId}|" th:name="|radio_${item.typeId}|" value="blue" checked="checked" />-->
+                                        <!--<label th:for="|radio_blue_${item.typeId}|" >-->
+                                            <!--蓝色-->
+                                        <!--</label>-->
+                                    <!--</div>-->
+                                    <!--<div class="radio3 radio-check radio-success radio-inline radio-box-color">-->
+                                        <!--<input type="radio" th:id="|radio_white_${item.typeId}|" th:name="|radio_${item.typeId}|" value="white" />-->
+                                        <!--<label th:for="|radio_white_${item.typeId}|">-->
+                                            <!--白色-->
+                                        <!--</label>-->
+                                    <!--</div>-->
+                                </div>
+                            </div>
+                            <div style="padding: 8px;">
+                                <div style="float: left;clear: both;width: 20%;line-height: 34px;">
+                                    <span>数量</span>
+                                </div>
+                                <div style="float: left;width:50%">
+                                    <div class="form-group form-group-options">
+                                        <div id="1" class="input-group input-group-option quantity-wrapper">
+                                            <span class="input-group-addon input-group-addon-remove quantity-remove btn">
+                                                <span class="glyphicon glyphicon-minus"></span>
+                                            </span>
+                                            <input th:value="${item.count}" name="count" class="form-control quantity-count" placeholder="1" minlength="1" maxlength="2" readonly="readonly" style="text-align: center;" />
+                                            <span class="input-group-addon input-group-addon-remove quantity-add btn">
+                                                <span class="glyphicon glyphicon-plus"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-select-box">
+            <span>确定</span>
+        </div>
+
+    </div>
+    <!--<footer th:replace="custom/common/footer::manager_footer">-->
+    <!--</footer>-->
+</div>
+
+<!-- Javascript Libs -->
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.min.js}" src="../../lib/js/jquery.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/bootstrap.min.js}" src="../../lib/js/bootstrap.min.js"></script>
+<!--<script type="text/javascript" th:src="@{/assets/btzero/lib/js/Chart.min.js}" src="../../lib/js/Chart.min.js"></script>-->
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/bootstrap-switch.min.js}" src="../../lib/js/bootstrap-switch.min.js"></script>
+
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.matchHeight-min.js}" src="../../lib/js/jquery.matchHeight-min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.dataTables.min.js}" src="../../lib/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/dataTables.bootstrap.min.js}" src="../../lib/js/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/select2.full.min.js}" src="../../lib/js/select2.full.min.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/ace.js}" src="../../lib/js/ace/ace.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/mode-html.js}" src="../../lib/js/ace/mode-html.js"></script>
+<script type="text/javascript" th:src="@{/assets/btzero/lib/js/ace/theme-github.js}" src="../../lib/js/ace/theme-github.js"></script>
+
+<script type="text/javascript" th:src="@{/assets/btzero/js/app.js}" src="../../js/app.js"></script>
+<!--<script type="text/javascript" th:src="@{/assets/btzero/js/index.js}" src="../../js/index.js"></script>-->
+
+<!-- jQuery plugin js -->
+<script type="text/javascript" th:src="@{/assets/toastr/toastr.min.js}"></script>
+<script type="text/javascript" th:src="@{/assets/js/common/jquery.form.min.js}"></script>
+<script type="text/javascript" th:src="@{/assets/js/common/validate/jquery.validate.min.js}"></script>
+<script type="text/javascript" th:src="@{/assets/js/common/validate/message_cn.js}"></script>
+
+<!-- 自定义js -->
+<script type="text/javascript" th:src="@{/assets/js/custom/header.js}"></script>
+
+<script type="text/javascript" th:src="@{/assets/js/custom/order/box-type-list.js}"></script>
+
+</body>
+
+</html>

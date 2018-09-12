@@ -1,0 +1,70 @@
+package com.izhuixin.rsps.controller;
+
+import com.izhuixin.rsps.pojo.Order;
+import com.izhuixin.rsps.service.OrderMsgService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("v1/")
+public class OrderController {
+
+    @Autowired
+    private OrderMsgService orderMsgService;
+
+    /**
+     * 根据司机编号获取订单集合
+     * @param motorId
+     * @return
+     */
+    @RequestMapping("orderData/commonOrder/get")
+    public List<Order> getAllOrderByMotorId(String motorId){
+
+        return orderMsgService.getAllOrderByMotorId(motorId);
+
+    }
+    /**
+     **保存订单信息
+     * @param order
+     * @return
+     */
+    @RequestMapping("orderData/commonOrder/save")
+    public boolean saveOrder(@RequestBody Order order){
+
+       return orderMsgService.saveOrder(order);
+    }
+
+    /**
+     **更新签收状态
+     * @param orderId
+     * @return
+     */
+    @RequestMapping("orderData/commonOrder/update")
+    public boolean updateOrderStatus(Integer orderId){
+
+        return orderMsgService.updateOrderStatus(orderId);
+    }
+    /**
+     * 根据订单id删除订单信息
+     */
+    @RequestMapping("orderData/commonOrder/deleteByOrderId")
+    public boolean delete(String orderId){
+
+        return orderMsgService.deleteOrderByOrderId(orderId);
+    }
+
+    /**
+     * 发送签收消息
+     * @param order
+     * @return
+     */
+    @RequestMapping("orderData/commonOrder/sendOrder")
+    public boolean sendOrder(@RequestBody Order order){
+
+        return orderMsgService.sendOrder(order);
+    }
+}

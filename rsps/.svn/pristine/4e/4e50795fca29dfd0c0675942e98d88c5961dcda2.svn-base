@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<!-- 图表面板卡片 -->
+<style type="text/css">
+
+    .tab-name {
+        padding: 0px;
+        height: 45px;
+        line-height: 45px;
+        width: 120px;
+        text-align: center;
+        float: left;
+        font-size: 1.2em;
+        cursor: pointer;
+    }
+
+    .tab-date-name {
+        padding: 0px;
+        height: 45px;
+        line-height: 45px;
+        width: 45px;
+        text-align: center;
+        float: left;
+        font-size: 1.2em;
+        cursor: pointer;
+    }
+
+    .tab-name-active {
+        border-bottom: 2px solid #22a7f0;
+        color: #22a7f0;
+    }
+
+    .tab-date-name-active {
+        border-bottom: 2px solid #22a7f0;
+        color: #22a7f0;
+    }
+
+    .tab-chart-area {
+        width: 100%;
+        height: 350px;
+    }
+</style>
+
+<!-- 图表显示区域 -->
+<div class="col-md-12">
+    <div class="card">
+        <div class="col-md-12" style="border-bottom: 1px solid #eeeeee">
+            <div class="col-md-6">
+                <div id="t1" class="tab-name tab-name-active" value="1">闲置率</div>
+                <div id="t2" class="tab-name" value="2">周转率</div>
+                <div id="t3" class="tab-name" value="3">遗失率</div>
+                <div id="t4" class="tab-name" value="4">过期率</div>
+            </div>
+            <div class="col-md-3">
+                <div id="d1" class="tab-date-name" value="1">
+                    日
+                </div>
+                <div id="d2" class="tab-date-name" value="2">
+                    周
+                </div>
+                <div id="d3" class="tab-date-name tab-date-name-active" value="3">
+                    月
+                </div>
+                <div id="d4" class="tab-date-name" value="4">
+                    年
+                </div>
+            </div>
+            <div class="col-md-3">
+                <!-- 查询日期 -->
+                <span></span>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div id="chart_area" class="col-md-9 tab-chart-area">
+                <!-- 图表区域 -->
+            </div>
+            <div id="ranking_area" class="col-md-3">
+                <!-- 排名区域 -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        // 图表信息
+        var statisticsColumnChart = echarts.init(document.getElementById('chart_area'));
+        var statisticsColumnOption = {
+            title : {
+                text: '',
+                subtext: '',
+                x:'center'
+            },
+            tooltip : {
+                trigger: 'axis'
+            },
+            color:['#22a7f0'],
+            grid: {
+                left: '5%',
+                right: '5%',
+                bottom: '3%',
+                containLabel: true
+            },
+            calculable : true,
+            xAxis : [
+                {
+                    type : 'category',
+                    data : []
+                }
+            ],
+            series : [
+            ]
+        };
+
+        // 闲置率(1)、周转率(2)、遗失率(3)、过期率(4)
+        // 日(1)、周(2)、月(3)、年(4)
+
+        // 闲置率tab点击事件
+        $(document).on("click", "#t1", function () {
+            $(".tab-name").removeClass("tab-name-active");
+            $(this).addClass("tab-name-active");
+
+            var dateType = $(".tab-date-name-active").attr("value");
+            loadLineChart(1, dateType);
+        });
+
+        // 周转率tab点击事件
+        $(document).on("click", "#t2", function () {
+            $(".tab-name").removeClass("tab-name-active");
+            $(this).addClass("tab-name-active");
+
+            var dateType = $(".tab-date-name-active").attr("value");
+            loadLineChart(2, dateType);
+        });
+
+        // 遗失率tab点击事件
+        $(document).on("click", "#t3", function () {
+            $(".tab-name").removeClass("tab-name-active");
+            $(this).addClass("tab-name-active");
+
+            var dateType = $(".tab-date-name-active").attr("value");
+            loadLineChart(3, dateType);
+        });
+
+        // 过期率tab点击事件
+        $(document).on("click", "#t4", function () {
+            $(".tab-name").removeClass("tab-name-active");
+            $(this).addClass("tab-name-active");
+
+            var dateType = $(".tab-date-name-active").attr("value");
+            loadLineChart(4, dateType);
+        });
+
+
+        // 日 tab点击事件
+        $(document).on("click", "#d1", function () {
+            $(".tab-date-name").removeClass("tab-date-name-active");
+            $(this).addClass("tab-date-name-active");
+
+            var tabType = $(".tab-name-active").attr("value");
+            loadLineChart(tabType, 1);
+        });
+
+        // 周 tab点击事件
+        $(document).on("click", "#d2", function () {
+            $(".tab-date-name").removeClass("tab-date-name-active");
+            $(this).addClass("tab-date-name-active");
+
+            var tabType = $(".tab-name-active").attr("value");
+            loadLineChart(tabType, 2);
+        });
+
+        // 月 tab点击事件
+        $(document).on("click", "#d3", function () {
+            $(".tab-date-name").removeClass("tab-date-name-active");
+            $(this).addClass("tab-date-name-active");
+
+            var tabType = $(".tab-name-active").attr("value");
+            loadLineChart(tabType, 3);
+        });
+
+        // 年 tab点击事件
+        $(document).on("click", "#d4", function () {
+            $(".tab-date-name").removeClass("tab-date-name-active");
+            $(this).addClass("tab-date-name-active");
+
+            var tabType = $(".tab-name-active").attr("value");
+            loadLineChart(tabType, 4);
+        });
+        
+        // 展示图表区域
+        function loadLineChart(tabType, dateType) {
+            console.log("tabType:" + tabType);
+            console.log("dateType:" + dateType);
+
+            // 请求包装箱状态柱状图
+//            $.ajax({
+//                url:"/manager/statistics/chart/data/get",
+//                data:"tabType=" + tabType + "&dateType=" + dateType,
+//                dataType:"json",
+//                success:function (msg) {
+//                    statisticsColumnOption.xAxis[0].data = msg.xAxisData;
+//                    statisticsColumnOption.series = msg.seriesData;
+//                    statisticsColumnChart.setOption(statisticsColumnOption);
+//                },
+//                error:function () {
+//                    statisticsColumnChart.setOption(statisticsColumnOption);
+//                }
+//            });
+        }
+
+        // 展示排名
+        function loadRanking(tabType, dateType) {
+            console.log("tabType:" + tabType);
+            console.log("dateType:" + dateType);
+
+            $.ajax({
+                url:"/manager/ranking/data/show",
+                data:"",
+                dataType:"html",
+                success:function (content) {
+                    $("#ranking_area").html(content);
+                }
+            });
+        }
+
+    });
+
+</script>
+
+</html>

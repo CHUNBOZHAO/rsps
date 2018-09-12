@@ -1,0 +1,35 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:9100/eureka/
+server:
+  port: 10400
+spring:
+  application:
+    name: app-service
+  resources:
+    static-locations: file:${img.location}
+  cloud:
+    stream:
+      bindings:
+        output_operlocation:
+          destination: operlocation
+  rabbitmq:
+    host: 121.40.204.36
+    port: 5672
+    username: izhuixin
+    password: rsps123456
+  zipkin:
+    base-url: http://localhost:9300
+  sleuth:
+    sampler:
+      percentage: 1.0
+endpoints.shutdown.enabled: true    #开启优雅关闭方式
+management.security.enabled: false  #关闭安全认证
+img:
+  location: /home/zx/cdn/files/rsps/sign/photo/
+  url: https://rsps.izhuixin/sign/photo/
+
+
+
+

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>RSPS可循环智能包装系统管理平台</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="_csrf" content="${_csrf.token}"/>
+    <meta name="_csrf_header" content="${_csrf.headerName}"/>
+
+    <link rel="icon" type="image/x-icon" th:href="@{/assets/images/manager/favicon.png}">
+
+    <!-- CSS Libs -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/bootstrap.min.css}" href="../../lib/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/lib/css/font-awesome.min.css}" href="../../lib/css/font-awesome.min.css">
+
+    <!-- CSS App -->
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/style.css}" href="../../css/style.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/btzero/css/themes/flat-blue.css}" href="../../css/themes/flat-blue.css">
+</head>
+
+<body class="flat-blue login-page">
+    <div class="container">
+        <div style="color: whitesmoke;margin: auto;margin-top: 5%;width: 60%;height: 450px;background-color: rgba(138, 146, 154, 0.58);padding: 10px;border-radius: 10px;letter-spacing:1px;">
+            <h4>忘记密码处理方式：</h4>
+            <h4>1.请将您的个人真实信息发送到追新科技企业邮箱support@izhuixin.com，收到您的邮件后，我们会第一时间处理。</h4>
+            <h4>2.紧急情况下，可以拨打电话0571-87897558进行求助。</h4>
+            <br/>
+            <h4>
+                <a href="/manager/login" style="color: #022a56">返回登录页面</a>
+            </h4>
+        </div>
+    </div>
+    <!-- Javascript Libs -->
+    <script type="text/javascript" th:src="@{/assets/btzero/lib/js/jquery.min.js}" src="../../lib/js/jquery.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<table id="custom_list_table" class="table table-striped" cellspacing="0" width="100%" style="border-bottom: 0px;">
+    <thead>
+        <tr>
+            <th style="padding-left: 10px;width: 100px;">客户ID</th>
+            <th style="padding-left: 10px;">客户名称</th>
+            <th style="padding-left: 10px;">关联线路</th>
+            <th style="padding-left: 10px;width: 100px;">操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!--<tr th:each="item,itemStat:${customerInfos}">-->
+            <!--<td>-->
+                <!--<span th:text="${item.customId}"></span>-->
+            <!--</td>-->
+            <!--<td>-->
+                <!--<span th:text="${item.name}"></span>-->
+            <!--</td>-->
+            <!--<td>-->
+                <!--<span th:text="${item.address}"></span>-->
+            <!--</td>-->
+            <!--<td>-->
+                <!--<span class="btn-related-line" style="color: #2caef5;cursor: pointer" th:attr="customId=${item.customId}">关联线路</span>-->
+            <!--</td>-->
+        <!--</tr>-->
+    </tbody>
+</table>
+
+<script type="text/javascript" th:src="@{/assets/js/manager/line/custom-list-content.js}"></script>
+
+</html>

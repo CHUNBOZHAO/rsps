@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.izhuixin.rsps.dao.manual.BoxStatusReportDao" >
+
+  <resultMap id="BaseResultMap" type="com.izhuixin.rsps.domain.manual.BoxStatusReportInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="leisure_num" jdbcType="INTEGER" property="leisureNum" />
+    <result column="binding_num" jdbcType="INTEGER" property="bindingNum" />
+    <result column="transporting_num" jdbcType="INTEGER" property="transportingNum" />
+    <result column="retention_num" jdbcType="INTEGER" property="retentionNum" />
+    <result column="recycle_num" jdbcType="INTEGER" property="recycleNum" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="generate_date" jdbcType="TIMESTAMP" property="generateDate" />
+  </resultMap>
+
+  <!-- 获取指定时间段内每小时包装箱的瞬时状态数据 -->
+  <select id="getTransientHourlyInfos" resultMap="BaseResultMap" statementType="STATEMENT">
+    select * from rsps_${entCode}box_status_report where 1=1
+    <if test="beginDate != null">
+      <![CDATA[ and generate_date >= '${beginDate}']]>
+    </if>
+    <if test="endDate != null">
+      <![CDATA[ and generate_date < '${endDate}']]>
+    </if>
+    and type = 22
+  </select>
+
+  <!-- 获取指定时间段的包装箱操作记录每天报表信息 -->
+  <select id="getDailyInfos" resultMap="BaseResultMap" statementType="STATEMENT">
+    select * from rsps_${entCode}box_status_report where 1 = 1
+    <if test="beginDate != null">
+      <![CDATA[ and generate_date >= '${beginDate}']]>
+    </if>
+    <if test="endDate != null">
+      <![CDATA[ and generate_date < '${endDate}']]>
+    </if>
+    and type = 3
+  </select>
+
+  <!-- 获取指定时间段的包装箱操作记录每小时报表信息 -->
+  <select id="getHourlyInfos" resultMap="BaseResultMap" statementType="STATEMENT">
+    select * from rsps_${entCode}box_status_report where 1 = 1
+    <if test="beginDate != null">
+      <![CDATA[ and generate_date >= '${beginDate}']]>
+    </if>
+    <if test="endDate != null">
+      <![CDATA[ and generate_date < '${endDate}']]>
+    </if>
+    and type = 2
+  </select>
+
+  <!-- 获取指定时间段内的数据 -->
+  <select id="getTotalReport" resultMap="BaseResultMap" statementType="STATEMENT">
+    select sum(leisure_num) as leisure_num, sum(binding_num) as binding_num, sum(transporting_num) as transporting_num,
+    sum(retention_num) as retention_num, sum(recycle_num) as recycle_num from
+    rsps_${entCode}box_status_report where type = 1 and generate_date between '${beginDate}' and '${endDate}'
+  </select>
+
+  <!-- 保存报表 -->
+  <insert id="saveReport" parameterType="com.izhuixin.rsps.domain.manual.BoxStatusReportInfo">
+    insert into rsps_${entCode}box_status_report
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="boxStatusReportInfo.leisureNum != null">
+        leisure_num,
+      </if>
+      <if test="boxStatusReportInfo.bindingNum != null">
+        binding_num,
+      </if>
+      <if test="boxStatusReportInfo.transportingNum != null">
+        transporting_num,
+      </if>
+      <if test="boxStatusReportInfo.retentionNum != null">
+        retention_num,
+      </if>
+      <if test="boxStatusReportInfo.recycleNum != null">
+        recycle_num,
+      </if>
+      <if test="boxStatusReportInfo.type != null">
+        type,
+      </if>
+      <if test="boxStatusReportInfo.generateDateStr != null">
+        generate_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="boxStatusReportInfo.leisureNum != null">
+        ${boxStatusReportInfo.leisureNum},
+      </if>
+      <if test="boxStatusReportInfo.bindingNum != null">
+        ${boxStatusReportInfo.bindingNum},
+      </if>
+      <if test="boxStatusReportInfo.transportingNum != null">
+        ${boxStatusReportInfo.transportingNum},
+      </if>
+      <if test="boxStatusReportInfo.retentionNum != null">
+        ${boxStatusReportInfo.retentionNum},
+      </if>
+      <if test="boxStatusReportInfo.recycleNum != null">
+        ${boxStatusReportInfo.recycleNum},
+      </if>
+      <if test="boxStatusReportInfo.type != null">
+        ${boxStatusReportInfo.type},
+      </if>
+      <if test="boxStatusReportInfo.generateDateStr != null">
+        '${boxStatusReportInfo.generateDateStr}',
+      </if>
+    </trim>
+  </insert>
+
+  <select id="checkRepeat" resultType="java.lang.Long">
+    select count(*) from rsps_${entCode}box_status_report where type = ${type} and generate_date = '${generateTime}'
+  </select>
+
+</mapper>

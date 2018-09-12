@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<!-- 图表面板卡片 -->
+
+<!-- 图表显示区域 -->
+<div class="col-md-12">
+    <div class="card">
+        <div class="col-md-12" style="border-bottom: 1px solid #eeeeee">
+            <div class="col-md-6">
+                <div id="t1" class="tab-name tab-name-active" value="1">闲置率</div>
+                <div id="t2" class="tab-name" value="2">周转率</div>
+                <div id="t3" class="tab-name" value="3">遗失率</div>
+                <div id="t4" class="tab-name" value="4">过期率</div>
+            </div>
+            <div class="col-md-3">
+                <div id="d1" class="tab-date-name" value="1">
+                    日
+                </div>
+                <div id="d2" class="tab-date-name" value="2">
+                    周
+                </div>
+                <div id="d3" class="tab-date-name tab-date-name-active" value="3">
+                    月
+                </div>
+                <div id="d4" class="tab-date-name" value="4">
+                    年
+                </div>
+            </div>
+            <div class="col-md-3">
+                <!-- 查询日期 -->
+                <span></span>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div id="chart_area" class="col-md-9 tab-chart-area">
+                <!-- 图表区域 -->
+            </div>
+            <div id="ranking_area" class="col-md-3 rankStyle">
+                <!-- 排名区域 -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" th:src="@{/assets/js/manager/statistics/tab-card.js}"></script>
+</html>

@@ -1,0 +1,246 @@
+package com.izhuixin.rsps.domain;
+
+import java.io.Serializable;
+import java.util.Date;
+
+public class Order implements Serializable {
+
+    private Integer id;
+    private String jobNo;
+    private String orderNo;
+    private String sdStation;
+    private String deliStation;
+    private String sdClientNo;
+    private String sdClientName;
+    private String reCompany;
+    private String reTel;
+    private String reTel2;
+    private String returnType;
+    private String printType;
+    private String eirNo;
+    private String eirStano;
+    private String eirStation;
+    private String motorMan;
+    private String motorTel;
+    private String motorId;
+    private String times;
+    private Date createTime;
+    private String entCode;
+    private Integer orderStatus;
+    private Integer sendAckStatus;
+    //拒收原因
+    private String refusedReason;
+    //拒收数量
+    private String refusedCount;
+    //订单总件数
+    private String orderCount;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getJobNo() {
+        return jobNo;
+    }
+
+    public void setJobNo(String jobNo) {
+        this.jobNo = jobNo;
+    }
+
+    public String getOrderNo() {
+        return orderNo;
+    }
+
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo;
+    }
+
+    public String getSdStation() {
+        return sdStation;
+    }
+
+    public void setSdStation(String sdStation) {
+        this.sdStation = sdStation;
+    }
+
+    public String getDeliStation() {
+        return deliStation;
+    }
+
+    public void setDeliStation(String deliStation) {
+        this.deliStation = deliStation;
+    }
+
+    public String getSdClientNo() {
+        return sdClientNo;
+    }
+
+    public void setSdClientNo(String sdClientNo) {
+        this.sdClientNo = sdClientNo;
+    }
+
+    public String getSdClientName() {
+        return sdClientName;
+    }
+
+    public void setSdClientName(String sdClientName) {
+        this.sdClientName = sdClientName;
+    }
+
+    public String getReCompany() {
+        return reCompany;
+    }
+
+    public void setReCompany(String reCompany) {
+        this.reCompany = reCompany;
+    }
+
+    public String getReTel() {
+        return reTel;
+    }
+
+    public void setReTel(String reTel) {
+        this.reTel = reTel;
+    }
+
+    public String getReTel2() {
+        return reTel2;
+    }
+
+    public void setReTel2(String reTel2) {
+        this.reTel2 = reTel2;
+    }
+
+    public String getReturnType() {
+        return returnType;
+    }
+
+    public void setReturnType(String returnType) {
+        this.returnType = returnType;
+    }
+
+    public String getPrintType() {
+        return printType;
+    }
+
+    public void setPrintType(String printType) {
+        this.printType = printType;
+    }
+
+    public String getEirNo() {
+        return eirNo;
+    }
+
+    public void setEirNo(String eirNo) {
+        this.eirNo = eirNo;
+    }
+
+    public String getEirStano() {
+        return eirStano;
+    }
+
+    public void setEirStano(String eirStano) {
+        this.eirStano = eirStano;
+    }
+
+    public String getEirStation() {
+        return eirStation;
+    }
+
+    public void setEirStation(String eirStation) {
+        this.eirStation = eirStation;
+    }
+
+    public String getMotorMan() {
+        return motorMan;
+    }
+
+    public void setMotorMan(String motorMan) {
+        this.motorMan = motorMan;
+    }
+
+    public String getMotorTel() {
+        return motorTel;
+    }
+
+    public void setMotorTel(String motorTel) {
+        this.motorTel = motorTel;
+    }
+
+    public String getMotorId() {
+        return motorId;
+    }
+
+    public void setMotorId(String motorId) {
+        this.motorId = motorId;
+    }
+
+    public String getTimes() {
+        return times;
+    }
+
+    public void setTimes(String times) {
+        this.times = times;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getEntCode() {
+        return entCode;
+    }
+
+    public void setEntCode(String entCode) {
+        this.entCode = entCode;
+    }
+
+    public Integer getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(Integer orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
+    public Integer getSendAckStatus() {
+        return sendAckStatus;
+    }
+
+    public void setSendAckStatus(Integer sendAckStatus) {
+        this.sendAckStatus = sendAckStatus;
+    }
+
+    public String getRefusedReason() {
+        return refusedReason;
+    }
+
+    public void setRefusedReason(String refusedReason) {
+        this.refusedReason = refusedReason;
+    }
+
+    public String getRefusedCount() {
+        return refusedCount;
+    }
+
+    public void setRefusedCount(String refusedCount) {
+        this.refusedCount = refusedCount;
+    }
+
+    public String getOrderCount() {
+        return orderCount;
+    }
+
+    public void setOrderCount(String orderCount) {
+        this.orderCount = orderCount;
+    }
+
+}

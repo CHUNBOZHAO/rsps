@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="custom_side_menu(meunIndex)" class="side-menu sidebar-inverse">
+    <nav class="navbar navbar-default" role="navigation">
+        <div class="side-menu-container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">
+                    <div class="icon fa fa-recycle"></div>
+                    <div class="title">RSPS智能包装系统</div>
+                </a>
+                <button type="button" class="navbar-expand-toggle pull-right visible-xs">
+                    <i class="fa fa-times icon"></i>
+                </button>
+            </div>
+            <ul class="nav navbar-nav">
+                <li th:classappend="${meunIndex == 100} ? 'active'">
+                    <a th:href="@{/custom/}">
+                        <span class="icon fa fa-tachometer"></span><span class="title">我的订单</span>
+                    </a>
+                </li>
+            </ul>
+            <!-- 我要下单 -->
+            <ul class="nav navbar-nav">
+                <li th:classappend="${meunIndex == 200} ? 'active'">
+                    <a th:href="@{/custom/order/showOrder(orderId=init)}">
+                        <span class="icon fa fa-file-text-o"></span><span class="title">我要下单</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </nav>
+</div>
+
+</html>

@@ -1,0 +1,38 @@
+package com.izhuixin.rsps.service.impl;
+
+import com.izhuixin.rsps.message.OutputMsg;
+import com.izhuixin.rsps.service.OrderService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cloud.stream.annotation.EnableBinding;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.stereotype.Service;
+
+@Service
+@EnableBinding(OutputMsg.class)
+public class OrderServiceImpl implements OrderService {
+
+    /**
+     *创建一个新的消息通道发送消息
+     */
+    @Autowired
+    @Qualifier(OutputMsg.OUTPUT_ORDER)
+    MessageChannel output_order;
+
+    @Override
+    public boolean sendOrder(String orderNo) {
+
+//        boolean tt = output_order.send(MessageBuilder.withPayload(orderMsg).build());
+//        if(tt==true){
+//
+//            flag = true;
+//        }
+
+        output_order.send(MessageBuilder.withPayload(orderNo).build());
+
+        return true;
+    }
+
+
+}
